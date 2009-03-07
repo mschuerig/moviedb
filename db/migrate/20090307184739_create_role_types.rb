@@ -1,6 +1,6 @@
-class CreateRoles < ActiveRecord::Migration
+class CreateRoleTypes < ActiveRecord::Migration
   def self.up
-    create_table :roles do |t|
+    create_table :role_types do |t|
       t.string :name, :null => false
 
       t.timestamps
@@ -8,6 +8,6 @@ class CreateRoles < ActiveRecord::Migration
   end
 
   def self.down
-    drop_table :roles
+    drop_table :role_types
   end
 end
