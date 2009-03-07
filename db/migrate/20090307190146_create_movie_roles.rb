@@ -7,8 +7,8 @@ class CreateMovieRoles < ActiveRecord::Migration
 
       t.timestamps
     end
-    add_index :movies, [:movie_id, :person_id, :role_id], :unique => true
-    add_index :movies, :person_id
+    add_index :movie_roles, [:movie_id, :person_id, :role_id], :unique => true
+    add_index :movie_roles, :person_id
   end
 
   def self.down
