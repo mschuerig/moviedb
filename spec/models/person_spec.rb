@@ -24,17 +24,17 @@ describe "Person with actor role in a single movie" do
 
   before(:each) do
     @actor = Person.create!(:firstname => 'Clint', :lastname => 'Hehaa')
-    @movie = Movie.create!(:title => 'Bad and Ugly')
+    @movie = Movie.create!(:title => 'Bad and Ugly', :release_date => '2004-12-05')
     @movie.add_actor(@actor)
     @movie.save!
   end
   
   it "acts in the movie" do
-    @actor.actor_of.should include(@movie)
+    @actor.movies.as_actor.should include(@movie)
   end
   
   it "does not direct the movie" do
-    @actor.director_of.should be_empty
+    @actor.movies.as_director.should be_empty
   end
   
   it "cannot be deleted" do
@@ -43,6 +43,14 @@ describe "Person with actor role in a single movie" do
   
   it "is found as an actor" do
     Person.actors.should include(@actor)
+  end
+
+  it "is found as an actor with a movie in 2004" do
+    Person.actors.with_movie_in_year(2004).should include(@actor)
+  end
+
+  it "is not found as an actor with a movie in 2005" do
+    Person.actors.with_movie_in_year(2005).should_not include(@actor)
   end
 
   it "is not found as a director" do
