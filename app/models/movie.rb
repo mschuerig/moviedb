@@ -7,9 +7,9 @@ class Movie < ActiveRecord::Base
   module ParticipantTypeExtensions
     RoleType.each_name do |name, clean_name|
       define_method("as_#{clean_name}") do
-        self.find(:all,
-                  :joins => 'JOIN role_types ON roles.role_type_id = role_types.id',
-                  :conditions => { :role_types => { :name => name }})
+        self.scoped(
+          :joins => 'JOIN role_types ON roles.role_type_id = role_types.id',
+          :conditions => { :role_types => { :name => name }})
       end
     end
   end
@@ -30,10 +30,12 @@ class Movie < ActiveRecord::Base
     END
   end
     
-  named_scope :in_year, lambda { |year|
-    { 
-      :conditions => ["movies.release_date between date(':year-01-01') and date(':year-12-31')",
-                      { :year => year }]
-    }
-  }
+  def self.in_year_condition(year)
+    ["movies.release_date between date(':year-01-01') and date(':year-12-31')",
+     { :year => year }]
+  end
+
+  named_scope :in_year, 
+    lambda { |year| { :conditions => in_year_condition(year) } }
+    
 end

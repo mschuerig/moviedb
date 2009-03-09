@@ -8,9 +8,9 @@ class Person < ActiveRecord::Base
   module RoleTypeExtensions
     RoleType.each_name do |name, clean_name|
       define_method("as_#{clean_name}") do
-        self.find(:all,
-                  :joins => 'JOIN role_types ON roles.role_type_id = role_types.id',
-                  :conditions => { :role_types => { :name => name }})
+        self.scoped(
+          :joins => 'JOIN role_types ON roles.role_type_id = role_types.id',
+          :conditions => { :role_types => { :name => name }})
       end
     end
   end
@@ -28,8 +28,7 @@ class Person < ActiveRecord::Base
   named_scope :with_movie_in_year, lambda { |year|
     { 
       :joins => { :roles => :movie },
-      :conditions => ["movies.release_date between date(':year-01-01') and date(':year-12-31')",
-                      { :year => year }]
+      :conditions => Movie.in_year_condition(year)
     }
   }
   

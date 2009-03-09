@@ -5,7 +5,8 @@ class RoleType < ActiveRecord::Base
   def self.each_name
 #    RoleType.each do |rt|
     ['Actor', 'Director'].each do |name|
-      clean_name = name.underscore.gsub(' ', '_') ### FIXME extract and make really safe
+      ### TODO extract
+      clean_name = ActiveSupport::Inflector.transliterate(name).gsub(' ', '_').gsub(/[^[:alnum:]_]/, '').underscore
       yield name, clean_name
     end
   end
