@@ -1,4 +1,6 @@
 class Movie < ActiveRecord::Base
+  validates_presence_of :title
+  validates_uniqueness_of :title, :scope => :release_date
 
   has_many :roles, :include => :role_type, :dependent => :destroy
 
@@ -14,6 +16,8 @@ class Movie < ActiveRecord::Base
   
   has_many :participants, :through => :roles, :source => :person, :extend => ParticipantTypeExtensions
 
+  default_scope :order => 'title, release_date'
+  
   RoleType.each_name do |name, clean_name|
     class_eval <<-END
       def add_#{clean_name}(person, options = {})
@@ -32,7 +36,4 @@ class Movie < ActiveRecord::Base
                       { :year => year }]
     }
   }
-
-  validates_presence_of :title
-
 end

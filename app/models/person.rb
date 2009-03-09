@@ -1,6 +1,8 @@
 class Person < ActiveRecord::Base
   class HasRoleError < StandardError; end
 
+  validates_presence_of :firstname, :lastname
+
   has_many :roles, :include => :role_type
   
   module RoleTypeExtensions
@@ -13,11 +15,12 @@ class Person < ActiveRecord::Base
     end
   end
   
-  has_many :movies, :through => :roles, :extend => RoleTypeExtensions
+  has_many :movies, :through => :roles, :extend => RoleTypeExtensions, :order => 'release_date'
+  
+  default_scope :order => 'lastname, firstname'
   
   RoleType.each_name do |name, clean_name|
     named_scope clean_name.pluralize,
-      :order => 'lastname, firstname',
       :joins => { :roles => :role_type },
       :conditions => { :roles => { :role_types => { :name => name }}}
   end
@@ -30,9 +33,6 @@ class Person < ActiveRecord::Base
     }
   }
   
-  validates_presence_of :firstname, :lastname
-  
-
   def before_destroy
     raise HasRoleError unless roles.empty?
   end
