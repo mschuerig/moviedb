@@ -1,4 +1,6 @@
 class Movie < ActiveRecord::Base
+  attr_protected :release_year
+  
   validates_presence_of :title
   validates_uniqueness_of :title, :scope => :release_date
 
@@ -31,11 +33,17 @@ class Movie < ActiveRecord::Base
   end
     
   def self.in_year_condition(year)
-    ["movies.release_date between date(':year-01-01') and date(':year-12-31')",
-     { :year => year }]
+    ["movies.release_year = ?",year]
   end
 
   named_scope :in_year, 
     lambda { |year| { :conditions => in_year_condition(year) } }
-    
+
+  def self.by_year
+    find(:all).group_by(&:release_year).sort_by(&:first)
+  end
+  
+  def before_save
+    self.release_year = release_date.blank? ? nil : release_date.year
+  end
 end
