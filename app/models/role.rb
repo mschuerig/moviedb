@@ -1,6 +1,5 @@
 class Role < ActiveRecord::Base
-  validates_presence_of :person_id, :role_type_id, :movie_id, :credited_as
-  validates_uniqueness_of :role_type_id, :scope => [:person_id, :movie_id]
+  validates_presence_of :person, :role_type, :movie, :credited_as
 
   belongs_to :person
   belongs_to :role_type

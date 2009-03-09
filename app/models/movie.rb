@@ -2,7 +2,6 @@ class Movie < ActiveRecord::Base
   attr_protected :release_year
   
   validates_presence_of :title
-  validates_uniqueness_of :title, :scope => :release_date
 
   has_many :roles, :include => :role_type, :dependent => :destroy
 
