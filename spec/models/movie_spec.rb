@@ -1,10 +1,10 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
-describe Movie do
-  
+describe "Movie (2002)" do
   before(:each) do
     @valid_attributes = {
-      :title => 'Running Down the Rails'
+      :title => 'Running Down the Rails',
+      :release_date => '2002-11-29'
     }
     @movie = Movie.create(@valid_attributes)
   end
@@ -12,11 +12,19 @@ describe Movie do
   it "should be valid given valid attributes" do
     @movie.should be_valid
   end
+
+  it "is found for 2002" do
+    Movie.in_year(2002).should include(@movie)
+  end
+
+  it "is not found for 2003" do
+    Movie.in_year(2003).should_not include(@movie)
+  end
 end
 
-describe "Movie with roles" do
+describe "Movie with only an actor" do
   before(:each) do
-    @movie = Movie.create!(:title => 'Bad Stuff', :release_date => '2002-11-29')
+    @movie = Movie.create!(:title => 'Bad Stuff')
     @actor = Person.create!(:firstname => 'Clint', :lastname => 'Eastwood')
     @movie.add_actor(@actor)
     @movie.save!
@@ -35,11 +43,4 @@ describe "Movie with roles" do
     @actor.roles.should be_empty
   end
   
-  it "is found for 2002" do
-    Movie.in_year(2002).should include(@movie)
-  end
-
-  it "is not found for 2003" do
-    Movie.in_year(2003).should_not include(@movie)
-  end
 end

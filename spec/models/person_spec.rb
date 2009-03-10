@@ -1,13 +1,20 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
-describe Person do
-
+describe "all persons", :shared => true do
   before(:each) do
     @valid_attributes = {
       :firstname => 'Clint',
       :lastname => 'Eastwood'
     }
-    @person = Person.create(@valid_attributes)
+  end
+end
+
+
+describe Person do
+  it_should_behave_like "all persons"
+  
+  before(:each) do
+    @person = Person.create!(@valid_attributes)
   end
 
   it "is valid given valid attributes" do
@@ -18,10 +25,43 @@ describe Person do
     @person.destroy
     Person.should have(:no).records
   end
+  
+  it "has a serial number" do
+    @person.serial_number.should eql(1)
+  end
+  
+  it "does not show its serial number" do
+    pending do
+      @person.name.should eql('Clint Eastwood')
+    end
+  end
+
+  it "creates a unique serial number" do
+    Person.should_receive(:next_unused_serial_number).twice.and_return(1, 2)
+    dupe = Person.create!(@valid_attributes)
+  end
 end
 
-describe "Person with actor role in a single movie" do
 
+describe "Person with a duplicate name" do
+  it_should_behave_like "all persons"
+  
+  before(:each) do
+    @person = Person.create!(@valid_attributes)
+    @dupe = Person.create!(@valid_attributes)
+  end
+
+  it "has a new serial number" do
+    @dupe.serial_number.should eql(2)
+  end
+
+  it "shows its serial number" do
+    @dupe.name.should eql('Clint Eastwood (2)')
+  end
+end
+
+
+describe "Person with only an actor role in a single 2004 movie" do
   before(:each) do
     @actor = Person.create!(:firstname => 'Clint', :lastname => 'Hehaa')
     @movie = Movie.create!(:title => 'Bad and Ugly', :release_date => '2004-12-05')

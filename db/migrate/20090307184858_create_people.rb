@@ -4,10 +4,10 @@ class CreatePeople < ActiveRecord::Migration
       t.string :firstname, :null => false
       t.string :lastname, :null => false
       t.date :date_of_birth
-
+      t.integer :serial_number, :null => false
       t.timestamps
     end
-    add_index :people, [:lastname, :firstname, :date_of_birth], :unique => true
+    add_index :people, [:lastname, :firstname, :serial_number], :unique => true
   end
 
   def self.down

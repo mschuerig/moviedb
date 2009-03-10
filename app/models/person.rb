@@ -1,6 +1,8 @@
 class Person < ActiveRecord::Base
   class HasRoleError < StandardError; end
 
+  attr_readonly :serial_number
+  
   validates_presence_of :firstname, :lastname
 
   has_many :roles, :include => :role_type
@@ -32,7 +34,48 @@ class Person < ActiveRecord::Base
     }
   }
   
+  def name
+    if has_dupes?
+      "#{firstname} #{lastname} (#{serial_number})" ### TODO use roman numeral
+    else
+      "#{firstname} #{lastname}"
+    end
+  end
+  
+  def create(*args)
+    super(*args)
+  rescue ActiveRecord::StatementInvalid => e
+    if e.message.include?('are not unique')
+      self.serial_number = next_unused_serial_number
+      retry
+    else
+      raise
+    end
+  end
+  
+  def before_create
+    # This method is called before create and before a retried create.
+    # On a retry, serial_number is already set, so don't reset it.
+    self.serial_number ||= 1
+  end
+  
   def before_destroy
     raise HasRoleError unless roles.empty?
+  end
+  
+  private
+  
+  def has_dupes?
+    true
+  end
+  
+  def next_unused_serial_number
+    self.class.next_unused_serial_number(self)
+  end
+  
+  def self.next_unused_serial_number(person)
+    max = self.maximum(:serial_number,
+      :conditions => { :lastname => person.lastname, :firstname => person.firstname })
+    max ? max + 1 : 1
   end
 end
