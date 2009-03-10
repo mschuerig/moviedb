@@ -61,13 +61,18 @@ describe "Person with a duplicate name" do
 end
 
 
-describe "Person with only an actor role in a single 2004 movie" do
+describe "an actor", :shared => true do
   before(:each) do
     @actor = Person.create!(:firstname => 'Clint', :lastname => 'Hehaa')
     @movie = Movie.create!(:title => 'Bad and Ugly', :release_date => '2004-12-05')
     @movie.add_actor(@actor)
     @movie.save!
   end
+end
+
+
+describe "Person with only an actor role in a single 2004 movie" do
+  it_should_behave_like "an actor"
   
   it "acts in the movie" do
     @actor.movies.as_actor.should include(@movie)
@@ -96,4 +101,36 @@ describe "Person with only an actor role in a single 2004 movie" do
   it "is not found as a director" do
     Person.directors.should_not include(@actor)
   end
+end
+
+describe "An actor with coworkers" do
+  it_should_behave_like "an actor"
+  
+  before(:each) do
+    @coactor1 = Person.create(:firstname => 'Eddie', :lastname => 'Act')
+    @movie.add_actor(@coactor1)
+    @director = Person.create(:firstname => 'Zeno', :lastname => 'Direct')
+    @movie.add_director(@director)
+    @movie.save!
+    
+    @movie2 = Movie.create!(:title => 'Bad and Ugly, the sequel', :release_date => '2005-12-09')
+    @movie2.add_actor(@actor)
+    @coactor2 = Person.create(:firstname => 'Duane', :lastname => 'Act')
+    @movie2.add_actor(@coactor2)
+    @movie2.save!
+  end
+  
+  it "knows their coworkers from all movies" do
+    @actor.should have(3).coworkers
+    @actor.coworkers.should include(@coactor1)
+    @actor.coworkers.should include(@coactor2)
+    @actor.coworkers.should include(@director)
+  end
+
+  it "knows their coworkers from a specific movie" do
+    @actor.should have(2).coworkers(@movie)
+    @actor.coworkers.should include(@coactor1)
+    @actor.coworkers.should include(@director)
+  end
+
 end

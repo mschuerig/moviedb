@@ -34,14 +34,6 @@ class Person < ActiveRecord::Base
     }
   }
   
-  def name
-    if has_dupes?
-      "#{firstname} #{lastname} (#{serial_number})" ### TODO use roman numeral
-    else
-      "#{firstname} #{lastname}"
-    end
-  end
-  
   def create(*args)
     super(*args)
   rescue ActiveRecord::StatementInvalid => e
@@ -51,6 +43,25 @@ class Person < ActiveRecord::Base
     else
       raise
     end
+  end
+  
+  def name
+    if has_dupes?
+      "#{firstname} #{lastname} (#{serial_number})" ### TODO use roman numeral
+    else
+      "#{firstname} #{lastname}"
+    end
+  end
+
+  def coworkers(movie = nil)
+    if movie
+      others = movie.participants
+    else
+      others = Person.find(:all,
+        :conditions => ["people.id IN (SELECT roles.person_id FROM roles WHERE roles.movie_id IN (SELECT roles.movie_id from roles WHERE roles.person_id = ?))", id]
+      )
+    end
+    others.include?(self) ? others - [self] : []
   end
   
   def before_create
