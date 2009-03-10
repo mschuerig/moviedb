@@ -19,6 +19,9 @@ class Person < ActiveRecord::Base
   
   has_many :movies, :through => :roles, :extend => RoleTypeExtensions, :order => 'release_date'
   
+  has_many :awardings, :class_name => 'PersonAwarding', :include => :person_award
+  has_many :awards, :through => :awardings, :source => :person_award
+  
   default_scope :order => 'lastname, firstname'
   
   RoleType.each_name do |name, clean_name|
@@ -28,7 +31,7 @@ class Person < ActiveRecord::Base
   end
   
   named_scope :with_movie_in_year, lambda { |year|
-    { 
+    {
       :joins => { :roles => :movie },
       :conditions => Movie.in_year_condition(year)
     }

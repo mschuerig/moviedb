@@ -1,0 +1,6 @@
+oscar_best_actor:
+  name: Best Actor
+  award_group: oscar
+oscar_best_actress:
+  name: Best Actress
+  award_group: oscar

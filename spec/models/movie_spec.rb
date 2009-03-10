@@ -42,5 +42,4 @@ describe "Movie with only an actor" do
     @movie.destroy
     @actor.roles.should be_empty
   end
-  
 end
