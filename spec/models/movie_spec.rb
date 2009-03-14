@@ -13,6 +13,10 @@ describe "Movie (2002)" do
     @movie.should be_valid
   end
 
+  it "should compute its release year" do
+    @movie.release_year.should be(2002)
+  end
+  
   it "is found for 2002" do
     Movie.in_year(2002).should include(@movie)
   end
