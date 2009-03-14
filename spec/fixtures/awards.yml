@@ -1,0 +1,15 @@
+oscar_best_picture:
+  name: Best Picture
+  award_group: oscar
+oscar_best_actor:
+  name: Best Actor
+  award_group: oscar
+oscar_best_actress:
+  name: Best Actress
+  award_group: oscar
+oscar_best_supporting_actor:
+  name: Best Supporting Actor
+  award_group: oscar
+oscar_best_supporting_actress:
+  name: Best Supporting Actress
+  award_group: oscar

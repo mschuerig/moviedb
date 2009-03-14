@@ -17,8 +17,7 @@ class Movie < ActiveRecord::Base
   
   has_many :participants, :through => :roles, :source => :person, :extend => ParticipantTypeExtensions
 
-  has_many :awardings, :class_name => 'MovieAwarding', :include => :movie_award
-  has_many :awards, :through => :awardings, :source => :movie_award
+  has_and_belongs_to_many :awardings
   
   default_scope :order => 'title, release_date'
   

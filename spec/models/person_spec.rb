@@ -10,7 +10,7 @@ describe "all persons", :shared => true do
 end
 
 
-describe Person do
+describe "A Person with a unique name" do
   it_should_behave_like "all persons"
   
   before(:each) do
@@ -43,7 +43,7 @@ describe Person do
 end
 
 
-describe "Person with a duplicate name" do
+describe "A Person with a duplicate name" do
   it_should_behave_like "all persons"
   
   before(:each) do
@@ -71,7 +71,7 @@ describe "an actor", :shared => true do
 end
 
 
-describe "Person with only an actor role in a single 2004 movie" do
+describe "A Person with only an actor role in a single 2004 movie" do
   it_should_behave_like "an actor"
   
   it "acts in the movie" do

@@ -19,8 +19,7 @@ class Person < ActiveRecord::Base
   
   has_many :movies, :through => :roles, :extend => RoleTypeExtensions, :order => 'release_date'
   
-  has_many :awardings, :class_name => 'PersonAwarding', :include => :person_award
-  has_many :awards, :through => :awardings, :source => :person_award
+  has_and_belongs_to_many :awardings
   
   default_scope :order => 'lastname, firstname'
   
