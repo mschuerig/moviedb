@@ -1,0 +1,34 @@
+
+<script type="text/javascript">
+  dojo.require('dojo.parser');
+  dojo.require("dojo.data.ItemFileReadStore");
+  dojo.require("dojox.grid.DataGrid");
+  dojo.require("dojox.widget.PlaceholderMenuItem");
+
+  var jsonStore = new dojo.data.ItemFileReadStore({ url: "/movies.json" });
+  var grid = null;
+
+  dojo.addOnLoad(function(){
+    dojo.parser.parse();
+    grid = new dojox.grid.DataGrid({
+      query: { part_num: '*' },
+      store: jsonStore,
+      structure: [
+        { field: "title", name: "Title", width: "auto" },
+        { field: "release_year", name: "Year", width: "auto" }
+      ],
+      rowsPerPage: 20,
+      region: 'center'
+    });
+    container.addChild(grid);
+    grid.startup();
+  });
+</script>
+
+<div dojoType="dijit.layout.BorderContainer" jsid="container" id="container" design="headline">
+  <div dojoType="dijit.layout.ContentPane" region="top">
+    <div class="headerWrapper">
+      <h1>Gasket Lookup</h1>
+    </div>
+  </div>
+</div>
