@@ -19,8 +19,12 @@ namespace :db do
 
     desc "Copy databases for a new branch. Default is 'master', set ORIG_BRANCH=some_branch"
     task :copy => "db:load_config" do
-      from_branch = ENV['ORIG_BRANCH'] || 'master' ### TODO determine originating branch
-      each_local_database { |switcher| switcher.copy_from(from_branch) }
+      each_local_database { |switcher| switcher.copy_from(originating_branch) }
+    end
+
+    desc "Link to databases of another branch. Default is 'master', set ORIG_BRANCH=some_branch"
+    task :copy => "db:load_config" do
+      each_local_database { |switcher| switcher.link_to(originating_branch) }
     end
 
     desc "Delete databases for a branch."
@@ -40,6 +44,10 @@ namespace :db do
       ENV['BRANCH'] || current_branch
     end
 
+    def originating_branch
+      ENV['ORIG_BRANCH'] || 'master' ### TODO determine originating branch
+    end
+    
     def each_local_config
       ActiveRecord::Base.configurations.each_value do |config|
         next unless config['database']
@@ -79,6 +87,9 @@ namespace :db do
       def copy_from(other_branch)
       end
       
+      def link_to(other_branch)
+      end
+      
       def select
       end
       
@@ -100,23 +111,28 @@ namespace :db do
         make_branch_dir
         unless File.exist?(@branch_db)
           FileUtils.mv(@db, @branch_db) if File.exist?(@db)
-          FileUtils.ln_s(@branch_db, @db)
+          FileUtils.ln_s(relative_path(@branch_db), @db)
         end
       end
 
       def copy_from(other_branch)
         other_db = branch_db_path(other_branch)
-        if File.exist?(@branch_db)
+        if File.exist?(@branch_db) && !File.symlink?(@branch_db)
           $stderr.puts "A database file #{@branch_db} exists already."
         elsif File.exist?(other_db)
           make_branch_dir
+          ### TODO make sure that symlinks are copied as symlinks
           FileUtils.cp(other_db, @branch_db)
         end
       end
 
+      def link_to(other_branch)
+        ### TODO
+      end
+      
       def select
         ensure_branch_exists!
-        FileUtils.ln_sf(branch_db_path, db_path)
+        FileUtils.ln_sf(relative_path(branch_db_path), db_path)
       end
       
       def delete
@@ -153,7 +169,7 @@ namespace :db do
       end
 
       def relative_path(s)
-        s.sub(%r{^#{RAILS_ROOT}/}, '')
+        s.sub(%r{^#{RAILS_ROOT}/db/}, '')
       end
     end
   end
