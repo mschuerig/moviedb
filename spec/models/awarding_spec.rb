@@ -9,7 +9,7 @@ describe "An Awarding for a Movie" do
   
   it "knows about its award" do
     @movie.should have(1).awardings
-    @movie.awardings[0].name.should eql("Academy Award: Best Picture (#{@movie.release_year})")
+    @movie.awardings[0].name.should == "Academy Award: Best Picture (#{@movie.release_year})"
   end
   
   it "deduces its year from the movie's release year" do
@@ -28,7 +28,7 @@ describe "An Awarding for a Person" do
   
   it "knows about its award" do
     @actress.should have(1).awardings
-    @actress.awardings[0].name.should eql("Academy Award: Best Actress (#{@movie.release_year})")
+    @actress.awardings[0].name.should == "Academy Award: Best Actress (#{@movie.release_year})"
   end
   
   it "deduces its year from the movie's release year" do

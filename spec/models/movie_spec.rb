@@ -14,7 +14,7 @@ describe "Movie (2002)" do
   end
 
   it "should compute its release year" do
-    @movie.release_year.should be(2002)
+    @movie.release_year.should == 2002
   end
   
   it "is found for 2002" do

@@ -27,12 +27,12 @@ describe "A Person with a unique name" do
   end
   
   it "has a serial number" do
-    @person.serial_number.should eql(1)
+    @person.serial_number.should == 1
   end
   
   it "does not show its serial number" do
     pending do
-      @person.name.should eql('Clint Eastwood')
+      @person.name.should == 'Clint Eastwood'
     end
   end
 
@@ -52,11 +52,11 @@ describe "A Person with a duplicate name" do
   end
 
   it "has a new serial number" do
-    @dupe.serial_number.should eql(2)
+    @dupe.serial_number.should == 2
   end
 
   it "shows its serial number" do
-    @dupe.name.should eql('Clint Eastwood (2)')
+    @dupe.name.should == 'Clint Eastwood (2)'
   end
 end
 
