@@ -1,6 +1,6 @@
 class MoviesController < ApplicationController
   
-  
+  ### TODO map JSON-format here instead of in MovieStore#_processResults.
   
   def parse_range_header(range = nil)
     range ||= request.headers['Range']
@@ -18,6 +18,7 @@ class MoviesController < ApplicationController
     ### TODO use request.query_string
     order = params.keys.grep(%r{^(/|\\)}).map do |attr|
       s = attr[1..-1]
+      s = 'release_year' if s == 'year'
       if attr[0..0] == '\\'
         s += ' DESC'
       end
