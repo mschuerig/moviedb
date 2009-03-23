@@ -1,12 +1,47 @@
 class MoviesController < ApplicationController
+  
+  
+  
+  def parse_range_header(range = nil)
+    range ||= request.headers['Range']
+    if range && range =~ /items=(.*)-(.*)/
+      first_item, last_item = $1.to_i, $2.to_i
+      offset = first_item
+      limit = last_item > 0 ? last_item - offset + 1 : nil
+      [offset, limit]
+    else
+      [nil, nil]
+    end
+  end
+  
+  def parse_order_params
+    ### TODO use request.query_string
+    order = params.keys.grep(%r{^(/|\\)}).map do |attr|
+      s = attr[1..-1]
+      if attr[0..0] == '\\'
+        s += ' DESC'
+      end
+      s
+    end
+    order.empty? ? nil : order.join(',')
+  end
+  
   # GET /movies
   # GET /movies.xml
   def index
-    @movies = Movie.all
+    offset, limit = parse_range_header
+    @movies = Movie.find(:all, :offset => offset, :limit => limit, :order => parse_order_params)
 
     respond_to do |format|
-      format.html # index.html.erb
-      format.json { render :json => @movies }
+      format.html { render :layout => false }
+      format.json do
+        data  = {
+          :identifier => 'id',
+          :count => Movie.count,
+          :items => @movies
+        }
+        render :json => data
+      end
       format.xml  { render :xml => @movies }
     end
   end
@@ -18,6 +53,7 @@ class MoviesController < ApplicationController
 
     respond_to do |format|
       format.html # show.html.erb
+      format.json { render :json => @movie }
       format.xml  { render :xml => @movie }
     end
   end

@@ -18,8 +18,15 @@ ActionController::Routing::Routes.draw do |map|
   # Sample resource route with sub-resources:
   #   map.resources :products, :has_many => [ :comments, :sales ], :has_one => :seller
 
-  map.resources :movies, :has_many => :people
-  map.resources :people, :has_many => :movies
+  # This explicit mapping has to come first. It shadows the
+  # /movies/:movie_id/participants/:id mapping!
+  map.connect '/movies/:movie_id/participants/:kind', :controller => 'people'
+  map.resources :movies do |movies|
+    movies.resources :awardings, :as => :awards
+    movies.resources :people, :as => :participants
+  end
+  
+  map.resources :people, :has_many => [ :awardings, :movies ]
   
   # Sample resource route with more complex sub-resources
   #   map.resources :products do |products|

@@ -1,34 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<script type="text/javascript">
-  dojo.require('dojo.parser');
-  dojo.require("dojo.data.ItemFileReadStore");
-  dojo.require("dojox.grid.DataGrid");
-  dojo.require("dojox.widget.PlaceholderMenuItem");
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+  <title>Movies</title>
 
-  var jsonStore = new dojo.data.ItemFileReadStore({ url: "/movies.json" });
-  var grid = null;
+  <link rel="stylesheet" href="/stylesheets/movies.css" type="text/css" />
 
-  dojo.addOnLoad(function(){
-    dojo.parser.parse();
-    grid = new dojox.grid.DataGrid({
-      query: { part_num: '*' },
-      store: jsonStore,
-      structure: [
-        { field: "title", name: "Title", width: "auto" },
-        { field: "release_year", name: "Year", width: "auto" }
-      ],
-      rowsPerPage: 20,
-      region: 'center'
+  <script src="/javascripts.<%= RAILS_ENV %>/dojo/dojo.js" type="text/javascript"
+          djConfig="parseOnLoad:true"></script>
+
+  <script type="text/javascript">
+    var grid;
+    var movies;
+
+    dojo.addOnLoad(function(){
+      dojo.registerModulePath('moviedb', "/javascripts.<%= RAILS_ENV %>/moviedb");
+      dojo.require('moviedb.movies');
+
+      dojo.declare("moviedb.MovieStore", dojox.data.JsonRestStore, {
+        _processResults: function(results, deferred) {
+          var items = dojo.map(results.items, function(m) {
+            return { id: m.movie.id, title: m.movie.title, year: m.movie.release_year };
+          });
+          return { totalCount: results.count, items: items };
+        }
+        ,
+        fetch: function(args) {
+          console.log("*** fetch: ", args);
+          var query = args.query;
+          if (query && dojo.isObject(query)) {
+            args.queryStr = '?' + this._matchingClause(query) + this._sortingClause(args.sort);
+          }
+          return this.inherited(arguments);
+        },
+        _matchingClause: function(query) {
+          return ''; //###
+        },
+        _sortingClause: function(sort) {
+          console.log("***fetch, sort: ", sort);
+          if (!dojo.isArray(sort) || sort.length === 0) return '';
+          return '[' + dojo.map(sort, function(attr) {
+            if (dojo.isObject(attr)) {
+              return (attr.descending ? '\\' : '/') + attr.attribute;
+            } else {
+              return '/' + attr;
+            }
+          }).join(',') + ']';
+        }
+      });
+
+      var movieSchema = {
+        prototype: {
+          displayTitle: function() { return this.title + ' (' + this.release_year + ')'; }
+        }
+      }
+      movies = new moviedb.MovieStore({ target: "/movies", schema: movieSchema });
+
+      grid = new dojox.grid.DataGrid({
+        query: { title: '*' },
+        store: movies,
+        structure: [
+          { field: "title", name: "Title", width: "auto" },
+          { field: "year", name: "Year", width: "auto" }
+        ],
+        rowSelector: '20px',
+        rowsPerPage: 50,
+        keepRows: 300
+      }, 'grid');
+      grid.startup();
     });
-    container.addChild(grid);
-    grid.startup();
-  });
-</script>
+  </script>
 
-<div dojoType="dijit.layout.BorderContainer" jsid="container" id="container" design="headline">
-  <div dojoType="dijit.layout.ContentPane" region="top">
-    <div class="headerWrapper">
-      <h1>Movies</h1>
+</head>
+<body class="tundra">
+
+  <div dojoType="dijit.layout.BorderContainer" jsid="container" id="container" design="headline">
+    <div dojoType="dijit.layout.ContentPane" region="top">
+      <div class="headerWrapper">
+        <h1>Movies</h1>
+      </div>
+    </div>
+    <div dojoType="dijit.layout.ContentPane" region="center">
+      <div id="grid"></div>
     </div>
   </div>
-</div>
+
+
+</body>
+</html>

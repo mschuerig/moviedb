@@ -1,11 +1,13 @@
 class PeopleController < ApplicationController
+  before_filter :load_scope
+  
   # GET /people
   # GET /people.xml
   def index
-    @people = Person.all
-
+    @people = @scope.all
     respond_to do |format|
       format.html # index.html.erb
+      format.json { render :json => @people }
       format.xml  { render :xml => @people }
     end
   end
@@ -13,7 +15,7 @@ class PeopleController < ApplicationController
   # GET /people/1
   # GET /people/1.xml
   def show
-    @person = Person.find(params[:id])
+    @person = @scope.find(params[:id])
 
     respond_to do |format|
       format.html # show.html.erb
@@ -34,13 +36,13 @@ class PeopleController < ApplicationController
 
   # GET /people/1/edit
   def edit
-    @person = Person.find(params[:id])
+    @person = @scope.find(params[:id])
   end
 
   # POST /people
   # POST /people.xml
   def create
-    @person = Person.new(params[:person])
+    @person = @scope.new(params[:person])
 
     respond_to do |format|
       if @person.save
@@ -80,6 +82,19 @@ class PeopleController < ApplicationController
     respond_to do |format|
       format.html { redirect_to(people_url) }
       format.xml  { head :ok }
+    end
+  end
+  
+  private
+  
+  def load_scope
+    @scope = Person
+    if movie_id = params[:movie_id]
+      @scope = @scope.participating_in_movie(movie_id)
+    end
+    if kind = params[:kind]
+      kind = RoleType.ensure_valid!(kind, :clean => true, :singularize => true)
+      @scope = @scope.send(kind.pluralize)
     end
   end
 end
