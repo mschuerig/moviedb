@@ -11,7 +11,7 @@ class Person < ActiveRecord::Base
     RoleType.each_name do |name, clean_name|
       define_method("as_#{clean_name}") do
         self.scoped(
-          :joins => 'JOIN role_types ON roles.role_type_id = role_types.id',
+          :joins => 'INNER JOIN role_types ON roles.role_type_id = role_types.id',
           :conditions => { :role_types => { :name => name }})
       end
     end
@@ -24,10 +24,26 @@ class Person < ActiveRecord::Base
   default_scope :order => 'lastname, firstname'
   
   RoleType.each_name do |name, clean_name|
-    named_scope clean_name.pluralize,
-      :joins => { :roles => :role_type },
-      :conditions => { :roles => { :role_types => { :name => name }}}
+    named_scope clean_name.pluralize, lambda { |*args|
+      options = args.first || {}
+      role_condition = { :role_types => { :name => name }}
+      if movies = (options[:movie] || options[:movies])
+        role_condition[:movie_id] = movies
+      end
+      {
+        :joins => ['INNER JOIN roles ON roles.person_id = people.id',
+                   'INNER JOIN role_types ON roles.role_type_id = role_types.id'],
+        :conditions => { :roles => role_condition }
+      }
+    }
   end
+  
+  named_scope :participating_in_movie, lambda { |movie|
+    {
+      :joins => 'INNER JOIN roles ON roles.person_id = people.id',
+      :conditions => { :roles => { :movie_id => movie }}
+    }
+  }
   
   named_scope :with_movie_in_year, lambda { |year|
     {

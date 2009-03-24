@@ -1,0 +1,17 @@
+
+<h1><%= h @person.name %></h1>
+<h2>Movies</h2>
+<ul>
+  <% @person.movies.each do |movie|  -%>
+  <li>
+    <% link_to movie do -%>
+      <%= h movie.title %> (<%= movie.release_year %>)
+    <% end -%>
+  </li>
+  <% end -%>
+</ul>
+
+<p>
+  <%= link_to 'Edit', edit_person_path(@person) %> |
+  <%= link_to 'Back', people_path %>
+</p>
