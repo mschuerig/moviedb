@@ -1,7 +1,5 @@
 class MoviesController < ApplicationController
   
-  ### TODO map JSON-format here instead of in MovieStore#_processResults.
-  
   def parse_range_header(range = nil)
     range ||= request.headers['Range']
     if range && range =~ /items=(.*)-(.*)/
@@ -18,7 +16,6 @@ class MoviesController < ApplicationController
     ### TODO use request.query_string
     order = params.keys.grep(%r{^(/|\\)}).map do |attr|
       s = attr[1..-1]
-      s = 'release_year' if s == 'year'
       if attr[0..0] == '\\'
         s += ' DESC'
       end
@@ -31,16 +28,16 @@ class MoviesController < ApplicationController
   # GET /movies.xml
   def index
     offset, limit = parse_range_header
-    @movies = Movie.find(:all, :offset => offset, :limit => limit, :order => parse_order_params)
 
     respond_to do |format|
       format.html { render :layout => false }
       format.json do
+        @movies = Movie.find(:all, :offset => offset, :limit => limit, :order => parse_order_params)
         data  = {
           :identifier => 'id',
-          :count => Movie.count,
+          :totalCount => Movie.count,
           :items => @movies
-        }
+        }.to_json(:format => :dojo)
         render :json => data
       end
       format.xml  { render :xml => @movies }

@@ -21,12 +21,8 @@
 
       dojo.declare("moviedb.MovieStore", dojox.data.JsonRestStore, {
         _processResults: function(results, deferred) {
-          var items = dojo.map(results.items, function(m) {
-            return { id: m.movie.id, title: m.movie.title, year: m.movie.release_year };
-          });
-          return { totalCount: results.count, items: items };
-        }
-        ,
+          return results;
+        },
         fetch: function(args) {
           console.log("*** fetch: ", args);
           var query = args.query;
@@ -63,7 +59,7 @@
         store: movies,
         structure: [
           { field: "title", name: "Title", width: "auto" },
-          { field: "year", name: "Year", width: "auto" }
+          { field: "release_year", name: "Year", width: "auto" }
         ],
         rowSelector: '20px',
         rowsPerPage: 50,

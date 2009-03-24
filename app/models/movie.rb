@@ -44,6 +44,14 @@ class Movie < ActiveRecord::Base
     find(:all).group_by(&:release_year).sort_by(&:first)
   end
   
+  def to_json(options = {})
+    if options[:format] == :dojo
+      JsonSerializer.new(self, options.reverse_merge(:only => [:id, :title, :release_year])).to_s
+    else
+      super
+    end
+  end
+  
   def before_save
     self.release_year = release_date.blank? ? nil : release_date.year
   end
