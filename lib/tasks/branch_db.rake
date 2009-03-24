@@ -129,7 +129,12 @@ namespace :db do
       end
       
       def current
-        puts "#{relative_path(@db)} -> #{relative_path(@branch_db)}"
+        status = relative_path(@db)
+        if File.symlink?(@db)
+          status << " -> #{File.readlink(@db)}"
+        end
+        status << " (doest not exist)" unless File.exist?(@db)
+        puts status
       end
       
       def create_initial
@@ -195,7 +200,7 @@ namespace :db do
       end
 
       def relative_path(s)
-        s.sub(%r{^#{DB_ROOT}}, '')
+        s.sub(%r{^#{DB_ROOT}/}, '')
       end
     end
   end
