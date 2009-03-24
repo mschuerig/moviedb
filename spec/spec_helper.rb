@@ -1,7 +1,7 @@
 # This file is copied to ~/spec when you run 'ruby script/generate rspec'
 # from the project root directory.
-ENV["RAILS_ENV"] = "test"
-require File.expand_path(File.dirname(__FILE__) + "/../config/environment")
+ENV["RAILS_ENV"] ||= 'test'
+require File.dirname(__FILE__) + "/../config/environment" unless defined?(RAILS_ROOT)
 require 'spec/autorun'
 require 'spec/rails'
 require 'spec/blueprints'
@@ -26,6 +26,7 @@ Spec::Runner.configure do |config|
   #
   # config.global_fixtures = :table_a, :table_b
   config.global_fixtures = :role_types, :award_groups, :awards, :award_requirements
+
   #
   # If you declare global fixtures, be aware that they will be declared
   # for all of your examples, even those that don't use them.
