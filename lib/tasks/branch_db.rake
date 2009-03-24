@@ -1,6 +1,14 @@
 
 namespace :db do
+  
+  task :branches => "branches:list"
+
   namespace :branches do
+    
+    desc "List all branch databases"
+    task :list => :rails_env do
+      puts SqliteSwitcher.branches
+    end
     
     desc "Initialize per branch databases."
     task :init => "db:load_config" do
@@ -40,6 +48,12 @@ namespace :db do
       `git symbolic-ref HEAD`.sub(%r{^refs/heads/}, '').chomp
     end
     
+    def environment_options
+      { 
+        :overwrite => ENV['OVERWRITE']
+      }
+    end
+    
     def target_branch
       ENV['BRANCH'] || current_branch
     end
@@ -57,25 +71,29 @@ namespace :db do
       end
     end
     
-    def each_local_database(branch = target_branch)
+    def each_local_database(*args)
+      options = args.last.kind_of?(Hash) ? args.pop : {}
+      options = options.reverse_merge(environment_options)
+      branch = args[0] || target_branch
       each_local_config do |config|
-        yield BranchSwitcher.create(config, branch)
+        yield BranchSwitcher.create(config, branch, options)
       end
     end
 
     class BranchSwitcher
-      def self.create(config, branch)
+      def self.create(config, branch, options)
         case config['adapter']
         when /sqlite/
-          SqliteSwitcher.new(config, branch)
+          SqliteSwitcher.new(config, branch, options)
         else
           $stderr.puts 'Your database adapter is not supported yet.'
-          BranchSwitcher.new(config, branch)
+          BranchSwitcher.new(config, branch, options)
         end
       end
       
-      def initialize(config, branch)
+      def initialize(config, branch, options)
         @config, @branch = config, branch
+        @overwrite = options[:overwrite]
       end
 
       def current
@@ -98,9 +116,16 @@ namespace :db do
     end
     
     class SqliteSwitcher < BranchSwitcher
-      def initialize(config, branch)
+      DB_ROOT = File.join(RAILS_ROOT, 'db')
+      BRANCH_ROOT = File.join(DB_ROOT, 'branches')
+      
+      def initialize(config, branch, options)
         super
         @db, @branch_db = db_path, branch_db_path
+      end
+      
+      def self.branches
+        Dir[File.join(BRANCH_ROOT, '*')].map { |b| File.basename(b) }
       end
       
       def current
@@ -117,7 +142,7 @@ namespace :db do
 
       def copy_from(other_branch)
         other_db = branch_db_path(other_branch)
-        if File.exist?(@branch_db) && !File.symlink?(@branch_db)
+        if !@overwrite && File.exist?(@branch_db) && !File.symlink?(@branch_db)
           $stderr.puts "A database file #{@branch_db} exists already."
         elsif File.exist?(other_db)
           make_branch_dir
@@ -128,6 +153,7 @@ namespace :db do
 
       def link_to(other_branch)
         ### TODO
+        $stderr.puts "Not yet implemented."
       end
       
       def select
@@ -147,7 +173,7 @@ namespace :db do
       end
       
       def branch_dir(branch = @branch)
-        File.join(RAILS_ROOT, 'db', 'branches', branch)
+        File.join(BRANCH_ROOT, branch)
       end
       
       def branch_db_path(branch = @branch)
@@ -169,7 +195,7 @@ namespace :db do
       end
 
       def relative_path(s)
-        s.sub(%r{^#{RAILS_ROOT}/db/}, '')
+        s.sub(%r{^#{DB_ROOT}}, '')
       end
     end
   end
