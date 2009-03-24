@@ -13,8 +13,14 @@ class Awarding < ActiveRecord::Base
   end
   
   def before_validation
-    if year.blank? && movies.size == 1
-      self.year = movies[0].release_year
+    if year.blank?
+      if movie = single_movie
+        self.year = movie.release_year
+      end
     end
+  end
+  
+  def single_movie
+    return movies[0] if movies.size == 1
   end
 end

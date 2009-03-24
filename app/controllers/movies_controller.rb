@@ -32,12 +32,27 @@ class MoviesController < ApplicationController
     respond_to do |format|
       format.html { render :layout => false }
       format.json do
-        @movies = Movie.find(:all, :offset => offset, :limit => limit, :order => parse_order_params)
+        ### TODO for sorting by award count use two steps
+        ### in Movie model
+        ### movies = Movie.find(:all, :joins => "LEFT OUTER JOIN awardings_movies ON awardings_movies.movie_id = movies.id", :group => 'movies.id', :select => "1 bla, movies.*, COUNT(awardings_movies.movie_id) award_count", :order => 'award_count DESC')
+        ### #preload_associations(movies, { :awardings => :award })
+
+        @movies = Movie.find(:all,
+                             :include => { :awardings => :award },
+                             :offset => offset,
+                             :limit => limit,
+                             :order => parse_order_params)
         data  = {
           :identifier => 'id',
           :totalCount => Movie.count,
-          :items => @movies
-        }.to_json(:format => :dojo)
+          :items => @movies.map { |m|
+            { 
+              :title => m.title,
+              :release_year => m.release_year,
+              :awards => m.awardings.map(&:name) ### TODO name + href
+            }
+          }
+        }.to_json
         render :json => data
       end
       format.xml  { render :xml => @movies }
