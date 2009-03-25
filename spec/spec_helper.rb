@@ -25,7 +25,8 @@ Spec::Runner.configure do |config|
   # names with your fixtures.
   #
   # config.global_fixtures = :table_a, :table_b
-  config.global_fixtures = :role_types, :award_groups, :awards, :award_requirements
+#  config.global_fixtures = :role_types, :award_groups, :awards, :award_requirements
+  config.global_fixtures = :award_groups, :awards, :award_requirements
 
   #
   # If you declare global fixtures, be aware that they will be declared

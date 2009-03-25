@@ -3,39 +3,78 @@ class RoleType < ActiveRecord::Base
   
   has_many :roles
 
-### TODO
-###  create :id => 1, :name => 'actor', :title => 'Actor'
-###  create :id => 2, :name => 'director', :title => 'Director'
+  protected
   
-  def self.[](name)
-    find_by_name!(name.to_s)
+  def self.enumerations
+    creator = EnumerationCreator.new(self)
+    yield creator
+    @enum_cache = creator.cache
   end
   
-  def self.each_name
-    ### FIXME
-#    self.all.each do |role_type|
-    ['actor', 'director'].each do |role_type|
-#      yield role_type.name
-      yield role_type
+  class EnumerationCreator
+    def initialize(model)
+      @model = model
+    end
+    def create(options)
+      unless @model.find_by_name(options[:name])
+        @model.create!(options)
+      end
+    end
+    def cache
+      @model.all.inject({}) do |c, e|
+        c[e.name] = e
+        c
+      end
     end
   end
 
-  def self.ensure_valid!(name, options = { })
-    name = ActiveSupport::Inflector.singularize(name) if options[:singularize]
-    ok =
-      if options[:clean]
-        name = clean_name(name)
-        names.include?(name)
-      else
-        names.include?(name)
-      end
-    raise ArgumentError, "Not a valid name for a RoleType: #{name.inspect}" unless ok
-    name
+  public
+  
+  enumerations do |v|
+    v.create :name => 'actor', :title => 'Actor'
+    v.create :name => 'director', :title => 'Director'
   end
   
-  private
+  class << self
+
+    def all
+      @all ||= @enum_cache.values
+    end
+    
+    def find_by_name(name)
+      @enum_cache[name.to_s]
+    end
+    alias :[] :find_by_name
+    
+    def find_by_name!(name)
+      find_by_name(name) or raise ActiveRecord::RecordNotFound, "Couldn't find RoleType with name = #{name}"
+    end
+    
+    def each_name
+      all.each do |role_type|
+#    ['actor', 'director'].each do |role_type|
+        yield role_type.name
+#      yield role_type
+      end
+    end
+
+    def ensure_valid!(name, options = { })
+      name = ActiveSupport::Inflector.singularize(name) if options[:singularize]
+      ok =
+        if options[:clean]
+          name = clean_name(name)
+          names.include?(name)
+        else
+          names.include?(name)
+        end
+      raise ArgumentError, "Not a valid name for a RoleType: #{name.inspect}" unless ok
+      name
+    end
   
-  def self.clean_name(name)
-    ActiveSupport::Inflector.transliterate(name).gsub(' ', '_').gsub(/[^[:alnum:]_]/, '').underscore.to_s
+    private
+  
+    def clean_name(name)
+      ActiveSupport::Inflector.transliterate(name).gsub(' ', '_').gsub(/[^[:alnum:]_]/, '').underscore.to_s
+    end
   end
 end

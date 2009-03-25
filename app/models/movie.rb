@@ -13,7 +13,7 @@ class Movie < ActiveRecord::Base
           :conditions => { :role_types => { :name => name } })
       end
 
-      ### FIXME is the added role recognized at once?
+      ### TODO how to ensure that the new participant is seen before saving?
       class_eval <<-END
         def add_#{name}(person, options = {})
           proxy_owner.roles.build(

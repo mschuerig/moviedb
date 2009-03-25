@@ -24,6 +24,14 @@ describe "Movie (2002)" do
   it "is not found for 2003" do
     Movie.in_year(2003).should_not include(@movie)
   end
+  
+  it "knows about participants even before saving" do
+    actor = Person.create!(:firstname => 'Clint', :lastname => 'Eastwood')
+    role = @movie.participants.add_actor(actor)
+    pending do
+      @movie.participants.should include(actor)
+    end
+  end
 end
 
 describe "Movie with only an actor" do
@@ -39,7 +47,7 @@ describe "Movie with only an actor" do
   end
   
   it "does not have a director" do
-    @movie.participants.as_director.should be_empty
+    @movie.participants.as_director.should == []
   end
   
   it "deletes related roles when deleted itself" do
