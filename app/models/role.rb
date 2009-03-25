@@ -5,15 +5,15 @@ class Role < ActiveRecord::Base
   belongs_to :role_type
   belongs_to :movie
   
-  RoleType.each_name do |name, clean_name|
-    named_scope "#{clean_name}_roles",
+  RoleType.each_name do |name|
+    named_scope "#{name}_roles",
       :joins => :role_type,
-      :conditions => { :role_types => { :name => name }}
+      :conditions => { :role_types => { :name => name } }
   end
   
   def before_validation
     if self.credited_as.blank?
-      self.credited_as = "#{person.firstname} #{person.lastname}"
+      self.credited_as = person.credits_name
     end
   end
   

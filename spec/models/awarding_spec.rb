@@ -3,9 +3,10 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 describe "An Awarding for a Movie" do
   before(:each) do
     @movie = Movie.make
-#    Awarding.create!(:award => awards(:oscar_best_picture),
-#                     :movies => [@movie])
-    @movie.awardings.create!(:award => awards(:oscar_best_picture))
+    Awarding.create!(:award => awards(:oscar_best_picture),
+                     :movies => [@movie])
+### FIXME
+#    @movie.awardings.create!(:award => awards(:oscar_best_picture))
   end
 
   it "knows about its award" do

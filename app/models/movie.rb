@@ -6,12 +6,23 @@ class Movie < ActiveRecord::Base
   has_many :roles, :include => :role_type, :dependent => :destroy
 
   module ParticipantTypeExtensions
-    RoleType.each_name do |name, clean_name|
-      define_method("as_#{clean_name}") do
+    RoleType.each_name do |name|
+      define_method("as_#{name}") do
         self.scoped(
           :joins => 'JOIN role_types ON roles.role_type_id = role_types.id',
-          :conditions => { :role_types => { :name => name }})
+          :conditions => { :role_types => { :name => name } })
       end
+
+      ### FIXME is the added role recognized at once?
+      class_eval <<-END
+        def add_#{name}(person, options = {})
+          proxy_owner.roles.build(
+            :person => person,
+            :role_type => RoleType[:#{name}],
+            :credited_as => options[:as]
+          )
+        end
+      END
     end
   end
   
@@ -21,18 +32,6 @@ class Movie < ActiveRecord::Base
   
   default_scope :order => 'title, release_date'
   
-  RoleType.each_name do |name, clean_name|
-    class_eval <<-END
-      def add_#{clean_name}(person, options = {})
-        roles.build(
-          :person => person,
-          :role_type => RoleType.find_by_name!('#{name}'),
-          :credited_as => options[:as]
-        )
-      end
-    END
-  end
-    
   def self.in_year_condition(year)
     ["movies.release_year = ?",year]
   end

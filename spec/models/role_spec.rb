@@ -8,13 +8,13 @@ describe Role do
   end
   
   it "creates a default credit name based on person name" do
-    role = @movie.add_actor(@actor)
+    role = @movie.participants.add_actor(@actor)
     @movie.save!
     role.credited_as.should eql('Clint Hehaa')
   end
   
   it "uses a given credit name" do
-    role = @movie.add_actor(@actor, :as => 'Clint H.')
+    role = @movie.participants.add_actor(@actor, :as => 'Clint H.')
     @movie.save!
     role.credited_as.should eql('Clint H.')
   end

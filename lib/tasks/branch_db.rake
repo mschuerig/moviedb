@@ -31,7 +31,7 @@ namespace :db do
     end
 
     desc "Link to databases of another branch. Default is 'master', set ORIG_BRANCH=some_branch"
-    task :copy => "db:load_config" do
+    task :link => "db:load_config" do
       each_local_database { |switcher| switcher.link_to(originating_branch) }
     end
 

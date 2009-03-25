@@ -1,4 +1,7 @@
+
 actor:
-  name: Actor
+  name: actor
+  title: Actor
 director:
-  name: Director
+  name: director
+  title: Director

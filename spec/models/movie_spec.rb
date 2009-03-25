@@ -30,7 +30,7 @@ describe "Movie with only an actor" do
   before(:each) do
     @movie = Movie.create!(:title => 'Bad Stuff')
     @actor = Person.create!(:firstname => 'Clint', :lastname => 'Eastwood')
-    @movie.add_actor(@actor)
+    @movie.participants.add_actor(@actor)
     @movie.save!
   end
 

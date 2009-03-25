@@ -65,7 +65,7 @@ describe "an actor", :shared => true do
   before(:each) do
     @actor = Person.create!(:firstname => 'Clint', :lastname => 'Hehaa')
     @movie = Movie.create!(:title => 'Bad and Ugly', :release_date => '2004-12-05')
-    @movie.add_actor(@actor)
+    @movie.participants.add_actor(@actor)
     @movie.save!
   end
 end
@@ -79,7 +79,7 @@ describe "A Person with only an actor role in a single 2004 movie" do
   end
   
   it "does not direct the movie" do
-    @actor.movies.as_director.should be_empty
+    @actor.movies.as_director.should == []
   end
   
   it "cannot be deleted" do
@@ -108,29 +108,60 @@ describe "An actor with coworkers" do
   
   before(:each) do
     @coactor1 = Person.create(:firstname => 'Eddie', :lastname => 'Act')
-    @movie.add_actor(@coactor1)
+    @movie.participants.add_actor(@coactor1)
     @director = Person.create(:firstname => 'Zeno', :lastname => 'Direct')
-    @movie.add_director(@director)
+    @movie.participants.add_director(@director)
     @movie.save!
     
     @movie2 = Movie.create!(:title => 'Bad and Ugly, the sequel', :release_date => '2005-12-09')
-    @movie2.add_actor(@actor)
+    @movie2.participants.add_actor(@actor)
     @coactor2 = Person.create(:firstname => 'Duane', :lastname => 'Act')
-    @movie2.add_actor(@coactor2)
+    @movie2.participants.add_actor(@coactor2)
+    @movie2.participants.add_director(@coactor2)
     @movie2.save!
+
+    unrelated_movie = Movie.create!(:title => 'Bad and Ugly, once more', :release_date => '2007-03-12')
+    actor_director = Person.create(:firstname => 'Bruno', :lastname => 'DirAct')
+    unrelated_movie.participants.add_actor(actor_director)
+    unrelated_movie.participants.add_director(actor_director)
+    unrelated_movie.save!
   end
   
   it "knows their coworkers from all movies" do
-    @actor.should have(3).coworkers
-    @actor.coworkers.should include(@coactor1)
-    @actor.coworkers.should include(@coactor2)
-    @actor.coworkers.should include(@director)
+    coworkers = @actor.coworkers
+    coworkers.size.should == 3
+    coworkers.should include(@coactor1)
+    coworkers.should include(@coactor2)
+    coworkers.should include(@director)
   end
 
   it "knows their coworkers from a specific movie" do
-    @actor.should have(2).coworkers(@movie)
-    @actor.coworkers.should include(@coactor1)
-    @actor.coworkers.should include(@director)
+    coworkers = @actor.coworkers(:movie => @movie)
+    coworkers.size.should == 2
+    coworkers.should include(@coactor1)
+    coworkers.should include(@director)
   end
 
+  it "knows all their co-actors" do
+    coactors = @actor.coworkers.actors
+    coactors.size.should == 2
+    coactors.should include(@coactor1)
+    coactors.should include(@coactor2)
+  end
+
+  it "knows their co-actors from a specific movie" do
+    coactors = @actor.coworkers(:movie => @movie).actors
+    coactors.should == [@coactor1]
+  end
+
+  it "knows their directors" do
+    directors = @actor.coworkers.directors
+    directors.size.should == 2
+    directors.should include(@director)
+    directors.should include(@coactor2)
+  end
+
+  it "knows their director from a specific movie" do
+    @actor.coworkers.directors(:movie => @movie).should == [@director]
+  end
 end

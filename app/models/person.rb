@@ -8,11 +8,11 @@ class Person < ActiveRecord::Base
   has_many :roles, :include => :role_type
   
   module RoleTypeExtensions
-    RoleType.each_name do |name, clean_name|
-      define_method("as_#{clean_name}") do
+    RoleType.each_name do |name|
+      define_method("as_#{name}") do
         self.scoped(
           :joins => 'INNER JOIN role_types ON roles.role_type_id = role_types.id',
-          :conditions => { :role_types => { :name => name }})
+          :conditions => { :role_types => { :name => name } })
       end
     end
   end
@@ -21,10 +21,21 @@ class Person < ActiveRecord::Base
   
   has_and_belongs_to_many :awardings
   
+=begin
+  has_many :coworkers, :class_name => 'Person',
+    :finder_sql => <<END
+SELECT people.* FROM people
+WHERE people.id IN
+(SELECT roles.person_id FROM roles
+ WHERE roles.movie_id IN
+ (SELECT roles.movie_id from roles WHERE roles.person_id = \#{id}))
+END
+=end
+
   default_scope :order => 'lastname, firstname'
   
-  RoleType.each_name do |name, clean_name|
-    named_scope clean_name.pluralize, lambda { |*args|
+  RoleType.each_name do |name|
+    named_scope name.pluralize, lambda { |*args|
       options = args.first || {}
       role_condition = { :role_types => { :name => name }}
       if movies = (options[:movie] || options[:movies])
@@ -47,7 +58,8 @@ class Person < ActiveRecord::Base
   
   named_scope :with_movie_in_year, lambda { |year|
     {
-      :joins => { :roles => :movie },
+      :joins => ['INNER JOIN roles ON roles.person_id = people.id',
+                 'INNER JOIN movies ON roles.movie_id = movies.id'],
       :conditions => Movie.in_year_condition(year)
     }
   }
@@ -70,18 +82,31 @@ class Person < ActiveRecord::Base
       "#{firstname} #{lastname}"
     end
   end
-
-  def coworkers(movie = nil)
-    if movie
-      others = movie.participants
-    else
-      others = Person.find(:all,
-        :conditions => ["people.id IN (SELECT roles.person_id FROM roles WHERE roles.movie_id IN (SELECT roles.movie_id from roles WHERE roles.person_id = ?))", id]
-      )
-    end
-    others.include?(self) ? others - [self] : []
+  
+  def credits_name
+    "#{firstname} #{lastname}"
   end
   
+  def coworkers(options = {})
+    if movie = options[:movie]
+      Person.scoped(
+        :conditions => [
+          "people.id <> ? AND people.id IN" +
+          " (SELECT roles.person_id FROM roles WHERE roles.movie_id = ?)",
+          id, movie
+        ]
+      )
+    else
+      Person.scoped(
+        :conditions => [
+        "people.id <> ? AND people.id IN" +
+        " (SELECT roles.person_id FROM roles WHERE roles.movie_id IN" +
+        " (SELECT roles.movie_id from roles WHERE roles.person_id = ?))",
+        id, id]
+      )
+    end
+  end
+
   def before_create
     # This method is called before create and before a retried create.
     # On a retry, serial_number is already set, so don't reset it.
