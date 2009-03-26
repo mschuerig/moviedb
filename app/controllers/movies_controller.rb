@@ -30,10 +30,11 @@ class MoviesController < ApplicationController
     respond_to do |format|
       format.html { render :layout => false }
       format.json do
+        @range = parse_range_header
         @movies = Movie.find(:all,
                              :include => { :awardings => :award },
-                             :offset => offset,
-                             :limit => limit,
+                             :offset => @range[:offset],
+                             :limit => @range[:limit],
                              :order => parse_order_params)
         @count = Movie.count
         render :template => 'movies/index.json.rb'

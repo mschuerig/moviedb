@@ -56,9 +56,13 @@
       movies = new moviedb.MovieStore({ target: "/movies", schema: movieSchema });
 
       var awardFormatter = function(awards) {
-        return dojo.map(awards, function(a) {
-          return '<span title="' + a + '">*</span>';
-        }).join();
+        if (awards) {
+          return dojo.map(awards, function(a) {
+            return '<span title="' + a + '">*</span>';
+          }).join();
+        } else {
+            return '';
+        }
       };
 
       grid = new dojox.grid.DataGrid({
