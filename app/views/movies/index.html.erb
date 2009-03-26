@@ -76,7 +76,7 @@
         rowSelector: '20px',
         rowsPerPage: 50,
         keepRows: 300
-      }, 'grid');
+      }, 'movies');
       grid.startup();
     });
   </script>
@@ -91,7 +91,18 @@
       </div>
     </div>
     <div dojoType="dijit.layout.ContentPane" region="center">
-      <div id="grid"></div>
+      <div id="movies"></div>
+    </div>
+    <div dojoType="dijit.layout.ContentPane" region="left">
+      <div dojoType="dojo.data.ItemFileReadStore"
+           url="/awards.json" jsId="awardsStore"></div>
+      <div dojoType="dijit.tree.ForestStoreModel"
+           rootLabel="Awards" store="awardsStore"
+           childrenAttrs="awards"
+           jsId="awardsModel"></div>
+      <div dojoType="dijit.Tree" id="awardsTree" 
+           model="awardsModel"
+           showRoot="false"></div>
     </div>
   </div>
 
