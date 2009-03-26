@@ -1,4 +1,5 @@
-m = { 
+m = {
+  :id => movie.to_param,
   :title => movie.title,
   :release_year => movie.release_year
 }

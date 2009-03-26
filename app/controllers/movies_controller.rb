@@ -39,7 +39,6 @@ class MoviesController < ApplicationController
         @count = Movie.count
         render :template => 'movies/index.json.rb'
       end
-      format.xml  { render :xml => @movies }
     end
   end
 

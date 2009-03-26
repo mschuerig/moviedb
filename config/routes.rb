@@ -27,6 +27,7 @@ ActionController::Routing::Routes.draw do |map|
   end
   
   map.resources :people, :has_many => [ :awardings, :movies ]
+  map.resources :awards
   
   # Sample resource route with more complex sub-resources
   #   map.resources :products do |products|
