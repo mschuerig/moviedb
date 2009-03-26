@@ -5,9 +5,13 @@ class PeopleController < ApplicationController
   # GET /people.xml
   def index
     @people = @scope.all
+    @count = @scope.count
     respond_to do |format|
       format.html # index.html.erb
-      format.json { render :json => @people }
+      format.json do
+        @count = Person.count
+        render :template => 'people/index.json.rb'
+      end
       format.xml  { render :xml => @people }
     end
   end

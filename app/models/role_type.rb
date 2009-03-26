@@ -52,9 +52,7 @@ class RoleType < ActiveRecord::Base
     
     def each_name
       all.each do |role_type|
-#    ['actor', 'director'].each do |role_type|
         yield role_type.name
-#      yield role_type
       end
     end
 

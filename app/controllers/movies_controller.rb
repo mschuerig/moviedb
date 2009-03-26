@@ -6,54 +6,37 @@ class MoviesController < ApplicationController
       first_item, last_item = $1.to_i, $2.to_i
       offset = first_item
       limit = last_item > 0 ? last_item - offset + 1 : nil
-      [offset, limit]
+      { :offset => offset, :limit => limit }
     else
-      [nil, nil]
+      {}
     end
   end
   
   def parse_order_params
     ### TODO use request.query_string
-    order = params.keys.grep(%r{^(/|\\)}).map do |attr|
-      s = attr[1..-1]
+    order_clause = params.keys.grep(%r{^(/|\\)}).map do |attr|
+      o = attr[1..-1]
       if attr[0..0] == '\\'
-        s += ' DESC'
+        o << ' DESC'
       end
-      s
+      o
     end
-    order.empty? ? nil : order.join(',')
+    order_clause.empty? ? nil : order_clause.join(',')
   end
   
   # GET /movies
   # GET /movies.xml
   def index
-    offset, limit = parse_range_header
-
     respond_to do |format|
       format.html { render :layout => false }
       format.json do
-        ### TODO for sorting by award count use two steps
-        ### in Movie model
-        ### movies = Movie.find(:all, :joins => "LEFT OUTER JOIN awardings_movies ON awardings_movies.movie_id = movies.id", :group => 'movies.id', :select => "1 bla, movies.*, COUNT(awardings_movies.movie_id) award_count", :order => 'award_count DESC')
-        ### #preload_associations(movies, { :awardings => :award })
-
         @movies = Movie.find(:all,
                              :include => { :awardings => :award },
                              :offset => offset,
                              :limit => limit,
                              :order => parse_order_params)
-        data  = {
-          :identifier => 'id',
-          :totalCount => Movie.count,
-          :items => @movies.map { |m|
-            { 
-              :title => m.title,
-              :release_year => m.release_year,
-              :awards => m.awardings.map(&:name) ### TODO name + href
-            }
-          }
-        }.to_json
-        render :json => data
+        @count = Movie.count
+        render :template => 'movies/index.json.rb'
       end
       format.xml  { render :xml => @movies }
     end

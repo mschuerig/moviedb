@@ -42,6 +42,23 @@ class Movie < ActiveRecord::Base
   def self.by_year
     find(:all).group_by(&:release_year).sort_by(&:first)
   end
+
+
+  def self.find(*args)
+    options = args.extract_options!
+    if options[:order] =~ /\bawards\b/
+      with_scope(:find => options) do
+        super(args[0],
+          :select => "movies.*, COUNT(awardings_movies.movie_id) awards",
+          :joins => "LEFT OUTER JOIN awardings_movies ON awardings_movies.movie_id = movies.id",
+          :group => 'movies.id'
+        )
+      end
+    else
+      args << options
+      super(*args)
+    end
+  end
   
   def before_save
     self.release_year = release_date.blank? ? nil : release_date.year
