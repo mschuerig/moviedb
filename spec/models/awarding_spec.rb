@@ -19,7 +19,7 @@ describe "An Awarding for a Movie" do
     @award = awards(:oscar_best_picture)
     Awarding.create!(:award => @award,
                      :movies => [@movie])
-### FIXME
+### TODO create awardings through association
 #    @movie.awardings.create!(:award => awards(:oscar_best_picture))
   end
 

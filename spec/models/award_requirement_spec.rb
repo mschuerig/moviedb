@@ -7,14 +7,12 @@ describe AwardRequirement do
       :award => award,
       :required_type => 'Person'
     )
-#    @awarding = stub_model(Awarding) do |awarding|
-#      awarding.people = stub_model(Person)
-#    end
     actor = Person.create!(:firstname => 'Get', :lastname => 'It')
-    @awarding = Awarding.create!(:award => award, :year => 2004, :people => [actor])
+    @awarding = Awarding.new(:award => award, :year => 2004)
   end
 
   it "adds an error to an awarding if it does not fulfill the requirement" do
     @req.validate_awarding(@awarding)
+    @awarding.errors.on_base.should include('requires a recipient of type Person')
   end
 end

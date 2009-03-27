@@ -5,7 +5,19 @@ describe MoviesController do
   def mock_movie(stubs={})
     @mock_movie ||= mock_model(Movie, stubs)
   end
+
+  describe "GET index" do
+    it "returns the static movies page" do
+      Movie.should_receive(:find).with(:all).and_return([mock_movie])
+      get :index
+      assigns[:movies].should == [mock_movie]
+    end
+
+    describe "with mime type of json" do
+    end
+  end
   
+=begin
   describe "GET index" do
 
     it "exposes all movies as @movies" do
@@ -167,5 +179,5 @@ describe MoviesController do
     end
 
   end
-
+=end
 end

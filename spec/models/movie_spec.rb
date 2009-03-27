@@ -32,26 +32,25 @@ describe "Movie (2002)" do
       @movie.participants.should include(actor)
     end
   end
-end
 
-describe "Movie with only an actor" do
-  before(:each) do
-    @movie = Movie.create!(:title => 'Bad Stuff')
-    @actor = Person.create!(:firstname => 'Clint', :lastname => 'Eastwood')
-    @movie.participants.add_actor(@actor)
-    @movie.save!
-  end
+  describe "with only an actor" do
+    before(:each) do
+      @actor = Person.create!(:firstname => 'Clint', :lastname => 'Eastwood')
+      @movie.participants.add_actor(@actor)
+      @movie.save!
+    end
 
-  it "has an actor" do
-    @movie.participants.as_actor.should include(@actor)
-  end
+    it "has an actor" do
+      @movie.participants.as_actor.should include(@actor)
+    end
   
-  it "does not have a director" do
-    @movie.participants.as_director.should == []
-  end
+    it "does not have a director" do
+      @movie.participants.as_director.should == []
+    end
   
-  it "deletes related roles when deleted itself" do
-    @movie.destroy
-    @actor.roles.should be_empty
+    it "deletes related roles when deleted itself" do
+      @movie.destroy
+      @actor.roles.should be_empty
+    end
   end
 end
