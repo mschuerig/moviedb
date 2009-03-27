@@ -20,17 +20,6 @@ class Person < ActiveRecord::Base
   has_many :movies, :through => :roles, :extend => RoleTypeExtensions, :order => 'release_date'
   
   has_and_belongs_to_many :awardings
-  
-=begin
-  has_many :coworkers, :class_name => 'Person',
-    :finder_sql => <<END
-SELECT people.* FROM people
-WHERE people.id IN
-(SELECT roles.person_id FROM roles
- WHERE roles.movie_id IN
- (SELECT roles.movie_id from roles WHERE roles.person_id = \#{id}))
-END
-=end
 
   default_scope :order => 'lastname, firstname'
   
@@ -63,17 +52,6 @@ END
       :conditions => Movie.in_year_condition(year)
     }
   }
-  
-  def create(*args)
-    super(*args)
-  rescue ActiveRecord::StatementInvalid => e
-    if e.message.include?('are not unique')
-      self.serial_number = next_unused_serial_number
-      retry
-    else
-      raise
-    end
-  end
   
   def name
     if has_dupes?
@@ -118,6 +96,17 @@ END
   end
   
   private
+  
+  def create_or_update
+    super
+  rescue ActiveRecord::StatementInvalid => e
+    if e.message.include?('are not unique')
+      self.serial_number = next_unused_serial_number
+      retry
+    else
+      raise
+    end
+  end
   
   def has_dupes?
     true

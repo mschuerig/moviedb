@@ -5,6 +5,8 @@ class Role < ActiveRecord::Base
   belongs_to :role_type
   belongs_to :movie
   
+  attr_readonly :person, :role_type, :movie
+  
   RoleType.each_name do |name|
     named_scope "#{name}_roles",
       :joins => :role_type,
