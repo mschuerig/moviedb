@@ -1,4 +1,3 @@
-puts "***** RENDERING: #{award.inspect}"
 aw = {
   :id => award.to_param,
   :name => award.name

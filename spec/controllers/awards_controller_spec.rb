@@ -2,22 +2,44 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe AwardsController do
 
-  def mock_awards(stubs={})
-    @mock_awards ||= mock_model(Awards, stubs)
+  def mock_award(stubs={})
+    @mock_award ||= mock_model(Award, stubs)
+  end
+
+  def mock_award_group(stubs={})
+    @mock_award_group ||= mock_model(AwardGroup, stubs)
   end
   
   describe "GET index" do
+    describe "with mime type of json" do
+      
+      it "exposes the top-level award groups" do
+        AwardGroup.should_receive(:find).with(:all).and_return([mock_award_group])
+        get :index, :format => 'json'
+        assigns[:award_groups].should == [mock_award_group]
+      end
+
+      it "renders the awards/index.json.rb template" do
+        AwardGroup.should_receive(:find).with(:all).and_return([mock_award_group])
+        get :index, :format => 'json'
+        response.should render_template('awards/index.json.rb')
+      end
+    end
+  end
+
+=begin
+  describe "GET index" do
 
     it "exposes all awards as @awards" do
-      Awards.should_receive(:find).with(:all).and_return([mock_awards])
+      Award.should_receive(:find).with(:all).and_return([mock_award])
       get :index
-      assigns[:awards].should == [mock_awards]
+      assigns[:awards].should == [mock_award]
     end
 
     describe "with mime type of xml" do
   
       it "renders all awards as xml" do
-        Awards.should_receive(:find).with(:all).and_return(awards = mock("Array of Awards"))
+        Award.should_receive(:find).with(:all).and_return(awards = mock("Array of Awards"))
         awards.should_receive(:to_xml).and_return("generated XML")
         get :index, :format => 'xml'
         response.body.should == "generated XML"
@@ -30,16 +52,16 @@ describe AwardsController do
   describe "GET show" do
 
     it "exposes the requested awards as @awards" do
-      Awards.should_receive(:find).with("37").and_return(mock_awards)
+      Award.should_receive(:find).with("37").and_return(mock_award)
       get :show, :id => "37"
-      assigns[:awards].should equal(mock_awards)
+      assigns[:awards].should equal(mock_award)
     end
     
     describe "with mime type of xml" do
 
       it "renders the requested awards as xml" do
-        Awards.should_receive(:find).with("37").and_return(mock_awards)
-        mock_awards.should_receive(:to_xml).and_return("generated XML")
+        Award.should_receive(:find).with("37").and_return(mock_award)
+        mock_award.should_receive(:to_xml).and_return("generated XML")
         get :show, :id => "37", :format => 'xml'
         response.body.should == "generated XML"
       end
@@ -51,9 +73,9 @@ describe AwardsController do
   describe "GET new" do
   
     it "exposes a new awards as @awards" do
-      Awards.should_receive(:new).and_return(mock_awards)
+      Award.should_receive(:new).and_return(mock_award)
       get :new
-      assigns[:awards].should equal(mock_awards)
+      assigns[:awards].should equal(mock_award)
     end
 
   end
@@ -61,9 +83,9 @@ describe AwardsController do
   describe "GET edit" do
   
     it "exposes the requested awards as @awards" do
-      Awards.should_receive(:find).with("37").and_return(mock_awards)
+      Award.should_receive(:find).with("37").and_return(mock_award)
       get :edit, :id => "37"
-      assigns[:awards].should equal(mock_awards)
+      assigns[:awards].should equal(mock_award)
     end
 
   end
@@ -73,15 +95,15 @@ describe AwardsController do
     describe "with valid params" do
       
       it "exposes a newly created awards as @awards" do
-        Awards.should_receive(:new).with({'these' => 'params'}).and_return(mock_awards(:save => true))
+        Award.should_receive(:new).with({'these' => 'params'}).and_return(mock_award(:save => true))
         post :create, :awards => {:these => 'params'}
-        assigns(:awards).should equal(mock_awards)
+        assigns(:awards).should equal(mock_award)
       end
 
       it "redirects to the created awards" do
-        Awards.stub!(:new).and_return(mock_awards(:save => true))
+        Award.stub!(:new).and_return(mock_award(:save => true))
         post :create, :awards => {}
-        response.should redirect_to(award_url(mock_awards))
+        response.should redirect_to(award_url(mock_award))
       end
       
     end
@@ -89,13 +111,13 @@ describe AwardsController do
     describe "with invalid params" do
 
       it "exposes a newly created but unsaved awards as @awards" do
-        Awards.stub!(:new).with({'these' => 'params'}).and_return(mock_awards(:save => false))
+        Award.stub!(:new).with({'these' => 'params'}).and_return(mock_award(:save => false))
         post :create, :awards => {:these => 'params'}
-        assigns(:awards).should equal(mock_awards)
+        assigns(:awards).should equal(mock_award)
       end
 
       it "re-renders the 'new' template" do
-        Awards.stub!(:new).and_return(mock_awards(:save => false))
+        Award.stub!(:new).and_return(mock_award(:save => false))
         post :create, :awards => {}
         response.should render_template('new')
       end
@@ -109,21 +131,21 @@ describe AwardsController do
     describe "with valid params" do
 
       it "updates the requested awards" do
-        Awards.should_receive(:find).with("37").and_return(mock_awards)
-        mock_awards.should_receive(:update_attributes).with({'these' => 'params'})
+        Award.should_receive(:find).with("37").and_return(mock_award)
+        mock_award.should_receive(:update_attributes).with({'these' => 'params'})
         put :update, :id => "37", :awards => {:these => 'params'}
       end
 
       it "exposes the requested awards as @awards" do
-        Awards.stub!(:find).and_return(mock_awards(:update_attributes => true))
+        Award.stub!(:find).and_return(mock_award(:update_attributes => true))
         put :update, :id => "1"
-        assigns(:awards).should equal(mock_awards)
+        assigns(:awards).should equal(mock_award)
       end
 
       it "redirects to the awards" do
-        Awards.stub!(:find).and_return(mock_awards(:update_attributes => true))
+        Award.stub!(:find).and_return(mock_award(:update_attributes => true))
         put :update, :id => "1"
-        response.should redirect_to(award_url(mock_awards))
+        response.should redirect_to(award_url(mock_award))
       end
 
     end
@@ -131,19 +153,19 @@ describe AwardsController do
     describe "with invalid params" do
 
       it "updates the requested awards" do
-        Awards.should_receive(:find).with("37").and_return(mock_awards)
-        mock_awards.should_receive(:update_attributes).with({'these' => 'params'})
+        Award.should_receive(:find).with("37").and_return(mock_award)
+        mock_award.should_receive(:update_attributes).with({'these' => 'params'})
         put :update, :id => "37", :awards => {:these => 'params'}
       end
 
       it "exposes the awards as @awards" do
-        Awards.stub!(:find).and_return(mock_awards(:update_attributes => false))
+        Award.stub!(:find).and_return(mock_award(:update_attributes => false))
         put :update, :id => "1"
-        assigns(:awards).should equal(mock_awards)
+        assigns(:awards).should equal(mock_award)
       end
 
       it "re-renders the 'edit' template" do
-        Awards.stub!(:find).and_return(mock_awards(:update_attributes => false))
+        Award.stub!(:find).and_return(mock_award(:update_attributes => false))
         put :update, :id => "1"
         response.should render_template('edit')
       end
@@ -155,17 +177,17 @@ describe AwardsController do
   describe "DELETE destroy" do
 
     it "destroys the requested awards" do
-      Awards.should_receive(:find).with("37").and_return(mock_awards)
-      mock_awards.should_receive(:destroy)
+      Award.should_receive(:find).with("37").and_return(mock_award)
+      mock_award.should_receive(:destroy)
       delete :destroy, :id => "37"
     end
   
     it "redirects to the awards list" do
-      Awards.stub!(:find).and_return(mock_awards(:destroy => true))
+      Award.stub!(:find).and_return(mock_award(:destroy => true))
       delete :destroy, :id => "1"
       response.should redirect_to(awards_url)
     end
 
   end
-
+=end
 end

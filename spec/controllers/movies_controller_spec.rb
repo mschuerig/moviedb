@@ -6,14 +6,62 @@ describe MoviesController do
     @mock_movie ||= mock_model(Movie, stubs)
   end
 
+  def expect_movie_retrievals(options = {})
+    Movie.should_receive(:find).with(:all, options).and_return([])
+    Movie.should_receive(:count).and_return(0)
+  end
+  
   describe "GET index" do
     it "returns the static movies page" do
-      Movie.should_receive(:find).with(:all).and_return([mock_movie])
       get :index
-      assigns[:movies].should == [mock_movie]
+      response.should render_template('movies/index.html.erb')
     end
 
     describe "with mime type of json" do
+      before(:each) do
+        @find_all_options = {
+          :include => { :awardings => :award },
+          :offset => nil,
+          :limit => nil,
+          :order => nil
+        }
+      end
+      
+      it "exposes the requested movies" do
+        expect_movie_retrievals(@find_all_options)
+        get :index, :format => 'json'
+        assigns[:movies].should == []
+        assigns[:count].should == 0
+      end
+
+      it "renders the movies/index.json.rb template" do
+        expect_movie_retrievals(@find_all_options)
+        get :index, :format => 'json'
+        response.should render_template('movies/index.json.rb')
+      end
+      
+      describe "and Range header" do
+        before(:each) do
+          request.env['Range'] = 'items=10-60'
+        end
+        
+        it "retrieves only the requested range of movies" do
+          expect_movie_retrievals(@find_all_options.merge(:offset => 10, :limit => 51))
+          get :index, :format => 'json'
+        end
+      end
+      
+      describe "and order params" do
+        it "orders by title ascending for /title" do
+          expect_movie_retrievals(@find_all_options.merge(:order => 'title'))
+          get :index, '/title' => nil, :format => 'json'
+        end
+
+        it "orders by title descending for \title" do
+          expect_movie_retrievals(@find_all_options.merge(:order => 'title DESC'))
+          get :index, '\title' => nil, :format => 'json'
+        end
+      end
     end
   end
   
