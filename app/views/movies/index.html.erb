@@ -15,57 +15,21 @@
     var movies, moviesGrid;
     var people, peopleGrid;
 
-    dojo.addOnLoad(function(){
-      dojo.registerModulePath('moviedb', "/javascripts.<%= RAILS_ENV %>/moviedb");
-      dojo.require('moviedb.movies');
+    function installTooltips(grid, showTooltip) {
+      var hideTooltip = function(e) {
+	    dijit.hideTooltip(e.cellNode);
+	    dijit._masterTT._onDeck=null;
+	  };
+      dojo.connect(grid, "onCellMouseOver", showTooltip);
+      dojo.connect(grid, "onCellMouseOut", hideTooltip);
+    }
 
-      dojo.declare("moviedb.Store", dojox.data.JsonRestStore, {
-        _processResults: function(results, deferred) {
-          return results;
-        },
-        fetch: function(args) {
-          console.log("*** fetch: ", args);
-          var query = args.query;
-          if (query && dojo.isObject(query)) {
-            args.queryStr = '?' + this._matchingClause(query) + this._sortingClause(args.sort);
-          }
-          return this.inherited(arguments);
-        },
-        _matchingClause: function(query) {
-          console.log("***fetch, query: ", query);
-          return ''; //###
-        },
-        _sortingClause: function(sort) {
-          console.log("***fetch, sort: ", sort);
-          if (!dojo.isArray(sort) || sort.length === 0) return '';
-          return '[' + dojo.map(sort, function(attr) {
-            if (dojo.isObject(attr)) {
-              return (attr.descending ? '\\' : '/') + attr.attribute;
-            } else {
-              return '/' + attr;
-            }
-          }).join(',') + ']';
-        }
-      });
-
-      var movieSchema = {
-        prototype: {
-          displayTitle: function() { return this.title + ' (' + this.release_year + ')'; }
-        }
-      }
-      movies = new moviedb.Store({ target: "/movies", schema: movieSchema });
-
+    function buildMoviesGrid(movies) {
       var awardFormatter = function(awards) {
-        if (awards) {
-          return dojo.map(awards, function(a) {
-            return '<span title="' + a + '">*</span>';
-          }).join();
-        } else {
-            return '';
-        }
+        return awards ? dojo.string.rep('*', awards.length) : '';
       };
-
-      moviesGrid = new dojox.grid.DataGrid({
+  
+      var grid = new dojox.grid.DataGrid({
         query: { title: '*' },
         store: movies,
         structure: [
@@ -73,20 +37,62 @@
           { field: "release_year", name: "Year", width: "5em" },
           { field: "awards", name: "Awards", width: "10%", formatter: awardFormatter }
         ],
-        rowSelector: '20px',
         rowsPerPage: 50,
         keepRows: 300
       }, 'movieslist');
 
-      people = new moviedb.Store({ target: "/people" });
+      var awardIdx = 2; //### FIXME find by name
+      installTooltips(grid, function(e) {
+        if (e.cellIndex == awardIdx) {
+          var movie = e.grid.getItem(e.rowIndex);
+          if (movie.awards) {
+            var msg = "<ul>" + 
+              dojo.map(movie.awards, function(award) {
+                return "<li>" + award + "</li>";
+              }) +
+              "</ul>";
+            dijit.showTooltip(msg, e.cellNode);
+          }
+        }
+      });
+    
+      return grid;
+    }
 
-      peopleGrid = new dojox.grid.DataGrid({
+    function buildPeopleGrid(people) {
+      var grid = new dojox.grid.DataGrid({
         query: { name: '*' },
         store: people,
         structure: [
           { field: "name", name: "Name", width: "auto" }
         ]
       }, 'peoplelist');
+
+      installTooltips(grid, function(e) {
+        var person = e.grid.getItem(e.rowIndex);
+        if (person.dob) {
+          var msg = 'born ' + person.dob; //### TODO i18n
+          dijit.showTooltip(msg, e.cellNode);
+        }
+      });
+     
+      return grid;
+    }
+
+    dojo.addOnLoad(function(){
+      dojo.registerModulePath('moviedb', "/javascripts.<%= RAILS_ENV %>/moviedb");
+      dojo.require('moviedb.movies');
+
+      var movieSchema = {
+        prototype: {
+          displayTitle: function() { return this.title + ' (' + this.release_year + ')'; }
+        }
+      }
+      movies = new moviedb.Store({ target: "/movies", schema: movieSchema });
+      moviesGrid = buildMoviesGrid(movies);
+
+      people = new moviedb.Store({ target: "/people" });
+      peopleGrid = buildPeopleGrid(people);
 
       moviesGrid.startup();
       peopleGrid.startup();
