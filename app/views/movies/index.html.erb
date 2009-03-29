@@ -12,8 +12,8 @@
           djConfig="parseOnLoad:true"></script>
 
   <script type="text/javascript">
-    var movies, moviesGrid;
-    var people, peopleGrid;
+    var moviesStore, moviesGrid;
+    var peopleStore, peopleGrid;
 
     function installTooltips(grid, showTooltip) {
       var hideTooltip = function(e) {
@@ -24,14 +24,15 @@
       dojo.connect(grid, "onCellMouseOut", hideTooltip);
     }
 
-    function buildMoviesGrid(movies) {
+    function buildMoviesGrid(moviesStore) {
       var awardFormatter = function(awards) {
         return awards ? dojo.string.rep('*', awards.length) : '';
       };
   
       var grid = new dojox.grid.DataGrid({
         query: { title: '*' },
-        store: movies,
+        sortInfo: 1,
+        store: moviesStore,
         structure: [
           { field: "title", name: "Title", width: "auto" },
           { field: "release_year", name: "Year", width: "5em" },
@@ -41,9 +42,8 @@
         keepRows: 300
       }, 'movieslist');
 
-      var awardIdx = 2; //### FIXME find by name
       installTooltips(grid, function(e) {
-        if (e.cellIndex == awardIdx) {
+        if (e.cell.field == "awards") {
           var movie = e.grid.getItem(e.rowIndex);
           if (movie.awards) {
             var msg = "<ul>" + 
@@ -59,15 +59,16 @@
       return grid;
     }
 
-    function buildPeopleGrid(people) {
+    function buildPeopleGrid(peopleStore) {
       var grid = new dojox.grid.DataGrid({
         query: { name: '*' },
-        store: people,
+        sortInfo: 1,
+        store: peopleStore,
         structure: [
           { field: "name", name: "Name", width: "auto" }
         ]
       }, 'peoplelist');
-
+      
       installTooltips(grid, function(e) {
         var person = e.grid.getItem(e.rowIndex);
         if (person.dob) {
@@ -88,11 +89,11 @@
           displayTitle: function() { return this.title + ' (' + this.release_year + ')'; }
         }
       }
-      movies = new moviedb.Store({ target: "/movies", schema: movieSchema });
-      moviesGrid = buildMoviesGrid(movies);
+      moviesStore = new moviedb.Store({ target: "/movies", schema: movieSchema });
+      moviesGrid = buildMoviesGrid(moviesStore);
 
-      people = new moviedb.Store({ target: "/people" });
-      peopleGrid = buildPeopleGrid(people);
+      peopleStore = new moviedb.Store({ target: "/people" });
+      peopleGrid = buildPeopleGrid(peopleStore);
 
       moviesGrid.startup();
       peopleGrid.startup();
@@ -102,7 +103,7 @@
 </head>
 <body class="tundra">
 
-  <div dojoType="dijit.layout.BorderContainer" jsid="container" id="container" design="headline">
+  <div dojoType="dijit.layout.BorderContainer" jsId="container" id="container" design="headline">
     <div dojoType="dijit.layout.ContentPane" region="top">
       <div class="headerWrapper">
         <h1>Movies</h1>
@@ -111,19 +112,30 @@
     <div dojoType="dijit.layout.ContentPane" region="center">
       <div id="movieslist"></div>
     </div>
-    <div dojoType="dijit.layout.ContentPane" region="left">
-      <div dojoType="dojo.data.ItemFileReadStore"
-           url="/awards.json" jsId="awardsStore"></div>
-      <div dojoType="dijit.tree.ForestStoreModel"
-           rootLabel="Awards" store="awardsStore"
-           childrenAttrs="awards"
-           jsId="awardsModel"></div>
-      <div dojoType="dijit.Tree" id="awardsTree" 
-           model="awardsModel"
-           showRoot="false"></div>
-    </div>
-    <div dojoType="dijit.layout.ContentPane" region="right">
-      <div id="peoplelist"></div>
+    <div dojoType="dijit.layout.TabContainer" id="tabs" jsId="tabs" region="left"
+         tabPosition="left" tabStrip="true" splitter="true" style="width:20em; height:100%">
+<!-- ### REMOVE
+      <script type="dojo/connect" event="selectChild" args="page">
+        console.log("*** Selected Page: ", page);
+        if (page.title === 'People') {
+          peopleGrid.setStore(peopleStore);
+        }
+      </script>
+-->
+      <div dojoType="dijit.layout.ContentPane" title="Awards">
+        <div dojoType="dojo.data.ItemFileReadStore"
+             url="/awards.json" jsId="awardsStore"></div>
+        <div dojoType="dijit.tree.ForestStoreModel"
+             rootLabel="Awards" store="awardsStore"
+             childrenAttrs="awards"
+             jsId="awardsModel"></div>
+        <div dojoType="dijit.Tree" id="awardsTree" 
+             model="awardsModel"
+             showRoot="false"></div>
+      </div>
+      <div dojoType="dijit.layout.ContentPane" title="People">
+        <div id="peoplelist"></div>
+      </div>
     </div>
     <div dojoType="dijit.layout.ContentPane" region="bottom">
       <div id="movieform">

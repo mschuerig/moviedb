@@ -13,6 +13,7 @@
   dojo.require('dijit.Tree');
   dojo.require('dijit.layout.BorderContainer');
   dojo.require('dijit.layout.ContentPane');
+  dojo.require('dijit.layout.TabContainer');
   dojo.require('dijit.tree.ForestStoreModel');
   dojo.require('dojo.data.ItemFileReadStore');
 
