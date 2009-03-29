@@ -2,17 +2,19 @@ class PeopleController < ApplicationController
   before_filter :load_scope
   
   # GET /people
-  # GET /people.xml
+  # GET /people.json
   def index
-    @people = @scope.all
-    @count = @scope.count
     respond_to do |format|
-      format.html # index.html.erb
+      format.html { render :layout => false }
       format.json do
+        range = parse_range_header
+        @people = Person.find(:all,
+                              :offset => range[:offset],
+                              :limit => range[:limit],
+                              :order => parse_order_params)
         @count = Person.count
         render :template => 'people/index.json.rb'
       end
-      format.xml  { render :xml => @people }
     end
   end
 

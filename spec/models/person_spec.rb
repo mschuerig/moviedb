@@ -29,9 +29,7 @@ describe "A Person" do
 
   describe "with a unique name" do
     it "does not show its serial number" do
-      pending do
-        @person.name.should == 'Clint Eastwood'
-      end
+      @person.name.should == 'Clint Eastwood'
     end
   end
 

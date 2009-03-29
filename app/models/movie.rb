@@ -46,7 +46,7 @@ class Movie < ActiveRecord::Base
 
   def self.find(*args)
     options = args.extract_options!
-    if options[:order] =~ /\bawards\b/
+    if options[:order] =~ /\bawards\b/i
       with_scope(:find => options) do
         super(args[0],
           :select => "movies.*, COUNT(awardings_movies.movie_id) awards",

@@ -5,7 +5,66 @@ describe PeopleController do
   def mock_person(stubs={})
     @mock_person ||= mock_model(Person, stubs)
   end
+
+  def expect_person_retrievals(options = {})
+    Person.should_receive(:find).with(:all, options).and_return([])
+    Person.should_receive(:count).and_return(0)
+  end
+
+  describe "GET index" do
+    it "returns the static people page" do
+      get :index
+      response.should render_template('people/index.html.erb')
+    end
   
+    describe "with mime type of json" do
+      before(:each) do
+        @find_all_options = {
+          :offset => nil,
+          :limit => nil,
+          :order => nil
+        }
+      end
+      
+      it "exposes the requested people" do
+        expect_person_retrievals(@find_all_options)
+        get :index, :format => 'json'
+        assigns[:people].should == []
+        assigns[:count].should == 0
+      end
+
+      it "renders the people/index.json.rb template" do
+        expect_person_retrievals(@find_all_options)
+        get :index, :format => 'json'
+        response.should render_template('people/index.json.rb')
+      end
+      
+      describe "and Range header" do
+        before(:each) do
+          request.env['Range'] = 'items=10-60'
+        end
+        
+        it "retrieves only the requested range of people" do
+          expect_person_retrievals(@find_all_options.merge(:offset => 10, :limit => 51))
+          get :index, :format => 'json'
+        end
+      end
+      
+      describe "and order params" do
+        it "orders by title ascending for /title" do
+          expect_person_retrievals(@find_all_options.merge(:order => 'title'))
+          get :index, '/title' => nil, :format => 'json'
+        end
+
+        it "orders by title descending for \title" do
+          expect_person_retrievals(@find_all_options.merge(:order => 'title DESC'))
+          get :index, '\title' => nil, :format => 'json'
+        end
+      end
+    end
+  end
+  
+=begin
   describe "GET index" do
 
     it "exposes all peoples as @peoples" do
@@ -167,5 +226,5 @@ describe PeopleController do
     end
 
   end
-
+=end
 end

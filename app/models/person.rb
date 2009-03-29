@@ -21,7 +21,7 @@ class Person < ActiveRecord::Base
   
   has_and_belongs_to_many :awardings
 
-  default_scope :order => 'lastname, firstname'
+  default_scope :order => 'lastname, firstname, serial_number'
   
   RoleType.each_name do |name|
     named_scope name.pluralize, lambda { |*args|
@@ -85,10 +85,25 @@ class Person < ActiveRecord::Base
     end
   end
 
+  def self.find(*args)
+    args = args.dup
+    options = args.extract_options!
+    if options[:order] =~ /\bname\b( (ASC|DESC))?/i
+      options[:order] = "lastname#{$1},firstname#{$1},serial_number#{$1}"
+    end
+    unless options[:group] || options[:select]
+      options[:select] = 'people.*, (SELECT COUNT(*) FROM PEOPLE AS dup WHERE dup.lastname = people.lastname AND dup.firstname = people.firstname) as duplicate_count'
+    end
+    args << options
+    super(*args)
+  end
+
   def before_create
     # This method is called before create and before a retried create.
     # On a retry, serial_number is already set, so don't reset it.
     self.serial_number ||= 1
+    self[:duplicate_count] ||= 0
+    self[:duplicate_count] += 1
   end
   
   def before_destroy
@@ -109,7 +124,7 @@ class Person < ActiveRecord::Base
   end
   
   def has_dupes?
-    true
+    self[:duplicate_count].to_i > 1
   end
   
   def next_unused_serial_number

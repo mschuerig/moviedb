@@ -1,31 +1,7 @@
 class MoviesController < ApplicationController
   
-  def parse_range_header(range = nil)
-    range ||= request.headers['Range']
-    if range && range =~ /items=(.*)-(.*)/
-      first_item, last_item = $1.to_i, $2.to_i
-      offset = first_item
-      limit = last_item > 0 ? last_item - offset + 1 : nil
-      { :offset => offset, :limit => limit }
-    else
-      {}
-    end
-  end
-  
-  def parse_order_params
-    ### TODO use request.query_string
-    order_clause = params.keys.grep(%r{^(/|\\)}).map do |attr|
-      o = attr[1..-1]
-      if attr[0..0] == '\\'
-        o << ' DESC'
-      end
-      o
-    end
-    order_clause.empty? ? nil : order_clause.join(',')
-  end
-  
   # GET /movies
-  # GET /movies.xml
+  # GET /movies.json
   def index
     respond_to do |format|
       format.html { render :layout => false }

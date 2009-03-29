@@ -1,5 +1,5 @@
 {
   :id => person.id,
-  :firstname => person.firstname,
-  :lastname => person.lastname
+  :name => person.name,
+  :dob => person.date_of_birth
 }
