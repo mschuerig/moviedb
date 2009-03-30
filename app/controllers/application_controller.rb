@@ -22,7 +22,7 @@ class ApplicationController < ActionController::Base
   def parse_order_params
     ### TODO use request.query_string
     order_clause = params.keys.grep(%r{^(/|\\)}).map do |attr|
-      o = attr[1..-1]
+      o = attr[1..-1].underscore
       if attr[0..0] == '\\'
         o << ' DESC'
       end

@@ -1,7 +1,7 @@
 m = {
   :id => movie.to_param,
   :title => movie.title,
-  :release_year => movie.release_year
+  :releaseDate => movie.release_date
 }
 unless movie.awardings.empty?
   m[:awards] = movie.awardings.map(&:name) ### TODO name + href

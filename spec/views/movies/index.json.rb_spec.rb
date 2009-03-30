@@ -6,10 +6,10 @@ describe "/movies/index.json.rb" do
   
   before(:each) do
     assigns[:movies] = [
-      stub_model(Movie, :id => 1, :title => 'The first movie', :release_year => 2001) { |m|
+      stub_model(Movie, :id => 1, :title => 'The first movie', :release_date => '2001-01-01') { |m|
         m.should_receive(:awardings).and_return([])
       },
-      stub_model(Movie, :id => 2, :title => 'The second movie', :release_year => 2002) { |m|
+      stub_model(Movie, :id => 2, :title => 'The second movie', :release_date => '2002-02-02') { |m|
         m.should_receive(:awardings).any_number_of_times.and_return([
           stub_model(Awarding) { |a| a.should_receive(:name).and_return('Oscar') },
           stub_model(Awarding) { |a| a.should_receive(:name).and_return('Karlheinz') }
@@ -27,8 +27,8 @@ describe "/movies/index.json.rb" do
         "identifier": "id",
         "totalCount": 2,
         "items": [
-          {"release_year": 2001, "title": "The first movie", "id": "1"},
-          {"release_year": 2002, "title": "The second movie", "id": "2",
+          {"releaseDate": '2001-01-01', "title": "The first movie", "id": "1"},
+          {"releaseDate": '2002-02-02', "title": "The second movie", "id": "2",
             "awards": ["Oscar", "Karlheinz"]}
         ]
       }
