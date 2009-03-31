@@ -40,7 +40,7 @@ namespace :db do
       end
       
       puts "Adding people to movies..."
-      actors_max = [(people_count * 20)/movies, people_count].min
+      actors_max = [(people_count * 20)/movies, 30, people_count].min
       Movie.find_each do |m|
         Person.find(:all, :order => 'random()', :limit => rand(actors_max)).each do |a|
           m.participants.add_actor(a)
