@@ -9,12 +9,12 @@ class Date
 end
 
 Sham.define do
-  lastname  { Faker::Name.last_name }
-  firstname  { Faker::Name.first_name }
-  title { Faker::Lorem.sentence }
-  release_date { Date.rand }
-  date_of_birth { Date.rand(100.years.ago, 10.years.ago) }
-  shaky_date_of_birth { rand < 0.2 ? nil : date_of_birth }
+  lastname(:unique => false) { Faker::Name.last_name }
+  firstname(:unique => false) { Faker::Name.first_name }
+  title(:unique => false) { Faker::Lorem.sentence }
+  release_date(:unique => false) { Date.rand }
+  date_of_birth(:unique => false) { Date.rand(100.years.ago, 10.years.ago) }
+  shaky_date_of_birth(:unique => false) { rand < 0.2 ? nil : date_of_birth }
 end
 
 Person.blueprint do

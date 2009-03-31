@@ -2,7 +2,7 @@ class AwardsController < ApplicationController
   # GET /awards
   # GET /awards.xml
   def index
-    @awards = Awards.all
+    @awards = Award.all
 
     respond_to do |format|
       format.html { render :layout => false }
@@ -16,7 +16,7 @@ class AwardsController < ApplicationController
   # GET /awards/1
   # GET /awards/1.xml
   def show
-    @awards = Awards.find(params[:id])
+    @awards = Award.find(params[:id])
 
     respond_to do |format|
       format.html # show.html.erb
@@ -27,7 +27,7 @@ class AwardsController < ApplicationController
   # GET /awards/new
   # GET /awards/new.xml
   def new
-    @awards = Awards.new
+    @awards = Award.new
 
     respond_to do |format|
       format.html # new.html.erb
@@ -37,13 +37,13 @@ class AwardsController < ApplicationController
 
   # GET /awards/1/edit
   def edit
-    @awards = Awards.find(params[:id])
+    @awards = Award.find(params[:id])
   end
 
   # POST /awards
   # POST /awards.xml
   def create
-    @awards = Awards.new(params[:awards])
+    @awards = Award.new(params[:awards])
 
     respond_to do |format|
       if @awards.save
@@ -60,7 +60,7 @@ class AwardsController < ApplicationController
   # PUT /awards/1
   # PUT /awards/1.xml
   def update
-    @awards = Awards.find(params[:id])
+    @awards = Award.find(params[:id])
 
     respond_to do |format|
       if @awards.update_attributes(params[:awards])
@@ -77,7 +77,7 @@ class AwardsController < ApplicationController
   # DELETE /awards/1
   # DELETE /awards/1.xml
   def destroy
-    @awards = Awards.find(params[:id])
+    @awards = Award.find(params[:id])
     @awards.destroy
 
     respond_to do |format|

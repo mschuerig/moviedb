@@ -8,12 +8,12 @@
 
   <link rel="stylesheet" href="/stylesheets/movies.css" type="text/css" />
 
-  <script src="/javascripts.<%= RAILS_ENV %>/dojo/dojo.js" type="text/javascript"
+  <script src="/javascripts/dojo/dojo.js" type="text/javascript"
           djConfig="parseOnLoad:true"></script>
 
   <script type="text/javascript">
     dojo.addOnLoad(function(){
-      dojo.registerModulePath('moviedb', "/javascripts.<%= RAILS_ENV %>/moviedb");
+      dojo.registerModulePath('moviedb', "/javascripts/moviedb");
       dojo.require('moviedb.movies');
     });
   </script>

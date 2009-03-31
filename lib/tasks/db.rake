@@ -22,8 +22,8 @@ namespace :db do
     require 'machinist'
     require 'spec/blueprints'
         
-    people_count = (ENV['PEOPLE'] || 100).to_i
-    movies_count = (ENV['MOVIES'] || 20).to_i
+    people_count = (ENV['PEOPLE'] || 200).to_i
+    movies_count = (ENV['MOVIES'] || 10).to_i
     
     ENV['FIXTURE_PATH'] = File.join(RAILS_ROOT, 'spec', 'fixtures')
     Rake::Task['db:load_reference_data'].invoke
@@ -33,10 +33,23 @@ namespace :db do
       people_count.times do
         Person.make
       end
+      
       puts "Creating people..."
       movies_count.times do
         Movie.make
       end
+      
+      puts "Adding people to movies..."
+      actors_max = [(people_count * 20)/movies, people_count].min
+      Movie.find_each do |m|
+        Person.find(:all, :order => 'random()', :limit => rand(actors_max)).each do |a|
+          m.participants.add_actor(a)
+        end
+        m.participants.add_director(
+          Person.find(:first, :order => 'random()', :limit => rand(actors_max)))
+        m.save!
+      end
+      
       puts "Giving them awards..."
       years = Movie.connection.select_values('select distinct release_year from movies')
       years.each do |year|

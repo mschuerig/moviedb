@@ -1,10 +1,8 @@
 
-require 'sdoc'
-
 namespace :doc do
   desc "Generate documentation for the application. Set custom template with TEMPLATE=/path/to/rdoc/template.rb or title with TITLE=\"Custom Title\""
   Rake::RDocTask.new("app") { |rdoc|
-    $KCODE = 'UTF-8'
+    require 'sdoc'
 
     rdoc.rdoc_dir = 'doc/app'
     rdoc.template = ENV['template'] if ENV['template']
@@ -19,6 +17,8 @@ namespace :doc do
 
   desc "Generate documentation for the Rails framework"
   Rake::RDocTask.new("rails") { |rdoc|
+    require 'sdoc'
+    
     rdoc.rdoc_dir = 'doc/api'
     rdoc.template = "#{ENV['template']}.rb" if ENV['template']
     rdoc.title    = "Rails Framework Documentation"
