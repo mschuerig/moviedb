@@ -24,10 +24,7 @@
         'movie_title': 'title',
         'movie_release_date': 'releaseDate'
       },
-      constructor: function() {
-      },
       populate: function(movie) {
-        this.movie = movie;
         if (movie) {
           for (var prop in this.propertiesMap) {
             dijit.byId(prop).setValue(movie[this.propertiesMap[prop]]);
@@ -38,10 +35,13 @@
           }
         }
         this._lastChanged = false;
-      }//,
-/*
+        this._originalState = dojo.formToJson(this.domNode);
+        this.movie = movie;
+      },
       isChanged: function() {
         if (!this.movie) return false;
+        return dojo.formToJson(this.domNode) !== this._originalState;
+/*
         for (var prop in this.propertiesMap) {
           if (dijit.byId(prop).getValue() !== this.movie[this.propertiesMap[prop]]) {
 console.log("** CHANGED: ", prop, dijit.byId(prop).getValue(), this.movie[this.propertiesMap[prop]]);
@@ -49,6 +49,7 @@ console.log("** CHANGED: ", prop, dijit.byId(prop).getValue(), this.movie[this.p
           }
         }
         return false;
+*/
       },
       connectChildren: function() {
         this.inherited(arguments);
@@ -60,12 +61,13 @@ console.log("** CHANGED: ", prop, dijit.byId(prop).getValue(), this.movie[this.p
         });
       },
       _checkForChange: function(widget) {
+        if (!this.movie) return;
         var changed = this.isChanged();
         if (changed !== this._lastChanged) {
           if (changed) {
             this.onChange();
           } else {
-            this.onUnchange();
+            this.onRevert();
           }
         }
         this._lastChanged = changed;
@@ -73,10 +75,9 @@ console.log("** CHANGED: ", prop, dijit.byId(prop).getValue(), this.movie[this.p
       onChange: function() {
         console.log("*** ON CHANGE");
       },
-      onUnchange: function() {
-        console.log("*** ON UNCHANGE");
+      onRevert: function() {
+        console.log("*** ON REVERT");
       }
-*/
     });
 
     function buildMoviesGrid(store) {
