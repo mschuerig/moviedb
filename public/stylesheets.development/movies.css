@@ -1,7 +1,7 @@
 
-@import "/javascripts.development/dijit/themes/tundra/tundra.css";
-@import "/javascripts.development/dojox/grid/resources/tundraGrid.css";
-@import "/javascripts.development/dojox/widget/Toaster/Toaster.css";
+@import "/javascripts/dijit/themes/tundra/tundra.css";
+@import "/javascripts/dojox/grid/resources/tundraGrid.css";
+@import "/javascripts/dojox/widget/Toaster/Toaster.css";
 
 
 html, body, #container {
