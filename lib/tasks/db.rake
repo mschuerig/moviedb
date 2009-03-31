@@ -5,8 +5,54 @@ namespace :db do
   task :load_reference_data => :environment do
     require 'active_record/fixtures'
     ActiveRecord::Base.establish_connection(RAILS_ENV.to_sym)
-    (ENV['FIXTURES'] ? ENV['FIXTURES'].split(/,/) : Dir.glob(File.join(RAILS_ROOT, 'db', 'ref_data', '*.{yml,csv}'))).each do |fixture_file|
-      Fixtures.create_fixtures('db/ref_data', File.basename(fixture_file, '.*'))
+    fixture_path = ENV['FIXTURE_PATH'] || File.join(RAILS_ROOT, 'db', 'ref_data')
+    fixtures = 
+      if ENV['FIXTURES']
+        ENV['FIXTURES'].split(/,/)
+      else
+        Dir.glob(File.join(fixture_path, '*.{yml,csv}'))
+      end
+    fixtures.each do |file|
+      Fixtures.create_fixtures(fixture_path, File.basename(file, '.*'))
     end
+  end
+  
+  desc "Populate the database with sample data"
+  task :populate => :environment do
+    require 'machinist'
+    require 'spec/blueprints'
+        
+    people_count = (ENV['PEOPLE'] || 100).to_i
+    movies_count = (ENV['MOVIES'] || 20).to_i
+    
+    ENV['FIXTURE_PATH'] = File.join(RAILS_ROOT, 'spec', 'fixtures')
+    Rake::Task['db:load_reference_data'].invoke
+    
+    ActiveRecord::Base.transaction do 
+      puts "Creating movies..."
+      people_count.times do
+        Person.make
+      end
+      puts "Creating people..."
+      movies_count.times do
+        Movie.make
+      end
+      puts "Giving them awards..."
+      years = Movie.connection.select_values('select distinct release_year from movies')
+      years.each do |year|
+        Award.all.each do |award|
+          awarding = Awarding.new(:award => award)
+          awarding.requirements.each do |assoc, count|
+            awarding.movies = Movie.find(:all, 
+              :conditions => { :release_year => year },
+              :order => 'random()', :limit => count)
+            awarding.people = Person.find(:all,
+              :order => 'random()', :limit => count)
+          end
+          awarding.save!
+        end
+      end
+    end
+    
   end
 end

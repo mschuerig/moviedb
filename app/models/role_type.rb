@@ -21,9 +21,28 @@ class RoleType < ActiveRecord::Base
       end
     end
     def cache
-      @model.all.inject({}) do |c, e|
-        c[e.name] = e
-        c
+      Cache.new(@model)
+    end
+    private
+    class Cache
+      def initialize(model)
+        @model = model
+        reload
+      end
+      def reload
+        @cache = @model.find(:all).inject({}) do |c, e|
+          c[e.name] = e
+          c
+        end
+      end
+      def values
+        @values ||= @cache.values
+      end
+      def [](name)
+        @cache[name.to_s]
+      end
+      def size
+        values.size
       end
     end
   end
@@ -38,11 +57,23 @@ class RoleType < ActiveRecord::Base
   class << self
 
     def all
-      @all ||= @enum_cache.values
+      @enum_cache.values
+    end
+    
+    def count(*args)
+      if args.empty?
+        @enum_cache.size
+      else
+        super
+      end
+    end
+    
+    def reload
+      @enum_cache.reload
     end
     
     def find_by_name(name)
-      @enum_cache[name.to_s]
+      @enum_cache[name]
     end
     alias :[] :find_by_name
     

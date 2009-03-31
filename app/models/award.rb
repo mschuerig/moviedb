@@ -12,6 +12,10 @@ class Award < ActiveRecord::Base
   def validate_awarding(awarding)
     award_requirements.each { |req| req.validate_awarding(awarding) }
   end
+  
+  def requirements
+    award_requirements.map { |req| req.association_count }
+  end
 
   def children
     []

@@ -8,6 +8,10 @@ class Awarding < ActiveRecord::Base
     "#{award.fullname} (#{year})"
   end
   
+  def requirements
+    award ? award.requirements : []
+  end
+  
   def validate
     award.try(:validate_awarding, self)
   end
