@@ -90,7 +90,7 @@ console.log("** CHANGED: ", prop, dijit.byId(prop).getValue(), this.movie[this.p
 
       var grid = new dojox.grid.DataGrid({
         query: { title: '*' },
-        sortInfo: 1,
+        sortInfo: -2,
         store: store,
         structure: [
           { field: "title", name: "Title", width: "auto" },
@@ -109,7 +109,7 @@ console.log("** CHANGED: ", prop, dijit.byId(prop).getValue(), this.movie[this.p
             var msg = "<ul>" + 
               dojo.map(movie.awards, function(award) {
                 return "<li>" + award + "</li>";
-              }) +
+              }).join('') +
               "</ul>";
             dijit.showTooltip(msg, e.cellNode);
           }
@@ -141,11 +141,6 @@ console.log("** CHANGED: ", prop, dijit.byId(prop).getValue(), this.movie[this.p
         }
       });
      
-      dojo.connect(grid, 'startup', function() {
-        console.log("******** STARTUP PEOPLE"); //### REMOVE
-//### FIXME        grid.setStore(store);
-      });
-
       return grid;
     }
 
@@ -165,7 +160,7 @@ console.log("** CHANGED: ", prop, dijit.byId(prop).getValue(), this.movie[this.p
       peopleGrid = buildPeopleGrid(peopleStore);
 
       moviesGrid.startup();
-      peopleGrid.startup(); // ### REMOVE
+      peopleGrid.startup();
 
       dojo.subscribe('movie.selected', function(m) {
         console.log("---> ", m); //### REMOVE
@@ -204,9 +199,6 @@ console.log("** CHANGED: ", prop, dijit.byId(prop).getValue(), this.movie[this.p
         <div dojoType="dijit.Tree" jsId="awardsTree" 
              model="awardsModel"
              showRoot="false">
-          <script type="dojo/connect" event="startup">
-            console.log("******* STARTUP AWARDS"); //### REMOVE
-          </script>
         </div>
       </div>
       <div dojoType="dijit.layout.ContentPane" id="peoplePane" title="People">
