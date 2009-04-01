@@ -19,7 +19,7 @@ class Person < ActiveRecord::Base
   
   has_many :movies, :through => :roles, :extend => RoleTypeExtensions, :order => 'release_date'
   
-  has_and_belongs_to_many :awardings
+  has_and_belongs_to_many :awardings, :after_remove => lambda { |_, awarding| awarding.destroy }
 
   default_scope :order => 'lastname, firstname, serial_number'
   

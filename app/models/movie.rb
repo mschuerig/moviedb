@@ -28,7 +28,7 @@ class Movie < ActiveRecord::Base
   
   has_many :participants, :through => :roles, :source => :person, :extend => ParticipantTypeExtensions
 
-  has_and_belongs_to_many :awardings
+  has_and_belongs_to_many :awardings, :after_remove => lambda { |_, awarding| awarding.destroy }
   
   default_scope :order => 'title, release_date'
   
@@ -47,11 +47,13 @@ class Movie < ActiveRecord::Base
   def self.find(*args)
     options = args.extract_options!
     if options[:order] =~ /\bawards\b/i
+      tn = table_name
+      cols = Movie.column_names.map { |c| "#{tn}.#{c}"}.join(',')
       with_scope(:find => options) do
         super(args[0],
-          :select => "movies.*, COUNT(awardings_movies.movie_id) awards",
+          :select => "#{cols}, COUNT(awardings_movies.movie_id) AS awards",
           :joins => "LEFT OUTER JOIN awardings_movies ON awardings_movies.movie_id = movies.id",
-          :group => 'movies.id'
+          :group => cols
         )
       end
     else

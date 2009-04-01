@@ -1,6 +1,14 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
-describe "all awardings", :shared => true do
+describe "An Awarding" do
+  before(:each) do
+    @movie = Movie.make
+    @actress = Person.make
+    @award = awards(:oscar_best_actress)
+    @awarding = Awarding.create!(:award => @award,
+      :people => [@actress],
+      :movies => [@movie])
+  end
 
   it "can only be given once per year" do
     other_movie = Movie.make(:release_date => @movie.release_date)
@@ -9,11 +17,35 @@ describe "all awardings", :shared => true do
       :people => [@actress].compact)
     dupe.errors.on_base.should include('The award can only be given once per year.')
   end
+  
+  it "is deleted when the movie is deleted" do
+    @movie.destroy
+    lambda { @awarding.reload }.should raise_error(ActiveRecord::RecordNotFound)
+  end
+  
+  it "is deleted when the actress is deleted" do
+    @actress.destroy
+    lambda { @awarding.reload }.should raise_error(ActiveRecord::RecordNotFound)
+  end  
 end
 
-describe "An Awarding for a Movie" do
-  it_should_behave_like "all awardings"
-  
+describe "An Awarding for an actor in a movie" do
+  it "can be given to an actor in the movie"do
+    pending
+  end
+
+  it "cannot be given to the director of the movie"do
+    pending
+  end
+
+  it "cannot be given to a person who did not participate in the movie"do
+    pending
+  end
+end
+
+
+
+describe "An awarded movie" do
   before(:each) do
     @movie = Movie.make
     @award = awards(:oscar_best_picture)
@@ -33,9 +65,7 @@ describe "An Awarding for a Movie" do
   end
 end
 
-describe "An Awarding for a Person" do
-  it_should_behave_like "all awardings"
-
+describe "An awarded person" do
   before(:each) do
     @movie = Movie.make
     @actress = Person.make
@@ -50,7 +80,7 @@ describe "An Awarding for a Person" do
     @actress.awardings[0].name.should == "Academy Award: Best Actress (#{@movie.release_year})"
   end
   
-  it "deduces its year from the movie's release year" do
-    @actress.awardings[0].year.should be(@movie.release_year)
+  it "deduces the year of their award from the movie's release year" do
+    @actress.awardings[0].year.should == @movie.release_year
   end
 end
