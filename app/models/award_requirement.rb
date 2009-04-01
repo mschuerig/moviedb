@@ -8,8 +8,8 @@ class AwardRequirement < ActiveRecord::Base
     awardees = awarding.send(association)
     if role_type
       roles = awarding.movies.inject([]) do |roles, movie|
-### FIXME        roles << movie.participants.as(role_type)
-        roles << movie.participants.send("as_#{role_type}")
+        roles << movie.participants.as(role_type)
+### REMOVE        roles << movie.participants.send("as_#{role_type}")
       end
       awardees = awardees.select { |a| roles.include?(a) }
     end

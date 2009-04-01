@@ -7,23 +7,7 @@ class Person < ActiveRecord::Base
 
   has_many :roles, :include => :role_type
   
-  module RoleTypeExtensions
-    RoleType.each_name do |name|
-      define_method("as_#{name}") do
-        self.scoped(
-           # PostgreSQL doesn't allow forward references to joined tables.
-           # Unfortunately, ActiveRecord merges the many scoped joins
-           # in an unsuitable order.
-           # We'll work around this with a CROSS JOIN + WHERE clause.
-           #:joins => 'INNER JOIN role_types ON roles.role_type_id = role_types.id',
-           #:conditions => { :role_types => { :name => name } })
-          :joins => 'CROSS JOIN role_types',
-          :conditions => ["roles.role_type_id = role_types.id AND role_types.name = ?", name])
-      end
-    end
-  end
-  
-  has_many :movies, :through => :roles, :extend => RoleTypeExtensions, :order => 'release_date'
+  has_many :movies, :through => :roles, :extend => RoleTypeAssociationExtensions, :order => 'release_date'
   
   has_and_belongs_to_many :awardings, :after_remove => lambda { |_, awarding| awarding.destroy }
 

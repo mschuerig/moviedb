@@ -6,19 +6,8 @@ class Movie < ActiveRecord::Base
   has_many :roles, :include => :role_type, :dependent => :destroy
 
   module ParticipantTypeExtensions
+    include RoleTypeAssociationExtensions
     RoleType.each_name do |name|
-      define_method("as_#{name}") do
-        self.scoped(
-          # PostgreSQL doesn't allow forward references to joined tables.
-          # Unfortunately, ActiveRecord merges the many scoped joins
-          # in an unsuitable order.
-          # We'll work around this with a CROSS JOIN + WHERE clause.
-          #:joins => 'INNER JOIN role_types ON roles.role_type_id = role_types.id',
-          #:conditions => { :role_types => { :name => name } })
-          :joins => 'CROSS JOIN role_types',
-          :conditions => ["roles.role_type_id = role_types.id AND role_types.name = ?", name])
-      end
-
       ### TODO how to ensure that the new participant is seen before saving?
       class_eval <<-END
         def add_#{name}(person, options = {})
