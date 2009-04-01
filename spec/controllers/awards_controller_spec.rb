@@ -14,13 +14,13 @@ describe AwardsController do
     describe "with mime type of json" do
       
       it "exposes the top-level award groups" do
-        AwardGroup.should_receive(:find).with(:all).and_return([mock_award_group])
+        AwardGroup.should_receive(:find).and_return([mock_award_group])
         get :index, :format => 'json'
         assigns[:award_groups].should == [mock_award_group]
       end
 
       it "renders the awards/index.json.rb template" do
-        AwardGroup.should_receive(:find).with(:all).and_return([mock_award_group])
+        AwardGroup.should_receive(:find).and_return([mock_award_group])
         get :index, :format => 'json'
         response.should render_template('awards/index.json.rb')
       end

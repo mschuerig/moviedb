@@ -2,10 +2,12 @@ class AwardsController < ApplicationController
   # GET /awards
   # GET /awards.xml
   def index
-    @awards = Award.all
 
     respond_to do |format|
-      format.html { render :layout => false }
+      format.html do
+        @awards = Award.all
+        render :layout => false
+        end
       format.json do
         @award_groups = AwardGroup.all
         render :template => 'awards/index.json.rb'
