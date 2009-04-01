@@ -46,9 +46,14 @@ class Awarding < ActiveRecord::Base
   private
   
   def create_or_update
-    super
+    Awarding.transaction(:requires_new => true) do
+      # The nested transaction is required as otherwise the failing
+      # INSERT aborts the entire (outer) transaction.
+      super
+    end
   rescue ActiveRecord::StatementInvalid => e
-    if e.message.include?('are not unique')
+    ### TODO move detection of uniqueness violation to an adapter mixin.
+    if e.message =~ /(are not unique)|(violates unique constraint)/
       errors.add_to_base('The award can only be given once per year.')
       false
     else

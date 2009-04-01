@@ -103,8 +103,13 @@ class Person < ActiveRecord::Base
   private
   
   def create_or_update
-    super
+    Person.transaction(:requires_new => true) do
+      # The nested transaction is required as otherwise the failing
+      # INSERT aborts the entire (outer) transaction.
+      super
+    end
   rescue ActiveRecord::StatementInvalid => e
+    ### TODO move detection of uniqueness violation to an adapter mixin.
     if e.message =~ /(are not unique)|(violates unique constraint)/
       self.serial_number = next_unused_serial_number
       retry
