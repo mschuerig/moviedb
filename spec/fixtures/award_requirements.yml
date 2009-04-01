@@ -1,31 +1,54 @@
 oscar_best_picture_movie:
   award: oscar_best_picture
-  required_type: Movie
+  association: movies
+  count: 1
+
+oscar_best_director_movie:
+  award: oscar_best_director
+  association: movies
+  count: 1
+oscar_best_director_person:
+  award: oscar_best_director
+  association: people
+  role_type: director
+  count: 1
 
 oscar_best_actor_movie:
   award: oscar_best_actor
-  required_type: Movie
+  association: movies
+  count: 1
 oscar_best_actor_person:
   award: oscar_best_actor
-  required_type: Person
+  association: people
+  role_type: actor
+  count: 1
 
 oscar_best_actress_movie:
   award: oscar_best_actress
-  required_type: Movie
+  association: movies
+  count: 1
 oscar_best_actress_person:
   award: oscar_best_actress
-  required_type: Person
+  association: people
+  role_type: actor
+  count: 1
 
 oscar_best_supporting_actor_movie:
   award: oscar_best_supporting_actor
-  required_type: Movie
+  association: movies
+  count: 1
 oscar_best_supporting_actor_person:
   award: oscar_best_supporting_actor
-  required_type: Person
+  association: people
+  role_type: actor
+  count: 1
 
 oscar_best_supporting_actress_movie:
   award: oscar_best_supporting_actress
-  required_type: Movie
+  association: movies
+  count: 1
 oscar_best_supporting_actress_person:
   award: oscar_best_supporting_actress
-  required_type: Person
+  association: people
+  role_type: actor
+  count: 1

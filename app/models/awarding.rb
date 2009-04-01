@@ -1,7 +1,18 @@
 class Awarding < ActiveRecord::Base
   validates_presence_of :award, :year
   belongs_to :award
-  has_and_belongs_to_many :people
+  
+  module PeopleExtensions
+    RoleType.each_name do |name|
+      define_method("as_#{name}") do
+        self.scoped(
+          :joins => 'INNER JOIN role_types ON roles.role_type_id = role_types.id',
+          :conditions => { :role_types => { :name => name } })
+      end
+    end
+  end
+  
+  has_and_belongs_to_many :people, :extend => PeopleExtensions
   has_and_belongs_to_many :movies
   
   def name

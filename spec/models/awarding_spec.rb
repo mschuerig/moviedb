@@ -30,16 +30,37 @@ describe "An Awarding" do
 end
 
 describe "An Awarding for an actor in a movie" do
+  before(:each) do
+    @movie = Movie.make
+    @award = awards(:oscar_best_actor)
+  end
+  
   it "can be given to an actor in the movie"do
-    pending
+    actor = Person.make
+    @movie.participants.add_actor(actor)
+    @movie.save!    
+    @awarding = Awarding.create!(:award => @award,
+      :people => [actor],
+      :movies => [@movie])
   end
 
   it "cannot be given to the director of the movie"do
-    pending
+    director = Person.make
+    @movie.participants.add_director(director)
+    @movie.save!    
+    @awarding = Awarding.new(:award => @award,
+      :people => [director],
+      :movies => [@movie])
+    @awarding.should_not be_valid
   end
 
   it "cannot be given to a person who did not participate in the movie"do
-    pending
+    outsider = Person.make
+    @movie.save!    
+    @awarding = Awarding.new(:award => @award,
+      :people => [outsider],
+      :movies => [@movie])
+    @awarding.should_not be_valid
   end
 end
 
