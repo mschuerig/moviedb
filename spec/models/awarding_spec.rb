@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe "An Awarding" do
-  before(:each) do
+  before do
     @movie = Movie.make
     @actress = Person.make
     @movie.participants.add_actor(@actress)
@@ -37,7 +37,7 @@ describe "An Awarding" do
 end
 
 describe "An Awarding for an actor in a movie" do
-  before(:each) do
+  before do
     @movie = Movie.make
     @award = awards(:oscar_best_actor)
   end
@@ -74,7 +74,7 @@ end
 
 
 describe "An awarded movie" do
-  before(:each) do
+  before do
     @movie = Movie.make
     @award = awards(:oscar_best_picture)
     Awarding.create!(:award => @award,
@@ -94,7 +94,7 @@ describe "An awarded movie" do
 end
 
 describe "An awarded person" do
-  before(:each) do
+  before do
     @movie = Movie.make
     @actress = Person.make
     @movie.participants.add_actor(@actress)

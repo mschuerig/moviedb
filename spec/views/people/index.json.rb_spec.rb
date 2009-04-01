@@ -4,7 +4,7 @@ describe "/people/index.json.rb" do
   include PeopleHelper
   include Spec::JSONMatchers
   
-  before(:each) do
+  before do
     person = stub_model(Person, :id => 1,
       :firstname => 'Clint', :lastname => 'Easterbunny', :date_of_birth => '2008-03-23')
     assigns[:people] = [person]

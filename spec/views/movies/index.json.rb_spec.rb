@@ -4,7 +4,7 @@ describe "/movies/index.json.rb" do
   include MoviesHelper
   include Spec::JSONMatchers
   
-  before(:each) do
+  before do
     assigns[:movies] = [
       stub_model(Movie, :id => 1, :title => 'The first movie', :release_date => '2001-01-01') { |m|
         m.should_receive(:awardings).and_return([])

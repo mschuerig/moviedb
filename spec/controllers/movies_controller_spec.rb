@@ -18,7 +18,7 @@ describe MoviesController do
     end
 
     describe "with mime type of json" do
-      before(:each) do
+      before do
         @find_all_options = {
           :include => { :awardings => :award },
           :offset => nil,
@@ -41,7 +41,7 @@ describe MoviesController do
       end
       
       describe "and Range header" do
-        before(:each) do
+        before do
           request.env['Range'] = 'items=10-60'
         end
         

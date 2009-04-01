@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe "A Person" do
-  before(:each) do
+  before do
     @valid_attributes = {
       :firstname => 'Clint',
       :lastname => 'Eastwood'
@@ -34,7 +34,7 @@ describe "A Person" do
   end
 
   describe "with a duplicate name" do
-    before(:each) do
+    before do
       @dupe = Person.create!(@valid_attributes)
     end
 
@@ -50,7 +50,7 @@ end
 
 
 describe "An actor" do
-  before(:each) do
+  before do
     @actor = Person.create!(:firstname => 'Clint', :lastname => 'Hehaa')
     @movie = Movie.create!(:title => 'Bad and Ugly', :release_date => '2004-12-05')
     @movie.participants.add_actor(@actor)
@@ -89,7 +89,7 @@ describe "An actor" do
   end
 
   describe "with coworkers" do
-    before(:each) do
+    before do
       @coactor1 = Person.create(:firstname => 'Eddie', :lastname => 'Act')
       @movie.participants.add_actor(@coactor1)
       @director = Person.create(:firstname => 'Zeno', :lastname => 'Direct')

@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Role do
 
-  before(:each) do
+  before do
     @actor = Person.create!(:firstname => 'Clint', :lastname => 'Hehaa')
     @movie = Movie.create!(:title => 'Bad and Ugly')
   end

@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe "An Award Requirement for an actor" do
-  before(:each) do
+  before do
     award = stub_model(Award)
     @req = AwardRequirement.create!(
       :award => award,

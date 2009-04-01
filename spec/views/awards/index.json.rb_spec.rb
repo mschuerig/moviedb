@@ -4,7 +4,7 @@ describe "/awards/index.json.rb" do
   include AwardsHelper
   include Spec::JSONMatchers
   
-  before(:each) do
+  before do
     assigns[:award_groups] = [
       stub_model(AwardGroup, :id => 1, :name => 'Oscar') { |ag|
         ag.should_receive(:children).any_number_of_times.and_return([

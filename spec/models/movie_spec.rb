@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe "Movie (2002)" do
-  before(:each) do
+  before do
     @valid_attributes = {
       :title => 'Running Down the Rails',
       :release_date => '2002-11-29'
@@ -34,7 +34,7 @@ describe "Movie (2002)" do
   end
 
   describe "with only an actor" do
-    before(:each) do
+    before do
       @actor = Person.create!(:firstname => 'Clint', :lastname => 'Eastwood')
       @movie.participants.add_actor(@actor)
       @movie.save!

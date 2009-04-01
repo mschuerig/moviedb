@@ -18,7 +18,7 @@ describe PeopleController do
     end
   
     describe "with mime type of json" do
-      before(:each) do
+      before do
         @find_all_options = {
           :offset => nil,
           :limit => nil,
@@ -40,7 +40,7 @@ describe PeopleController do
       end
       
       describe "and Range header" do
-        before(:each) do
+        before do
           request.env['Range'] = 'items=10-60'
         end
         

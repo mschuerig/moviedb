@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Award do
 =begin
-  before(:each) do
+  before do
     @valid_attributes = {
       :name => "value for name",
       :award_group_id => 1
