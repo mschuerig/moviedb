@@ -7,7 +7,7 @@ namespace :db do
     
     desc "List all branch databases"
     task :list => :rails_env do
-      puts SqliteSwitcher.branches
+      puts BranchSwitcher.which.branches
     end
     
     desc "Initialize per branch databases."
@@ -28,11 +28,6 @@ namespace :db do
     desc "Copy databases for a new branch. Default is 'master', set ORIG_BRANCH=some_branch"
     task :copy => "db:load_config" do
       each_local_database { |switcher| switcher.copy_from(originating_branch) }
-    end
-
-    desc "Link to databases of another branch. Default is 'master', set ORIG_BRANCH=some_branch"
-    task :link => "db:load_config" do
-      each_local_database { |switcher| switcher.link_to(originating_branch) }
     end
 
     desc "Delete databases for a branch."
@@ -65,6 +60,7 @@ namespace :db do
     def each_local_config
       ActiveRecord::Base.configurations.each_value do |config|
         next unless config['database']
+        next unless config['per_branch']
         local_database?(config) do
           yield config
         end
@@ -81,19 +77,28 @@ namespace :db do
     end
 
     class BranchSwitcher
-      def self.create(config, branch, options)
+      def self.which
         case config['adapter']
         when /sqlite/
-          SqliteSwitcher.new(config, branch, options)
+          SqliteSwitcher
+        when 'postgresql'
+          PostgresqlSwitcher
         else
           $stderr.puts 'Your database adapter is not supported yet.'
-          BranchSwitcher.new(config, branch, options)
+          BranchSwitcher
         end
+      end
+      
+      def self.create(config, branch, options = {})
+        which.new(config, branch, options)
       end
       
       def initialize(config, branch, options)
         @config, @branch = config, branch
         @overwrite = options[:overwrite]
+      end
+
+      def self.branches
       end
 
       def current
@@ -156,11 +161,6 @@ namespace :db do
         end
       end
 
-      def link_to(other_branch)
-        ### TODO
-        $stderr.puts "Not yet implemented."
-      end
-      
       def select
         ensure_branch_exists!
         FileUtils.ln_sf(relative_path(branch_db_path), db_path)
@@ -202,6 +202,10 @@ namespace :db do
       def relative_path(s)
         s.sub(%r{^#{DB_ROOT}/}, '')
       end
+    end
+
+    class PostgresqlSwitcher < BranchSwitcher
+      ### TODO
     end
   end
 end
