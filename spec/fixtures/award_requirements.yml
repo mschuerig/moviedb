@@ -10,7 +10,7 @@ oscar_best_director_movie:
 oscar_best_director_person:
   award: oscar_best_director
   association: people
-  role_type: director
+  role_type_id: 2
   count: 1
 
 oscar_best_actor_movie:
@@ -20,7 +20,7 @@ oscar_best_actor_movie:
 oscar_best_actor_person:
   award: oscar_best_actor
   association: people
-  role_type: actor
+  role_type_id: 1
   count: 1
 
 oscar_best_actress_movie:
@@ -30,7 +30,7 @@ oscar_best_actress_movie:
 oscar_best_actress_person:
   award: oscar_best_actress
   association: people
-  role_type: actor
+  role_type_id: 1
   count: 1
 
 oscar_best_supporting_actor_movie:
@@ -40,7 +40,7 @@ oscar_best_supporting_actor_movie:
 oscar_best_supporting_actor_person:
   award: oscar_best_supporting_actor
   association: people
-  role_type: actor
+  role_type_id: 1
   count: 1
 
 oscar_best_supporting_actress_movie:
@@ -50,5 +50,5 @@ oscar_best_supporting_actress_movie:
 oscar_best_supporting_actress_person:
   award: oscar_best_supporting_actress
   association: people
-  role_type: actor
+  role_type_id: 1
   count: 1

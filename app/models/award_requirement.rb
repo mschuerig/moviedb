@@ -7,10 +7,9 @@ class AwardRequirement < ActiveRecord::Base
   def validate_awarding(awarding)
     awardees = awarding.send(association)
     if role_type
-      roles = awarding.movies.inject([]) do |roles, movie|
-        roles << movie.participants.as(role_type)
-### REMOVE        roles << movie.participants.send("as_#{role_type}")
-      end
+      roles = awarding.movies.inject([]) { |roles, movie|
+        roles += movie.participants.as(role_type)
+      }
       awardees = awardees.select { |a| roles.include?(a) }
     end
     actual_count = awardees.size
