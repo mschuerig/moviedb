@@ -12,7 +12,8 @@ namespace :db do
       when 'mysql'
         `mysqldump --user "#{config["username"]}" --host "#{config["host"]}" #{config["database"]} > #{dump_file}`
       when 'postgresql'
-        `pg_dump --clean --inserts -U "#{config["username"]}" --host="#{config["host"]}" --port=#{config['port']} #{config["database"]} > #{dump_file}`
+        inserts = (ENV['INSERTS'] =~ /true|1/i) ? '--inserts' : ''
+        `pg_dump #{inserts} --clean -U "#{config["username"]}" --host="#{config["host"]}" --port=#{config['port']} #{config["database"]} > #{dump_file}`
       else
         raise "Don't know how to dump a #{config['adapter']} database."
       end
@@ -26,7 +27,8 @@ namespace :db do
       when 'mysql'
         `mysqldump --no-create-info --user "#{config["username"]}" --host "#{config["host"]}" #{config["database"]} > #{dump_file}`
       when 'postgresql'
-        `pg_dump --data-only --inserts -U "#{config["username"]}" --host="#{config["host"]}" --port=#{config['port']} #{config["database"]} > #{dump_file}`
+        inserts = (ENV['INSERTS'] =~ /true|1/i) ? '--inserts' : ''
+        `pg_dump --data-only #{inserts} -U "#{config["username"]}" --host="#{config["host"]}" --port=#{config['port']} #{config["database"]} > #{dump_file}`
       else
         raise "Don't know how to dump a #{config['adapter']} database."
       end

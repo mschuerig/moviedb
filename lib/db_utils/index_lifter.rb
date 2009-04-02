@@ -8,6 +8,7 @@ module DbUtils
     end
     
     def initialize(*tables)
+      @options = tables.extract_options!
       @connection = ActiveRecord::Base.connection
       @tables = (tables.empty? ? @connection.tables : tables) - SYSTEM_TABLES
     end
@@ -35,9 +36,24 @@ module DbUtils
     end
     
     def index_definitions
-      @tables.inject([]) do |defs, table|
+      indexes = @tables.inject([]) { |defs, table|
         defs += @connection.indexes(table)
+      }
+      if @options[:except_unique]
+        indexes.delete_if(&:unique)
       end
+      exceptions = [@options[:except]].flatten
+      exception_names = exceptions.map { |exc| (exc.kind_of?(::Hash) ? exc[:name] : exc).to_s }
+      indexes.delete_if { |idx| exception_names.include?(idx.name) }
+      exception_hashes = exceptions.select { |exc| exc.kind_of?(::Hash) }.map { |exc|
+        { :table => exc[:table].to_s,
+          :columns => Array(exc[:column] || exc[:columns]).map(&:to_s)
+        }}
+      indexes.delete_if { |idx| exception_hashes.any? { |exc|
+          exc[:table]   == idx.table && 
+          exc[:columns] == idx.columns
+        }}
+      indexes
     end
   end
 end

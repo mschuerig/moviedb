@@ -18,11 +18,23 @@ namespace :db do
     people_count = (ENV['PEOPLE'] || 200).to_i
     movies_count = (ENV['MOVIES'] || 10).to_i
     
+    retained_indexes = [
+      ### FIXME AR botches column order; name is OK, schema.rb has wrong order
+      'index_people_on_lastname_and_firstname_and_serial_number'
+    ]
+    
     load_fixtures(File.join(RAILS_ROOT, 'spec', 'fixtures'))
     ActiveRecord::Base.transaction do
-      DbUtils::IndexLifter.without_indexes do
-        MovieDb::Populator.new(people_count, movies_count).populate
+      DbUtils::IndexLifter.without_indexes(:except => retained_indexes) do
+        ActiveRecord::Base.silence do
+          MovieDb::Populator.new(people_count, movies_count).populate
+          puts "Whew... now let's get the indexes back..."
+        end
       end
+    end
+    if ActiveRecord::Base.configurations[RAILS_ENV]['adapter'] == 'postgresql'
+      puts "Finally, vacuum the database..."
+      ActiveRecord::Base.connection.execute "VACUUM FULL ANALYZE"
     end
   end
   

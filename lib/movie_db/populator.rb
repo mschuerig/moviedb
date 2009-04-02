@@ -1,4 +1,6 @@
 
+require 'ruby-debug' ### REMOVE
+
 module MovieDb
   class Populator
     def initialize(people_count, movies_count)
@@ -35,12 +37,18 @@ module MovieDb
       ary
     end
     
-    def random_people(n)
-      if @people_count > 10000
-        Person.find(:all, :order => 'random()', :limit => n)
+    def random_people(n, movies = nil, role_type = nil)
+      if movies && !movies.empty?
+        candidates = movies.map { |m| m.participants.as(role_type) }.flatten
+        extend_with_sample(candidates)
+        candidates.sample(n)
       else
-        @people ||= extend_with_sample(Person.find(:all))
-        @people.sample(n)
+        if @people_count > 100000
+          Person.find(:all, :order => 'random()', :limit => n)
+        else
+          @people ||= extend_with_sample(Person.find(:all))
+          @people.sample(n)
+        end
       end
     end
     
@@ -55,15 +63,19 @@ module MovieDb
           :order => 'random()', :limit => n)
       else
         unless @movies_by_year
-          @movies_by_year = Movie.find(:all).index_by(&:release_year)
+          @movies_by_year = Movie.find(:all).group_by(&:release_year)
           @movies_by_year.each_value { |v| extend_with_sample(v) }
         end
-        (@movies_by_year[year] || []).sample(n)
+        if movies = @movies_by_year[year]
+          movies.sample(n)
+        else
+          []
+        end
       end
     end
 
     def movie_years
-      Movie.connection.select_values('select distinct release_year from movies')
+      Movie.connection.select_values('select distinct release_year from movies').map(&:to_i)
     end
 
     def create_people(count)
@@ -83,7 +95,7 @@ module MovieDb
     def add_participants_to_movies(max_actors_count)
       puts "Adding people to movies..."
       Movie.find_each do |m|
-        random_people(rand(max_actors_count)).each do |a|
+        random_people(1 + rand(max_actors_count)).each do |a|
           m.participants.add_actor(a)
         end
         m.participants.add_director(random_person)
@@ -96,15 +108,21 @@ module MovieDb
       movie_years.each do |year|
         Award.all.each do |award|
           awarding = Awarding.new(:award => award)
-          awarding.requirements.each do |assoc, count|
-            case assoc
-            when :movies
-              awarding.movies = random_movies(year, count)
-            when :people
-              awarding.people = random_people(count)
+          # Make sure that movies are added first
+          awarding.requirements.sort_by { |req| req.association == 'movies' ? 0 : 1 }.each do |req|
+            case req.association
+            when 'movies'
+              awarding.movies = random_movies(year, req.count)
+            when 'people'
+              awarding.people = random_people(req.count, awarding.movies, req.role_type)
             end
           end
-          awarding.save!
+          begin
+            awarding.save!
+          rescue
+            debugger ### REMOVE
+            raise
+          end
         end
       end
     end

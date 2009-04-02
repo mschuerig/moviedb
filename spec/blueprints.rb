@@ -1,4 +1,5 @@
 
+require 'machinist'
 require 'faker'
 
 class Date
@@ -29,4 +30,5 @@ end
 Movie.blueprint do
   title
   release_date
+  summary
 end

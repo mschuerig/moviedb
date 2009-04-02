@@ -41,15 +41,6 @@
       isChanged: function() {
         if (!this.movie) return false;
         return dojo.formToJson(this.domNode) !== this._originalState;
-/*
-        for (var prop in this.propertiesMap) {
-          if (dijit.byId(prop).getValue() !== this.movie[this.propertiesMap[prop]]) {
-console.log("** CHANGED: ", prop, dijit.byId(prop).getValue(), this.movie[this.propertiesMap[prop]]);
-            return true;
-          }
-        }
-        return false;
-*/
       },
       connectChildren: function() {
         this.inherited(arguments);

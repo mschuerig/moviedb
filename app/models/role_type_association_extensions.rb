@@ -1,6 +1,7 @@
 
 module RoleTypeAssociationExtensions
   define_method("as") do |role_name|
+    return self if role_name.blank?
     role_name = role_name.kind_of?(RoleType) ? role_name.name : role_name.to_s
     self.scoped(
        # PostgreSQL doesn't allow forward references to joined tables.
