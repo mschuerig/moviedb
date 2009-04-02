@@ -1,6 +1,4 @@
 
-require 'ruby-debug' ### REMOVE
-
 module MovieDb
   class Populator
     def initialize(people_count, movies_count)
@@ -117,12 +115,7 @@ module MovieDb
               awarding.people = random_people(req.count, awarding.movies, req.role_type)
             end
           end
-          begin
-            awarding.save!
-          rescue
-            debugger ### REMOVE
-            raise
-          end
+          awarding.save!
         end
       end
     end
