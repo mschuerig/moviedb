@@ -12,7 +12,7 @@ namespace :db do
   task :populate => :environment do
     require 'machinist'
     require 'spec/blueprints'
-    require 'db_utils/index_lifter'
+    require 'index_lifter'
     require 'movie_db/populator'
         
     people_count = (ENV['PEOPLE'] || 200).to_i
@@ -25,7 +25,7 @@ namespace :db do
     
     load_fixtures(File.join(RAILS_ROOT, 'spec', 'fixtures'))
     ActiveRecord::Base.transaction do
-      DbUtils::IndexLifter.without_indexes(:except => retained_indexes) do
+      IndexLifter.without_indexes(:except => retained_indexes) do
         ActiveRecord::Base.silence do
           MovieDb::Populator.new(people_count, movies_count).populate
           puts "Whew... now let's get the indexes back..."
