@@ -2,26 +2,31 @@
 (function() {
   dojo.provide('moviedb.movies');
 
-  dojo.require('dojo.parser');
+  dojo.require('dijit.Menu');
+  dojo.require('dijit.MenuItem');
+  dojo.require('dijit.MenuSeparator');
+  dojo.require('dijit.Tooltip');
+  dojo.require('dijit.Tree');
+  dojo.require('dijit.form.DateTextBox');
+  dojo.require('dijit.form.Form');
+  dojo.require('dijit.form.Textarea');
+  dojo.require('dijit.form.ValidationTextBox');
+  dojo.require('dijit.layout.BorderContainer');
   dojo.require('dijit.layout.BorderContainer');
   dojo.require('dijit.layout.ContentPane');
+  dojo.require('dijit.layout.ContentPane');
+  dojo.require('dijit.layout.TabContainer');
+  dojo.require('dijit.tree.ForestStoreModel');
+  dojo.require('dojo.back');
+  dojo.require('dojo.data.ItemFileReadStore');
+  dojo.require('dojo.parser');
   dojo.require('dojox.data.ClientFilter');
   dojo.require('dojox.data.JsonQueryRestStore');
   dojo.require('dojox.grid.DataGrid');
   dojo.require('dojox.json.query');
   dojo.require('dojox.widget.PlaceholderMenuItem');
   dojo.require('dojox.widget.Toaster');
-  dojo.require('dijit.Tooltip');
-  dojo.require('dijit.Tree');
-  dojo.require('dijit.form.DateTextBox');
-  dojo.require('dijit.form.Form');
-  dojo.require('dijit.form.ValidationTextBox');
-  dojo.require('dijit.layout.BorderContainer');
-  dojo.require('dijit.layout.ContentPane');
-  dojo.require('dijit.layout.TabContainer');
-  dojo.require('dijit.tree.ForestStoreModel');
-  dojo.require('dojo.back');
-  dojo.require('dojo.data.ItemFileReadStore');
+  dojo.require('moviedb.Form');
 
   dojo.declare('moviedb.Movie', null, {
     constructor: function(data) {
@@ -32,7 +37,7 @@
     }
   });
 
-  dojo.declare("moviedb.Store", dojox.data.JsonRestStore, {
+  dojo.declare("moviedb.Store", dojox.data.JsonRestStore, { //### TODO JsonQueryRestStore
     _processResults: function(results, deferred) {
       return results;
     },

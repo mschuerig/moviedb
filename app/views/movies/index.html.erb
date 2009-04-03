@@ -18,61 +18,41 @@
     dojo.registerModulePath('moviedb', "/javascripts/moviedb");
     dojo.require('moviedb.movies');
     
-    dojo.declare('moviedb.MovieForm', dijit.form.Form, {
-      movie: null,
-      propertiesMap: {
-        'movie_title': 'title',
-        'movie_release_date': 'releaseDate'
-      },
-      populate: function(movie) {
-        if (movie) {
-          for (var prop in this.propertiesMap) {
-            dijit.byId(prop).setValue(movie[this.propertiesMap[prop]]);
-          }
-        } else {
-          for (var prop in this.propertiesMap) {
-            dijit.byId(prop).setValue(null);
-          }
-        }
-        this._lastChanged = false;
-        this._originalState = dojo.formToJson(this.domNode);
-        this.movie = movie;
-      },
-      isChanged: function() {
-        if (!this.movie) return false;
-        return dojo.formToJson(this.domNode) !== this._originalState;
-      },
-      connectChildren: function() {
-        this.inherited(arguments);
-        var self = this;
-        var conns = this._changeConnections;
-        dojo.forEach(this.getDescendants(), function(widget) {
-          conns.push(self.connect(widget, 'onChange', 
-            dojo.hitch(self, '_checkForChange', widget)))
-        });
-      },
-      _checkForChange: function(widget) {
-        if (!this.movie) return;
-        var changed = this.isChanged();
-        if (changed !== this._lastChanged) {
-          if (changed) {
-            this.onChange();
-          } else {
-            this.onRevert();
-          }
-        }
-        this._lastChanged = changed;
-      },
-      onChange: function() {
-        console.log("*** ON CHANGE");
-      },
-      onRevert: function() {
-        console.log("*** ON REVERT");
+    var awardSchema = {
+      type: 'object',
+      properties: {
+        title: { type: 'string' }
       }
-    });
+    };
+    var movieSchema = {
+      type: 'object',
+      properties: {
+        id: { type: 'integer' },
+        title: { type: 'string' },
+        releaseDate: { type: 'date', format: 'date-time' },
+        summary: { type: 'string' },
+        awards: {
+          type: 'array',
+          optional: true,
+          items: awardSchema
+        }
+      },
+      prototype: moviedb.Movie.prototype
+    };
+    var personSchema = {
+      type: 'object',
+      properties: {
+        id: { type: 'integer' },
+        name: { type: 'string', readonly: true },
+        dob: { type: 'date', format: 'date-time' }
+      }
+    };
+
 
     function buildMoviesGrid(store) {
-      var awardFormatter = function(awards) {
+      var awardsFormatter = function(awards) {
+        //### TODO value check ought to be done through JSON Schema, if possible
+//        return dojo.string.rep('*', awards.length);
         return awards ? dojo.string.rep('*', awards.length) : '';
       };
       var yearFormatter = function(date) {
@@ -86,26 +66,41 @@
         structure: [
           { field: "title", name: "Title", width: "auto" },
           { field: "releaseDate", name: "Year", width: "5em", formatter: yearFormatter },
-          { field: "awards", name: "Awards", width: "15%", formatter: awardFormatter }
+          { field: "awards", name: "Awards", width: "15%", formatter: awardsFormatter }
         ],
         selectionMode: 'single',
         rowsPerPage: 50,
         keepRows: 300
       }, 'movieslist');
 
-      moviedb.installTooltips(grid, function(e) {
+      grid.onCellContextMenu = function(e) {
         if (e.cell.field == "awards") {
           var movie = e.grid.getItem(e.rowIndex);
           if (movie.awards) {
-            var msg = "<ul>" + 
-              dojo.map(movie.awards, function(award) {
-                return "<li>" + award + "</li>";
-              }).join('') +
-              "</ul>";
-            dijit.showTooltip(msg, e.cellNode);
+            var awards = movie.awards;
+            var awardsMenu = new dijit.Menu({targetNodeIds: e.cellNode});
+            awardsMenu.addChild(new dijit.MenuItem({
+              label: 'Overview',
+              onClick: function() { dojo.publish('award.selected', [awards]) }
+            }));
+            awardsMenu.addChild(new dijit.MenuSeparator());
+            dojo.forEach(awards, function(award) {
+              awardsMenu.addChild(new dijit.MenuItem({
+                label: award.title,
+                onClick: function() { dojo.publish('award.selected', [award]) }
+              }));
+            });
+            awardsMenu.startup();
+            dojo.connect(awardsMenu, 'onClose', function() {
+              awardsMenu.uninitialize();
+            });
+            awardsMenu._openMyself(e);
           }
         }
-      });
+	  };
+	  grid.onHeaderContextMenu = function(e) {
+	    console.log('*** onHeaderContextMenu: ', e); //### REMOVE
+	  };
     
       dojo.connect(grid, 'onSelected', function(idx) {
         dojo.publish('movie.selected', [grid.getItem(idx)]);
@@ -136,18 +131,10 @@
     }
 
     dojo.addOnLoad(function(){
-      moviesStore = new moviedb.Store({ target: "/movies", schema: {
-        type: 'object',
-        properties: {
-          title: { type: 'string' },
-          releaseDate: { type: 'date', format: 'date-time' }
-          //### TODO add awards
-        },
-        prototype: moviedb.Movie.prototype
-      }});
+      moviesStore = new moviedb.Store({ target: "/movies", schema: movieSchema });
       moviesGrid = buildMoviesGrid(moviesStore);
 
-      peopleStore = new moviedb.Store({ target: "/people" });
+      peopleStore = new moviedb.Store({ target: "/people", schema: personSchema });
       peopleGrid = buildPeopleGrid(peopleStore);
 
       moviesGrid.startup();
@@ -155,12 +142,18 @@
 
       dojo.subscribe('movie.selected', function(m) {
         console.log("---> ", m); //### REMOVE
-        dijit.byId('movieform').populate(m);
+        dijit.byId('movieform').populate(moviesStore, m);
       });
 
-      dojo.connect(moviesGrid, 'onCanDeselect', function() {
-        console.log('CAN DESELECT movie: ', arguments);
-        return true;
+      dojo.subscribe('award.selected', function() {
+        console.log("** AWARD: ", arguments);
+      });
+
+      dojo.connect(moviesGrid, 'onCanSelect', function(rowIdx) {
+        //### FIXME doesn't have an effect.
+        var formIsChanged = dijit.byId('movieform').isChanged();
+        console.log('CAN SELECT movie: ', !formIsChanged);
+        return !formIsChanged;
       });
     });
   </script>
@@ -197,7 +190,7 @@
       </div>
     </div>
     <div dojoType="dijit.layout.ContentPane" region="bottom">
-      <form dojoType="moviedb.MovieForm" id="movieform">
+      <form dojoType="moviedb.Form" id="movieform">
         <ul>
           <li>
             <label for="movie_title">Title:</label>
@@ -216,7 +209,15 @@
                    id="movie_release_date" name="movie[release_date]"
                    invalidMessage="Please enter a valid date." />
           </li>
-            
+          <li>
+            <label for="movie_summary">Summary</label>
+          </li>
+          <li>
+            <textarea dojoType="dijit.form.Textarea"
+                      id="movie_summary" name="movie[summary]"
+                      style="width:30em"></textarea>
+          </li>
+        </ul>
       </form>
     </div>
   </div>

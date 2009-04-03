@@ -13,7 +13,7 @@ class PeopleController < ApplicationController
                               :limit => range[:limit],
                               :order => parse_order_params)
         @count = Person.count
-        render :template => 'people/index.json.rb'
+        render
       end
     end
   end

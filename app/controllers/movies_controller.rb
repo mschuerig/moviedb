@@ -8,16 +8,26 @@ class MoviesController < ApplicationController
       format.json do
         range = parse_range_header
         @movies = Movie.find(:all,
-                             :include => { :awardings => :award },
-                             :offset => range[:offset],
-                             :limit => range[:limit],
-                             :order => parse_order_params)
+          :include => { :awardings => :award },
+          :offset => range[:offset],
+          :limit => range[:limit],
+          :order => parse_order_params)
         @count = Movie.count
-        render :template => 'movies/index.json.rb'
+        render
       end
     end
   end
 
+  def summary
+    @movie = Movie.find(params[:id])
+    respond_to do |format|
+      format.html { render :text => @movie.summary, :layout => false }
+      format.json do
+        render :template => 'movies/summary'
+      end
+    end
+  end
+  
   # GET /movies/1
   # GET /movies/1.xml
   def show
@@ -25,7 +35,7 @@ class MoviesController < ApplicationController
 
     respond_to do |format|
       format.html # show.html.erb
-      format.json { render :json => @movie }
+      format.json { render :template => 'movies/movie' }
       format.xml  { render :xml => @movie }
     end
   end

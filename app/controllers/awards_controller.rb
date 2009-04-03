@@ -2,7 +2,6 @@ class AwardsController < ApplicationController
   # GET /awards
   # GET /awards.xml
   def index
-
     respond_to do |format|
       format.html do
         @awards = Award.all
@@ -10,7 +9,7 @@ class AwardsController < ApplicationController
         end
       format.json do
         @award_groups = AwardGroup.all
-        render :template => 'awards/index.json.rb'
+        render
       end
     end
   end

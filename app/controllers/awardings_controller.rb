@@ -1,0 +1,2 @@
+class AwardingsController < ApplicationController
+end
