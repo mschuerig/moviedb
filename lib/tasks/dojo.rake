@@ -1,6 +1,13 @@
 
 namespace :dojo do
   
+  task :update => :environment do
+    DOJO_ROOT = File.join(RAILS_ROOT, 'vendor', 'dojo')
+    Dir[File.join(DOJO_ROOT, '*')].each do |dir|
+      sh %{cd "#{dir}" && git svn rebase && git gc}
+    end
+  end
+  
   task :setup => :environment do
     DOJO_ROOT = File.join(RAILS_ROOT, 'vendor', 'dojo')
     DOJO_BUILD = File.join(DOJO_ROOT, 'util', 'buildscripts')
