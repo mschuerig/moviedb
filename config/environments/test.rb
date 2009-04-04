@@ -30,3 +30,11 @@ config.action_mailer.delivery_method = :test
 config.gem "faker"
 config.gem "rspec", :lib => false, :version => ">= 1.2.2" 
 config.gem "rspec-rails", :lib => false, :version => ">= 1.2.2"
+
+config.after_initialize do
+  if config.database_configuration[RAILS_ENV]['database'] == ':memory:'
+    silence_stream(STDOUT) do
+      load File.join(RAILS_ROOT, 'db', 'schema.rb')
+    end
+  end
+end
