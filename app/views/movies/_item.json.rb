@@ -1,6 +1,5 @@
 m = {
-#  '$ref' => movie.to_param,
-  :id => movie.to_param,
+  '$ref' => movie.to_param,
   :title => movie.title,
   :releaseDate => movie.release_date
 }

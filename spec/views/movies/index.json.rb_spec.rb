@@ -11,11 +11,11 @@ describe "/movies/index.json.rb" do
       },
       stub_model(Movie, :id => 2, :title => 'The second movie', :release_date => '2002-02-02') { |m|
         m.should_receive(:awardings).any_number_of_times.and_return([
-          stub_model(Awarding) { |a|
-            a.should_receive(:name).and_return('Oscar')
+          stub_model(Awarding, :name => 'Oscar') { |a|
+            a.should_receive(:to_param).and_return('3')
           },
-          stub_model(Awarding) { |a|
-            a.should_receive(:name).and_return('Karlheinz')
+          stub_model(Awarding, :name => 'Karlheinz') { |a|
+            a.should_receive(:to_param).and_return('4')
           }
         ])
       }
@@ -31,11 +31,11 @@ describe "/movies/index.json.rb" do
         "identifier": "id",
         "totalCount": 2,
         "items": [
-          {"releaseDate": '2001-01-01', "title": "The first movie", "id": "1"},
-          {"releaseDate": '2002-02-02', "title": "The second movie", "id": "2",
+          {"releaseDate": '2001-01-01', "title": "The first movie", "$ref": "1"},
+          {"releaseDate": '2002-02-02', "title": "The second movie", "$ref": "2",
             "awards": [
-              { "title": "Oscar" },
-              { "title": "Karlheinz" }
+              { "title": "Oscar", "$ref": "3" },
+              { "title": "Karlheinz", "$ref": "4" }
              ]
           }
         ]

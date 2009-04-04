@@ -51,9 +51,7 @@
 
     function buildMoviesGrid(store) {
       var awardsFormatter = function(awards) {
-        //### TODO value check ought to be done through JSON Schema, if possible
-//        return dojo.string.rep('*', awards.length);
-        return awards ? dojo.string.rep('*', awards.length) : '';
+        return dojo.string.rep('*', awards.length);
       };
       var yearFormatter = function(date) {
         return date ? 1900 + date.getYear() : '';

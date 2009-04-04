@@ -20,7 +20,7 @@
   dojo.require('dojo.back');
   dojo.require('dojo.data.ItemFileReadStore');
   dojo.require('dojo.parser');
-  dojo.require('dojox.data.ClientFilter');
+//  dojo.require('dojox.data.ClientFilter');
   dojo.require('dojox.data.JsonQueryRestStore');
   dojo.require('dojox.grid.DataGrid');
   dojo.require('dojox.json.query');
@@ -39,6 +39,12 @@
 
   dojo.declare("moviedb.Store", dojox.data.JsonRestStore, { //### TODO JsonQueryRestStore
     _processResults: function(results, deferred) {
+      dojo.forEach(results.items, function(item) {
+        if (!item.awards) {
+          item.awards = [];
+        }
+      });
+      console.log('**** RESULTS: ', results); //### REMOVE
       return results;
     },
     fetch: function(args) {

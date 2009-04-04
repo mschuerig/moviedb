@@ -1,4 +1,4 @@
 { 
-  :id => awarding.to_param,
+  '$ref' => awarding.to_param,
   :title => awarding.name
 }

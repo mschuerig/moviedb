@@ -1,10 +1,22 @@
 
 namespace :dojo do
   
+  desc 'Update Dojo git repository.'
   task :update => :environment do
     DOJO_ROOT = File.join(RAILS_ROOT, 'vendor', 'dojo')
     Dir[File.join(DOJO_ROOT, '*')].each do |dir|
       sh %{cd "#{dir}" && git svn rebase && git gc}
+    end
+  end
+  
+  namespace :use do
+    desc 'Use individual development script files.'
+    task :debug => :environment do
+      sh %{ln -nfs javascripts.development "#{RAILS_ROOT}/public/javascripts"}
+    end
+    desc 'Use optimized script files.'
+    task :optimized => :environment do
+      sh %{ln -nfs javascripts.production "#{RAILS_ROOT}/public/javascripts"}
     end
   end
   

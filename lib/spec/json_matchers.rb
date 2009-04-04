@@ -14,7 +14,8 @@ module Spec
       end
       
       def failure_message
-        "expected\n#{@raw_target}\nto be JSON code equivalent to\n#{@raw_expected}"
+        "expected\n#{@raw_target}\nto be JSON code equivalent to\n#{@raw_expected}\n" +
+        "Difference:\n#{@expected.diff(@target).inspect}"
       end
       
       def negative_failure_message
