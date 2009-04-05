@@ -108,14 +108,9 @@ class Person < ActiveRecord::Base
       # INSERT aborts the entire (outer) transaction.
       super
     end
-  rescue ActiveRecord::StatementInvalid => e
-    ### TODO move detection of uniqueness violation to an adapter mixin.
-    if e.message =~ /(are not unique)|(violates unique constraint)/
-      self.serial_number = next_unused_serial_number
-      retry
-    else
-      raise
-    end
+  rescue ActiveRecord::RecordNotUnique => e
+    self.serial_number = next_unused_serial_number
+    retry
   end
   
   def has_dupes?

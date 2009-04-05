@@ -51,14 +51,9 @@ class Awarding < ActiveRecord::Base
       # INSERT aborts the entire (outer) transaction.
       super
     end
-  rescue ActiveRecord::StatementInvalid => e
-    ### TODO move detection of uniqueness violation to an adapter mixin.
-    if e.message =~ /(are not unique)|(violates unique constraint)/
-      errors.add_to_base('The award can only be given once per year.')
-      false
-    else
-      raise
-    end
+  rescue ActiveRecord::RecordNotUnique => e
+    errors.add_to_base('The award can only be given once per year.')
+    false
   end
 
 end
