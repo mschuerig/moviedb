@@ -46,7 +46,8 @@ namespace :db do
     end
     
     def current_branch
-      @current_branch ||= `git symbolic-ref HEAD`.sub(%r{^refs/heads/}, '').chomp
+      #@current_branch ||= `git symbolic-ref HEAD`.sub(%r{^refs/heads/}, '').chomp
+      @current_branch ||= `git rev-parse --symbolic-full-name HEAD`.sub(%r{^refs/heads/}, '').chomp
     end
     
     def environment_options

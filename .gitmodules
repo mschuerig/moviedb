@@ -1,0 +1,3 @@
+[submodule "vendor/plugins/acts_as_xapian"]
+	path = vendor/plugins/acts_as_xapian
+	url = git://github.com/Overbryd/acts_as_xapian.git
