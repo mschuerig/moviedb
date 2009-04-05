@@ -1,6 +1,9 @@
 class Movie < ActiveRecord::Base
   attr_protected :release_year
   
+  acts_as_xapian :texts => [ :title, :summary ],
+    :values => [ [ :release_year, 1, 'year', :number ] ]
+  
   validates_presence_of :title
 
   has_many :roles, :include => :role_type, :dependent => :destroy

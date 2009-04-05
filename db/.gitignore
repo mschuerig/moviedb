@@ -1,3 +1,5 @@
 *.sqlite3
 schema.rb
 dump*.sql
+development-*dump-*.sql
+xapian

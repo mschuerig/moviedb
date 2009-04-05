@@ -1,0 +1,9 @@
+
+development: &development
+  base_db_path: db/xapian
+
+production:
+  <<: *development
+
+test:
+  base_db_path: tmp/xapian
