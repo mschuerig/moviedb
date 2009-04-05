@@ -16,9 +16,17 @@ config.action_controller.perform_caching             = false
 # Don't care if the mailer can't send
 config.action_mailer.raise_delivery_errors = false
 
-if File.exists?(File.join(RAILS_ROOT,'tmp', 'debug.txt'))
-  require 'ruby-debug'
-  Debugger.wait_connection = true
-  Debugger.start_remote
-  File.delete(File.join(RAILS_ROOT,'tmp', 'debug.txt'))
+begin
+  debug_flag = File.join(RAILS_ROOT,'tmp', 'debug.txt')
+  if File.exists?(debug_flag)
+    require 'ruby-debug'
+#    case File.read(debug_flag).chomp
+#    when 'connect'
+#      Debugger.stop_on_connect = true
+#    else
+      Debugger.wait_connection = true
+#    end
+    Debugger.start_remote
+    File.delete(debug_flag)
+  end
 end

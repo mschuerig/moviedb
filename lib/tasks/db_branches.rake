@@ -1,4 +1,6 @@
 
+require 'ruby-debug' ### REMOVE
+
 namespace :db do
   
   task :branches => "branches:list"
@@ -6,7 +8,7 @@ namespace :db do
   namespace :branches do
     
     desc "List all branch databases"
-    task :list => :rails_env do
+    task :list => "db:load_config" do
       puts BranchSwitcher.which.branches
     end
     
@@ -27,7 +29,11 @@ namespace :db do
 
     desc "Copy databases for a new branch. Default is 'master', set ORIG_BRANCH=some_branch"
     task :copy => "db:load_config" do
-      each_local_database { |switcher| switcher.copy_from(originating_branch) }
+      if target_branch == current_branch
+        $stderr.puts "Cannot copy database to itself."
+      else
+        each_local_database { |switcher| switcher.copy_from(originating_branch) }
+      end
     end
 
     desc "Delete databases for a branch."
@@ -40,7 +46,7 @@ namespace :db do
     end
     
     def current_branch
-      `git symbolic-ref HEAD`.sub(%r{^refs/heads/}, '').chomp
+      @current_branch ||= `git symbolic-ref HEAD`.sub(%r{^refs/heads/}, '').chomp
     end
     
     def environment_options
@@ -72,12 +78,13 @@ namespace :db do
       options = options.reverse_merge(environment_options)
       branch = args[0] || target_branch
       each_local_config do |config|
-        yield BranchSwitcher.create(config, branch, options)
+        yield BranchSwitcher.create(config, branch, options, RAILS_ENV)
       end
     end
 
     class BranchSwitcher
       def self.which
+        config = ActiveRecord::Base.configurations[RAILS_ENV]
         case config['adapter']
         when /sqlite/
           SqliteSwitcher
@@ -89,12 +96,12 @@ namespace :db do
         end
       end
       
-      def self.create(config, branch, options = {})
-        which.new(config, branch, options)
+      def self.create(config, branch, rails_env, options = {})
+        which.new(config, branch, options, rails_env)
       end
       
-      def initialize(config, branch, options)
-        @config, @branch = config, branch
+      def initialize(config, branch, rails_env, options)
+        @config, @branch, @rails_env = config, branch, rails_env
         @overwrite = options[:overwrite]
       end
 
@@ -110,9 +117,6 @@ namespace :db do
       def copy_from(other_branch)
       end
       
-      def link_to(other_branch)
-      end
-      
       def select
       end
       
@@ -124,7 +128,7 @@ namespace :db do
       DB_ROOT = File.join(RAILS_ROOT, 'db')
       BRANCH_ROOT = File.join(DB_ROOT, 'branches')
       
-      def initialize(config, branch, options)
+      def initialize(config, branch, options, rails_env)
         super
         @db, @branch_db = db_path, branch_db_path
       end
@@ -136,7 +140,7 @@ namespace :db do
       def current
         status = relative_path(@db)
         if File.symlink?(@db)
-          status << " -> #{File.readlink(@db)}"
+          status << " -> SQLite3 #{File.readlink(@db)}"
         end
         status << " (doest not exist)" unless File.exist?(@db)
         puts status
@@ -205,7 +209,62 @@ namespace :db do
     end
 
     class PostgresqlSwitcher < BranchSwitcher
-      ### TODO
+      def self.branches
+        ### TODO
+        puts "++++ PostgreSQL branches"
+      end
+
+      def current
+        puts "#{@branch} -> PostgreSQL #{@config['database']}"
+      end
+      
+      def copy_from(other_branch)
+        ### TODO
+        puts @rails_env
+        puts branch_db_config(other_branch).inspect
+#        create_branch_db
+#        dump_branch_db(other_branch)
+      end
+      
+      def select
+        ### TODO
+      end
+      
+      def delete
+        ### TODO
+      end
+      
+      private
+      
+      def copy_branch_db(from_branch)
+        require 'tempfile'
+        
+        ### FIXME determine config for from_branch
+        from_config = @config
+        
+        old_umask = File.umask(0077) # make created files readable only to the user
+        dump_file = Tempfile.new('branchdb')
+        sh %{pg_dump --clean -U "#{from_config['username']}" --host="#{from_config['host']}" --port=#{from_config['port']} #{from_config['database']} > #{dump_file.path}}
+      ensure
+        File.umask(old_umask)
+      end
+      
+      def branch_db_config(from_branch)
+        database = @config['database']
+        branch_database = database.sub(/(_.+?)??(_?(#{@rails_env}))?$/, "_#{@branch}\\2")
+        @config.dup.merge('database' => branch_database)
+      end
+      
+      def write_branch_db_config
+        ### TODO
+      end
+      
+      def create_branch_db
+        ### FIXME
+        ActiveRecord::Base.establish_connection(@config)
+        ActiveRecord::Base.connection
+      end
+      
     end
   end
 end

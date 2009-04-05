@@ -2,8 +2,10 @@
 dojo.provide('moviedb.Form');
 
 dojo.declare('moviedb.Form', dijit.form.Form, {
+  //### TODO
+  // - derive appropriate widgets and validations from a json schema
+  // - propertiesMap: convention|explicit map|mapping function
   movie: null,
-  //### TODO replace explicit map with a convention (by default)
   propertiesMap: {
     'movie_title': 'title',
     'movie_release_date': 'releaseDate',
