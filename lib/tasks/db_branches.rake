@@ -12,37 +12,40 @@ namespace :db do
       puts BranchSwitcher.which.branches
     end
     
-    desc "Initialize per branch databases."
-    task :init => "db:load_config" do
-      each_local_database { |switcher| switcher.create_initial }
-    end
-    
     desc "Currently selected databases."
     task :current => "db:load_config" do
       each_local_database { |switcher| switcher.current }
     end
-    
-    desc "Switch to the databases for the currently checked out git branch."
-    task :switch => "db:load_config" do
-      each_local_database { |switcher| switcher.select }
-    end
 
-    desc "Copy databases for a new branch. Default is 'master', set ORIG_BRANCH=some_branch"
+    #desc "Create an empty database for a branch"
+    task :create => "db:load_config" do
+      ### TODO
+      ### TODO restart passenger etc.
+    end
+    
+    desc "Copy databases from one branch to another. Default is from ORIG_BRANCH=master to BRANCH=<current branch>"
     task :copy => "db:load_config" do
-      if target_branch == current_branch
+      if originating_branch == current_branch
         $stderr.puts "Cannot copy database to itself."
       else
         each_local_database { |switcher| switcher.copy_from(originating_branch) }
+        ### TODO restart passenger etc.
       end
     end
 
-    desc "Delete databases for a branch."
+    desc "Delete databases for a branch. Current branch or BRANCH"
     task :delete => "db:load_config" do
       if target_branch == current_branch
         $stderr.puts "Cannot delete databases for the current branch."
       else
         each_local_database { |switcher| switcher.delete }
+        ### TODO restart passenger etc.
       end
+    end
+    
+    #desc "Show sizes of all branch databases"
+    task :size do
+      ### TODO
     end
     
     def current_branch
@@ -112,19 +115,14 @@ namespace :db do
       def current
       end
       
-      def create_initial
-      end
-      
-      def copy_from(other_branch)
-      end
-      
-      def select
+      def copy_from(from_branch)
       end
       
       def delete
       end
     end
-    
+
+=begin
     class SqliteSwitcher < BranchSwitcher
       DB_ROOT = File.join(RAILS_ROOT, 'db')
       BRANCH_ROOT = File.join(DB_ROOT, 'branches')
@@ -147,6 +145,7 @@ namespace :db do
         puts status
       end
       
+      ### REMOVE
       def create_initial
         make_branch_dir
         unless File.exist?(@branch_db)
@@ -154,23 +153,19 @@ namespace :db do
           FileUtils.ln_s(relative_path(@branch_db), @db)
         end
       end
-
-      def copy_from(other_branch)
-        other_db = branch_db_path(other_branch)
+      
+      def copy_from(from_branch)
+        from_db = branch_db_path(from_branch)
+        ensure_branch_db_exists!(from_db)
         if !@overwrite && File.exist?(@branch_db) && !File.symlink?(@branch_db)
           $stderr.puts "A database file #{@branch_db} exists already."
-        elsif File.exist?(other_db)
+        elsif File.exist?(from_db)
           make_branch_dir
           ### TODO make sure that symlinks are copied as symlinks
-          FileUtils.cp(other_db, @branch_db)
+          FileUtils.cp(from_db, @branch_db)
         end
       end
 
-      def select
-        ensure_branch_exists!
-        FileUtils.ln_sf(relative_path(branch_db_path), db_path)
-      end
-      
       def delete
         FileUtils.rm_f(branch_db_path)
         FileUtils.rmdir(branch_dir) rescue nil
@@ -198,9 +193,9 @@ namespace :db do
         File.directory?(branch_dir(branch))
       end
       
-      def ensure_branch_exists!(branch = @branch)
+      def ensure_db_branch_exists!(branch)
         unless branch_exists?(branch)
-          raise "There is no database for the branch #{@branch}."
+          raise "There is no database for the branch #{branch}."
         end
       end
 
@@ -208,64 +203,110 @@ namespace :db do
         s.sub(%r{^#{DB_ROOT}/}, '')
       end
     end
-
+=end
+    
     class PostgresqlSwitcher < BranchSwitcher
       def self.branches
-        ### TODO
+        ### TODO determine from per_branch, if it is a Hash
         puts "++++ PostgreSQL branches"
       end
 
       def current
-        puts "#{@branch} -> PostgreSQL #{@config['database']}"
+        branch = branch_db_exists?(@branch) ? @branch : 'master'
+        puts "#{@rails_env}: #{branch_db(branch)} (PostgreSQL)"
       end
       
-      def copy_from(other_branch)
-        ### TODO
-        puts @rails_env
-        puts branch_db_config(other_branch).inspect
-#        create_branch_db
-#        dump_branch_db(other_branch)
-      end
-      
-      def select
-        ### TODO
+      def copy_from(from_branch)
+        ### REMOVE
+        puts "ENV: #{@rails_env}"
+        puts "BRANCH: #{@branch}"
+        puts "FROM CONFIG: #{branch_config(from_branch).inspect}"
+        puts "TO CONFIG: #{branch_config(@branch).inspect}"
+        
+        ### TODO extract to template method
+        ensure_branch_db_exists!(from_branch)
+        if branch_db_exists?(@branch)
+          if !@overwrite
+            $stderr.puts "A database #{branch_db(@branch)} exists already."
+            return
+          else
+            puts "Dropping existing database #{branch_db(@branch)}..."
+            drop_database(branch_config(@branch))
+          end
+        end
+        puts "Creating fresh database #{branch_db(@branch)}..."
+        create_database(branch_config(@branch))
+        puts "Copying data..."
+        copy_branch_db(from_branch, @branch)
       end
       
       def delete
-        ### TODO
+        ensure_branch_db_exists!(@branch)
+        drop_database(@config)
       end
       
       private
       
-      def copy_branch_db(from_branch)
+      def existing_databases
+        @existing_databases ||=
+          begin
+            raw_dbs = `psql -l`
+            if $? == 0
+              existing_dbs = raw_dbs.split("\n").drop_while { |l| l !~ /^-/ }.drop(1).take_while { |l| l !~ /^\(/ }.map { |l| l.split('|')[0].strip }
+              existing_dbs.reject { |db| db =~ /^template/ }
+            else
+              raise "Cannot determine existing databases."
+            end
+          end
+      end
+      
+      def db_exists?(db)
+        existing_databases.include?(db)
+      end
+      
+      def branch_db_exists?(branch)
+        db_exists?(branch_db(branch))
+      end
+      
+      def ensure_branch_db_exists!(branch)
+        unless branch_db_exists?(branch)
+          raise "There is no database for the branch #{branch}."
+        end
+      end
+      
+      def copy_branch_db(from_branch, to_branch)
+        dump_file = dump_branch_db(from_branch)
+        load_branch_db(to_branch, dump_file)
+      end
+      
+      def dump_branch_db(branch)
         require 'tempfile'
-        
-        ### FIXME determine config for from_branch
-        from_config = @config
-        
+        config = branch_config(branch)
         old_umask = File.umask(0077) # make created files readable only to the user
         dump_file = Tempfile.new('branchdb')
-        sh %{pg_dump --clean -U "#{from_config['username']}" --host="#{from_config['host']}" --port=#{from_config['port']} #{from_config['database']} > #{dump_file.path}}
+        sh %{pg_dump --clean -U "#{config['username']}" --host="#{config['host']}" --port=#{config['port']} #{config['database']} > #{dump_file.path}}
+        dump_file.path
       ensure
         File.umask(old_umask)
       end
       
-      def branch_db_config(from_branch)
-        database = @config['database']
-        branch_database = database.sub(/(_.+?)??(_?(#{@rails_env}))?$/, "_#{@branch}\\2")
-        @config.dup.merge('database' => branch_database)
+      def load_branch_db(branch, dump_file)
+        config = branch_config(branch)
+        sh %{psql -U "#{config['username']}" -f "#{dump_file}" --host="#{config['host']}" --port=#{config['port']} #{config['database']}}
       end
       
-      def write_branch_db_config
-        ### TODO
+      def branch_config(branch)
+        @config.merge('database' => branch_db(branch))
       end
-      
-      def create_branch_db
-        ### FIXME
-        ActiveRecord::Base.establish_connection(@config)
-        ActiveRecord::Base.connection
+
+      def branch_db(branch)
+        if branch == 'master'
+          @config['database']
+        else
+          @config['database'].sub(/(_.+?)??(_?(#{@rails_env}))?$/, "_#{branch}\\2")
+        end
       end
-      
+
     end
   end
 end
