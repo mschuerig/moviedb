@@ -1,5 +1,6 @@
 
 module ActiveRecord
+  ### TODO move into rails_sql_views gem
   class View < Base
     self.abstract_class = true
     

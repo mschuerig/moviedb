@@ -236,7 +236,8 @@ namespace :db do
       
       def delete
         ensure_branch_db_exists!(@branch)
-        drop_database(@config)
+        puts "Dropping database #{branch_db(@branch)}..."
+        drop_database(branch_config(@branch))
       end
       
       private
