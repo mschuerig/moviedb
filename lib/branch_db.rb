@@ -30,7 +30,6 @@ module BranchDB
             # Don't check for existence. A missing DB is an error -- just blow up.
           end
         end
-        puts "*** BRANCH DB: #{env}, #{branch_db}, #{conf['database']}" ### REMOVE
       end
     end
     dbconfig
