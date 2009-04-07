@@ -37,14 +37,14 @@
     }
   });
 
-  dojo.declare("moviedb.Store", dojox.data.JsonRestStore, { //### TODO JsonQueryRestStore
+ dojo.declare("moviedb.Store", dojox.data.JsonRestStore, { //### TODO JsonQueryRestStore
+//   dojo.declare("moviedb.Store", dojox.data.JsonQueryRestStore, {
     _processResults: function(results, deferred) {
       dojo.forEach(results.items, function(item) {
         if (!item.awards) {
           item.awards = [];
         }
       });
-      console.log('**** RESULTS: ', results); //### REMOVE
       return results;
     },
     fetch: function(args) {
