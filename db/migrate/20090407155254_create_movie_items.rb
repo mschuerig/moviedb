@@ -14,6 +14,6 @@ class CreateMovieItems < ActiveRecord::Migration
   end
 
   def self.down
-    drop_view :movie_list
+    drop_view :movie_items
   end
 end
