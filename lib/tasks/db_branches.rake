@@ -208,7 +208,7 @@ namespace :db do
     class PostgresqlSwitcher < BranchSwitcher
       def self.branches
         ### TODO determine from per_branch, if it is a Hash
-        puts "++++ PostgreSQL branches"
+        puts "Not implemented yet for PostgreSQL"
       end
 
       def current
@@ -217,12 +217,6 @@ namespace :db do
       end
       
       def copy_from(from_branch)
-        ### REMOVE
-        puts "ENV: #{@rails_env}"
-        puts "BRANCH: #{@branch}"
-        puts "FROM CONFIG: #{branch_config(from_branch).inspect}"
-        puts "TO CONFIG: #{branch_config(@branch).inspect}"
-        
         ### TODO extract to template method
         ensure_branch_db_exists!(from_branch)
         if branch_db_exists?(@branch)

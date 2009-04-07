@@ -7,8 +7,8 @@ describe MoviesController do
   end
 
   def expect_movie_retrievals(options = {})
-    Movie.should_receive(:find).with(:all, options).and_return([])
-    Movie.should_receive(:count).and_return(0)
+    MovieItem.should_receive(:find).with(:all, options).and_return([])
+    MovieItem.should_receive(:count).and_return(0)
   end
   
   describe "GET index" do

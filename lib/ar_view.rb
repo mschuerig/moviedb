@@ -8,13 +8,27 @@ module ActiveRecord
     end
     
     class << self
-      def based_on(klass)
-        define_method("to_#{klass.name.demodulize.underscore}") do
+      def based_on(model)
+        define_method("to_#{model.name.demodulize.underscore}") do
           ### TODO reload?
-          becomes(klass)
+          becomes(model)
         end
         
-        klass.reflect_on_all_associations.each do |r|
+        model.reflect_on_all_associations.each do |assoc|
+          steal_association(model, assoc)
+        end
+      end
+      
+      def steal_association(model, *associations)
+        associations.each do |association|
+          r = case association
+              when String, Symbol
+                model.reflect_on_association(association.to_sym)
+              when ActiveRecord::Reflection::AssociationReflection
+                association
+              else
+                raise ArgumentError, "Unrecognized association #{association.inspect}; must be a Symbol, String, or AssociationReflection."
+              end
           case r.macro
           when :belongs_to
             ### ensure that the fk column exists

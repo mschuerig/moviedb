@@ -7,12 +7,12 @@ class MoviesController < ApplicationController
       format.html { render :layout => false }
       format.json do
         range = parse_range_header
-        @movies = Movie.find(:all,
+        @movies = MovieItem.find(:all,
           :include => { :awardings => :award },
           :offset => range[:offset],
           :limit => range[:limit],
           :order => parse_order_params)
-        @count = Movie.count
+        @count = MovieItem.count
         render
       end
     end
