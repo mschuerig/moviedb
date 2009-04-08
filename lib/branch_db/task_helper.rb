@@ -1,14 +1,11 @@
 
-require 'branch_db/switcher'
-require 'branch_db/postgresql_switcher'
-require 'branch_db/sqlite_switcher'
+require 'branch_db'
 
 module BranchDB # :nodoc:
   module TaskHelper
 
     def current_branch
-      #@current_branch ||= `git symbolic-ref HEAD`.sub(%r{^refs/heads/}, '').chomp
-      @current_branch ||= `git rev-parse --symbolic-full-name HEAD`.sub(%r{^refs/heads/}, '').chomp
+      BranchDB::current_repo_branch(true)
     end
     
     def environment_options
@@ -28,7 +25,12 @@ module BranchDB # :nodoc:
     def each_local_config
       ActiveRecord::Base.configurations.each do |rails_env, config|
         next unless config['database']
-        next unless config['per_branch']
+        case per_branch = config['per_branch']
+        when true
+#        when Hash
+        else
+          next
+        end
         local_database?(config) do
           yield rails_env, config
         end
@@ -40,7 +42,7 @@ module BranchDB # :nodoc:
       options = options.reverse_merge(environment_options)
       branch = args[0] || target_branch
       each_local_config do |rails_env, config|
-        yield BranchDB::Switcher.create(config, branch, rails_env, options)
+        yield BranchDB::Switcher.create(rails_env, config, branch, options)
       end
     end
   end

@@ -2,8 +2,7 @@
 module BranchDB # :nodoc:
 
   class Switcher
-    def self.which(rails_env = RAILS_ENV)
-      config = ActiveRecord::Base.configurations[rails_env]
+    def self.which(config)
       switcher = Array(@switchers).detect { |sw| sw.can_handle?(config) }
       unless switcher
         $stderr.puts 'Your database adapter is not supported yet.'
@@ -13,22 +12,34 @@ module BranchDB # :nodoc:
     end
     
     def self.can_handle?(config)
-      raise "Subclasses of BranchDB::Switcher must implement #can_handle?(config)."
+      raise Error, "Subclasses of BranchDB::Switcher must implement #can_handle?(config)."
     end
     
-    def self.create(config, branch, rails_env, options = {})
-      which(rails_env).new(config, branch, rails_env, options)
+    def self.create(rails_env, config, branch, options = {})
+      which(config).new(rails_env, config, branch, options)
     end
     
-    def initialize(config, branch, rails_env, options)
-      @config, @branch, @rails_env = config, branch, rails_env
+    def self.branches(rails_env, config)
+      self.which(config).show_branches(rails_env, config)
+    end
+
+    def initialize(rails_env, config, branch, options)
+      @rails_env, @config, @branch = rails_env, config, branch
       @overwrite = options[:overwrite]
     end
 
-    def self.branches
-    end
-
     def current
+      # Must be implemented in subclasses.
+    end
+    
+    def exists?
+      branch_db_exists?(@branch)
+    end
+    
+    def switch!
+      if exists?
+        @config.replace(branch_config(@branch))
+      end
     end
     
     def create_empty_database
@@ -44,7 +55,7 @@ module BranchDB # :nodoc:
       end
       puts "Creating fresh database #{db}..."
       create_database(@branch)
-      yield
+      yield if block_given?
     end
     
     def delete_database
@@ -64,29 +75,46 @@ module BranchDB # :nodoc:
     
     protected
     
+    def self.show_branches(rails_env, config)
+      case per_branch = config['per_branch']
+      when true
+        puts "#{rails_env}: Has branch databases. Cannot determine which ones."
+#      when Hash
+#        puts "#{rails_env}:"
+#        per_branch.each do |db|
+#          puts "  #{db}"
+#        end
+      end
+    end
+
     def branch_config(branch)
       @config.merge('database' => branch_db(branch))
     end
 
     def ensure_branch_db_exists!(branch)
       unless branch_db_exists?(branch)
-        raise "There is no database for the branch #{branch}."
+        raise Error, "There is no database for the branch #{branch}."
       end
     end
 
-    def branch_db(branch)
+    def branch_db_exists?(branch)
+      false
     end
     
-    def branch_db_exists?(branch)
+    def branch_db(branch)
+      # Must be implemented in subclasses.
     end
     
     def create_database(branch)
+      # Must be implemented in subclasses.
     end
     
     def drop_database(branch)
+      # Must be implemented in subclasses.
     end
     
     def copy_database(from_branch, to_branch)
+      # Must be implemented in subclasses.
     end
     
     private
@@ -97,3 +125,6 @@ module BranchDB # :nodoc:
     end
   end
 end
+
+require 'branch_db/postgresql_switcher'
+require 'branch_db/sqlite_switcher'

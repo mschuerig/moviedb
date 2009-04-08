@@ -9,11 +9,6 @@ module BranchDB # :nodoc:
       config['adapter'] == 'postgresql'
     end
     
-    def self.branches
-      ### TODO determine from per_branch, if it is a Hash
-      puts "Not implemented yet for PostgreSQL"
-    end
-
     def current
       current_branch = branch_db_exists?(@branch) ? @branch : 'master'
       puts "#{@rails_env}: #{branch_db(current_branch)} (PostgreSQL)"
@@ -21,6 +16,10 @@ module BranchDB # :nodoc:
     
     protected
     
+    def self.show_branches(rails_env, config)
+      super
+    end
+
     def branch_db(branch)
       if branch == 'master'
         @config['database']
@@ -65,7 +64,7 @@ module BranchDB # :nodoc:
             existing_dbs = raw_dbs.split("\n").drop_while { |l| l !~ /^-/ }.drop(1).take_while { |l| l !~ /^\(/ }.map { |l| l.split('|')[0].strip }
             existing_dbs.reject { |db| db =~ /^template/ }
           else
-            raise "Cannot determine existing databases."
+            raise Error, "Cannot determine existing databases."
           end
         end
     end
@@ -76,7 +75,7 @@ module BranchDB # :nodoc:
       old_umask = File.umask(0077) # make created files readable only to the user
       dump_file = Tempfile.new('branchdb')
       `pg_dump --clean -U "#{config['username']}" --host="#{config['host']}" --port=#{config['port']} #{config['database']} > #{dump_file.path}`
-      ### TODO error handling
+      raise Error, "Unable to dump database #{config['database']}." unless $? == 0
       dump_file.path
     ensure
       File.umask(old_umask)
@@ -87,7 +86,7 @@ module BranchDB # :nodoc:
       silence_stderr do
         `psql -U "#{config['username']}" -f "#{dump_file}" --host="#{config['host']}" --port=#{config['port']} #{config['database']}`
       end
-      ### TODO error handling
+      raise Error, "Unable to load database #{config['database']}." unless $? == 0
     end
   end
 end

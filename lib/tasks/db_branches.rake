@@ -1,12 +1,9 @@
 
-require 'ruby-debug' ### REMOVE
-
 namespace :db do
   
   task :branches => "branches:list"
 
   namespace :branches do
-    
     task :setup => "db:load_config" do
       require 'branch_db/task_helper'
       include BranchDB::TaskHelper
@@ -14,7 +11,9 @@ namespace :db do
     
     desc "List all branch databases"
     task :list => :setup do
-      puts BranchDB::Switcher.which.branches
+      each_local_config do |rails_env, config|
+        BranchDB::Switcher.branches(rails_env, config)
+      end
     end
     
     desc "Currently selected databases."
@@ -22,14 +21,14 @@ namespace :db do
       each_local_database { |switcher| switcher.current }
     end
 
-    #desc "Create an empty database for a branch"
+    desc "Create empty databases for a branch. Current or BRANCH."
     task :create => :setup do
-      ### TODO
+      each_local_database { |switcher| switcher.create_empty_database }
     end
     
     desc "Copy databases from one branch to another. Default is from ORIG_BRANCH=master to BRANCH=<current branch>"
     task :copy => :setup do
-      if originating_branch == current_branch
+      if target_branch == current_branch
         $stderr.puts "Cannot copy database to itself."
       else
         each_local_database { |switcher| switcher.copy_from(originating_branch) }
@@ -47,11 +46,5 @@ namespace :db do
         each_local_database { |switcher| switcher.delete_database }
       end
     end
-    
-    #desc "Show sizes of all branch databases"
-    task :size do
-      ### TODO
-    end
-    
   end
 end

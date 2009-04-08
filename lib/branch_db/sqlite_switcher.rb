@@ -9,10 +9,6 @@ module BranchDB # :nodoc:
       (config['adapter'] =~ /^sqlite/) == 0
     end
 
-    def self.branches
-      Dir[File.join(BRANCH_ROOT, '*')].map { |b| File.basename(b) }
-    end
-    
     def current
       current_branch = branch_db_exists?(@branch) ? @branch : 'master'
       puts "#{@rails_env}: #{rails_root_relative(branch_db(current_branch))} (SQLite)"
@@ -20,13 +16,16 @@ module BranchDB # :nodoc:
     
     protected
     
+    def self.show_branches(rails_env, config)
+      super
+    end
+
     def branch_db(branch)
       relative_path =
         if branch == 'master'
           @config['database']
         else
-          ### FIXME
-          @config['database'].sub(/(_.+?)??(_?(#{@rails_env}))?$/, "_#{branch}\\2")
+          @config['database'].sub(/(.+)\./, "\\1_#{branch}.")
         end
       File.join(RAILS_ROOT, relative_path)
     end

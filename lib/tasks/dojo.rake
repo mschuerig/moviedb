@@ -28,7 +28,7 @@ namespace :dojo do
     DOJO_PROFILE = ENV['PROFILE'] || 'production'
   end
   
-  desc 'Build a dojo profile. Default is production, can be set with PROFILE'
+  desc 'Build a dojo profile. Default is production, specify with PROFILE=<profile name>'
   task :optimize => "dojo:setup" do
     if DOJO_PROFILE == 'development' && ENV['FORCE'] != 'true'
       $stderr.puts "Think again! You may be trying to overwrite your source files. If you are sure, set FORCE=true"
