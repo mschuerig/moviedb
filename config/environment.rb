@@ -8,7 +8,7 @@ require File.join(File.dirname(__FILE__), 'boot')
 
 require 'branch_db/configuration_twiddler'
 Rails::Configuration.class_eval do
-  include ::BranchDB::ConfigurationTwiddler
+  include ::BranchDb::ConfigurationTwiddler
 end
 
 Rails::Initializer.run do |config|
@@ -27,6 +27,7 @@ Rails::Initializer.run do |config|
   config.gem "mschuerig-index_lifter", :lib => 'index_lifter'
   config.gem "mschuerig-easy_enums", :lib => 'easy_enums'
   config.gem "mschuerig-ruby_template_handler", :lib => 'ruby_template_handler'
+  config.gem "mschuerig-branch_db", :lib => 'branch_db'
   config.gem "rails_sql_views"
   
   # Only load the plugins named here, in the order given (default is alphabetical).
