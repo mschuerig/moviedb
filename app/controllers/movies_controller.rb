@@ -7,11 +7,13 @@ class MoviesController < ApplicationController
       format.html { render :layout => false }
       format.json do
         range = parse_range_header
+        ### TODO allow to define mappings
+        order = parse_order_params.sub(/\bawards\b/, 'award_count')
         @movies = MovieItem.find(:all,
           :include => { :awardings => :award },
           :offset => range[:offset],
           :limit => range[:limit],
-          :order => parse_order_params)
+          :order => order)
         @count = MovieItem.count
         render
       end
