@@ -2,7 +2,6 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe "/movies/index.json.rb" do
   include MoviesHelper
-  include Spec::JSONMatchers
   
   before do
     assigns[:movies] = [

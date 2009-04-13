@@ -2,7 +2,6 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe "/people/index.json.rb" do
   include PeopleHelper
-  include Spec::JSONMatchers
   
   before do
     person = stub_model(Person, :id => 1,

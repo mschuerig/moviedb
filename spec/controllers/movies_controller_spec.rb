@@ -2,8 +2,8 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe MoviesController do
 
-  def mock_movie(stubs={})
-    @mock_movie ||= mock_model(Movie, stubs)
+  def mock_movie_item(stubs={})
+    @mock_movie_item ||= mock_model(MovieItem, stubs)
   end
 
   def expect_movie_retrievals(options = {})
