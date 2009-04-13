@@ -1,8 +1,7 @@
 
-@import "/javascripts/dijit/themes/tundra/tundra.css";
-@import "/javascripts/dojox/grid/resources/tundraGrid.css";
-@import "/javascripts/dojox/widget/Toaster/Toaster.css";
-
+@import "../javascripts/dijit/themes/tundra/tundra.css";
+@import "../javascripts/dojox/grid/resources/tundraGrid.css";
+@import "../javascripts/dojox/widget/Toaster/Toaster.css";
 
 html, body, #container {
   width: 100%;

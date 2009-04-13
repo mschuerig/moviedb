@@ -20,38 +20,42 @@ namespace :dojo do
     end
   end
   
-  task :setup => :environment do
-    DOJO_ROOT = File.join(RAILS_ROOT, 'vendor', 'dojo')
-    DOJO_BUILD = File.join(DOJO_ROOT, 'util', 'buildscripts')
-    DOJO_PROFILES = File.join(RAILS_ROOT, 'config', 'dojo_profiles')
-    DOJO_RELEASES = File.join(RAILS_ROOT, 'public')
-    DOJO_PROFILE = ENV['PROFILE'] || 'production'
-  end
-  
   desc 'Build a dojo profile. Default is production, specify with PROFILE=<profile name>'
-  task :optimize => "dojo:setup" do
-    if DOJO_PROFILE == 'development' && ENV['FORCE'] != 'true'
-      $stderr.puts "Think again! You may be trying to overwrite your source files. If you are sure, set FORCE=true"
-      exit
-    end
-    profile_file = File.join(DOJO_PROFILES, "#{DOJO_PROFILE}.js")
-    unless File.exist?(profile_file)
-      $stderr.puts "The profile #{DOJO_PROFILE} does not exist."
-      exit
-    end
-
-    release_dir = File.join(DOJO_RELEASES, "javascripts.#{DOJO_PROFILE}", '/')
-    release_name = ''
-    sh %{cd "#{DOJO_BUILD}" && ./build.sh action=clean,release profileFile="#{profile_file}" releaseDir="#{release_dir}" releaseName="#{release_name}" layerOptimize=shrinksafe.keepLines cssOptimize=comments.keepLines}
-  end
+  task :optimize => "dojo:optimize:all"
   
   namespace :optimize do
-    task :all => "dojo:setup" do
-      $stderr.puts "Not yet implemented..."
+    task :setup => :environment do
+      DOJO_ROOT = File.join(RAILS_ROOT, 'vendor', 'dojo')
+      DOJO_BUILD = File.join(DOJO_ROOT, 'util', 'buildscripts')
+      DOJO_PROFILES = File.join(RAILS_ROOT, 'config', 'dojo_profiles')
+      DOJO_RELEASES = File.join(RAILS_ROOT, 'public')
+      DOJO_PROFILE = ENV['PROFILE'] || 'production'
+      if DOJO_PROFILE == 'development' && ENV['FORCE'] != 'true'
+        $stderr.puts "Think again! You may be trying to overwrite your source files. If you are sure, set FORCE=true"
+        exit
+      end
+    end
+  
+    task :all => [:scripts, :stylesheets]
+    
+    desc 'Build a dojo profile. Default is production, specify with PROFILE=<profile name>'
+    task :scripts => :setup do
+      profile_file = File.join(DOJO_PROFILES, "#{DOJO_PROFILE}.js")
+      unless File.exist?(profile_file)
+        $stderr.puts "The profile #{DOJO_PROFILE} does not exist."
+        exit
+      end
+
+      release_dir = File.join(DOJO_RELEASES, "javascripts.#{DOJO_PROFILE}", '/')
+      release_name = ''
+      sh %{cd "#{DOJO_BUILD}" && ./build.sh action=clean,release profileFile="#{profile_file}" releaseDir="#{release_dir}" releaseName="#{release_name}" layerOptimize=shrinksafe.keepLines cssOptimize=comments.keepLines}
     end
     
-    task :stylesheets do
-      $stderr.puts "Not yet implemented..."
-    end
+#    task :stylesheets => :setup do
+#      profile_file = File.join(DOJO_PROFILES, "stylesheets.js")
+#      release_dir = File.join(DOJO_RELEASES, "stylesheets.#{DOJO_PROFILE}", '/')
+#      release_name = ''
+#      sh %{cd "#{DOJO_BUILD}" && ./build.sh action=release profileFile="#{profile_file}" releaseDir="#{release_dir}" releaseName="#{release_name}" layerOptimize=shrinksafe.keepLines cssOptimize=comments.keepLines}
+#    end
   end
 end
