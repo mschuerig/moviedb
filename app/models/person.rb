@@ -78,7 +78,7 @@ class Person < ActiveRecord::Base
   def self.find(*args)
     args = args.dup
     options = args.extract_options!
-    if options[:order] =~ /\bname\b( (ASC|DESC))?/i
+    if options[:order] =~ /\bname\b( (?:ASC|DESC))?/i
       options[:order] = "lastname#{$1},firstname#{$1},serial_number#{$1}"
     end
     unless options[:group] || options[:select]

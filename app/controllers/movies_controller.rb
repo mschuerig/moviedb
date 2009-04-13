@@ -8,7 +8,7 @@ class MoviesController < ApplicationController
       format.json do
         range = parse_range_header
         ### TODO allow to define mappings
-        order = parse_order_params.sub(/\bawards\b/, 'award_count')
+        order = parse_order_params ? parse_order_params.sub(/\bawards\b/, 'award_count') : nil
         @movies = MovieItem.find(:all,
           :include => { :awardings => :award },
           :offset => range[:offset],
