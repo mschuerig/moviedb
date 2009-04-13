@@ -11,6 +11,9 @@ dojo.declare('moviedb.Form', dijit.form.Form, {
     'movie_release_date': 'releaseDate',
     'movie_summary': 'summary'
   },
+  constructor: function() {
+    console.log('*** FORM ctor: ', arguments);
+  },
   populate: function(store, movie) {
     if (movie) {
       var propertiesMap = this.propertiesMap;

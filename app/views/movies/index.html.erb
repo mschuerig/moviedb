@@ -18,37 +18,6 @@
     dojo.registerModulePath('moviedb', "/javascripts/moviedb");
     dojo.require('moviedb.movies');
     
-    var awardSchema = {
-      type: 'object',
-      properties: {
-        title: { type: 'string' }
-      }
-    };
-    var movieSchema = {
-      type: 'object',
-      properties: {
-        id: { type: 'integer' },
-        title: { type: 'string' },
-        releaseDate: { type: 'date', format: 'date-time' },
-        summary: { type: 'string' },
-        awards: {
-          type: 'array',
-          optional: true,
-          items: awardSchema
-        }
-      },
-      prototype: moviedb.Movie.prototype
-    };
-    var personSchema = {
-      type: 'object',
-      properties: {
-        id: { type: 'integer' },
-        name: { type: 'string', readonly: true },
-        dob: { type: 'date', format: 'date-time' }
-      }
-    };
-
-
     function buildMoviesGrid(store) {
       var awardsFormatter = function(awards) {
         return dojo.string.rep('*', awards.length);
@@ -129,10 +98,10 @@
     }
 
     dojo.addOnLoad(function(){
-      moviesStore = new moviedb.Store({ target: "/movies", schema: movieSchema });
+      moviesStore = new moviedb.Store({ target: "/movies", schema: moviedb.schema.movie });
       moviesGrid = buildMoviesGrid(moviesStore);
 
-      peopleStore = new moviedb.Store({ target: "/people", schema: personSchema });
+      peopleStore = new moviedb.Store({ target: "/people", schema: moviedb.schema.person });
       peopleGrid = buildPeopleGrid(peopleStore);
 
       moviesGrid.startup();
