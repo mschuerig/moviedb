@@ -2,7 +2,6 @@
 require 'rack/utils'
 
 class JSONQueryParser
-#  COMPARATORS = ['=', '<', '=<', '>=', '>'].{ |c| Rack::Utils.escape(c) }.join('|').freeze
   COMPARATORS = ['=', '<', '=<', '>=', '>'].join('|').freeze
   
   def initialize(app)
@@ -18,7 +17,7 @@ class JSONQueryParser
         case bracket
         when %r{^\[\?([[:alnum:]_]+)[[:blank:]]*(#{COMPARATORS})[[:blank:]]*'(.*?)'\]$}
           conditions << build_condition($1, $2, $3)
-        when %r{^\[\?([[:alnum:]_]+)[[:blank:]]*(#{COMPARATORS})[[:blank:]]*([[:digit].,]*?)\]$}
+        when %r{^\[\?([[:alnum:]_]+)[[:blank:]]*(#{COMPARATORS})[[:blank:]]*([[:digit:].,]*?)\]$}
           conditions << build_condition($1, $2, $3)
         when %r{^\[/(.+?)\]}
           orders << build_order($1)

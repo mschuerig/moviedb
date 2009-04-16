@@ -1,5 +1,12 @@
 class PeopleController < ApplicationController
-  before_filter :load_scope
+  include QueryScope
+  before_filter :load_scope, :only => [:show, :edit, :create]
+
+  query_scope :only => :index do
+    allow     :name
+    condition :name => "LOWER(firstname || ' ' || lastname) :op LOWER(?)"
+    order     :name => "lastname :dir, firstname :dir, serial_number :dir"
+  end
   
   # GET /people
   # GET /people.json
@@ -7,17 +14,8 @@ class PeopleController < ApplicationController
     respond_to do |format|
       format.html { render :layout => false }
       format.json do
-        req = RequestConditioner.new(request, { 
-          :allowed => [ :name ],
-          :conditions => {
-            :name => "LOWER(firstname || ' ' || lastname) :op LOWER(?)"
-          },
-          :order => {
-            :name => "lastname :dir, firstname :dir, serial_number :dir"
-          }
-        })
-        @people = Person.find(:all, req.find_options)
-        @count = Person.count(req.count_options)
+        @people = Person.all(:offset => @offset_limit[0], :limit => @offset_limit[1])
+        @count = Person.count
         render
       end
     end

@@ -1,4 +1,11 @@
 class MoviesController < ApplicationController
+  include QueryScope
+  
+  query_scope :resource => :movie_item, :only => :index do
+    allow     :title, :release_date, :awards
+    condition :awards => "award_count :op ?"
+    order     :awards => "award_count :dir"
+  end
   
   # GET /movies
   # GET /movies.json
@@ -6,18 +13,9 @@ class MoviesController < ApplicationController
     respond_to do |format|
       format.html { render :layout => false }
       format.json do
-        req = RequestConditioner.new(request, {
-          :allowed => [ :title, :release_date, :awards ],
-          :conditions => {
-            :awards => "award_count :op ?"
-          },
-          :order => {
-            :awards => "award_count :dir"
-          }
-        })
-        @movies = MovieItem.find(:all, 
-          req.find_options.merge(:include => { :awardings => :award }))
-        @count = MovieItem.count(req.count_options)
+        @movies = MovieItem.all(:include => { :awardings => :award },
+          :offset => @offset_limit[0], :limit => @offset_limit[1])
+        @count = MovieItem.count
         render
       end
     end

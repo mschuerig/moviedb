@@ -2,8 +2,6 @@
 class RequestConditioner
   extend ActiveSupport::Memoizable
   
-  ### TODO use for scoping
-  
   def initialize(request, options = {})
     @headers, @params = request.headers, request.parameters
     @allowed_attributes = options[:allowed]
@@ -14,8 +12,8 @@ class RequestConditioner
   def find_options
     returning opts = {} do
       opts[:conditions] = conditions if conditions
-      opts[:offset]     = offset     if offset
-      opts[:limit]      = limit      if limit
+#      opts[:offset]     = offset     if offset
+#      opts[:limit]      = limit      if limit
       opts[:order]      = order      if order
     end
   end
@@ -32,7 +30,11 @@ class RequestConditioner
     coerce_to_nil(condition_clause)
   end
   memoize :conditions
-  
+ 
+  def offset_limit
+    parse_range_header
+  end
+
   def offset
     parse_range_header[0]
   end
@@ -49,7 +51,6 @@ class RequestConditioner
   protected
   
   def parse_range_header
-#    debugger ### REMOVE
     range = @headers['Range']
     if range && range =~ /items=(.*)-(.*)/i
       first_item, last_item = $1.to_i, $2.to_i
