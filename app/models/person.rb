@@ -77,12 +77,12 @@ class Person < ActiveRecord::Base
 
   def self.find(*args)
     args = args.dup
-    options = args.extract_options!
+    options = args.extract_options!.dup
     if options[:order] =~ /\bname\b( (?:ASC|DESC))?/i
       options[:order] = "lastname#{$1},firstname#{$1},serial_number#{$1}"
     end
     unless options[:group] || options[:select]
-      options[:select] = 'people.*, (SELECT COUNT(*) FROM PEOPLE AS dupe WHERE dupe.lastname = people.lastname AND dupe.firstname = people.firstname) as duplicate_count'
+      options[:select] = 'people.*, (SELECT COUNT(*) FROM people AS dupe WHERE dupe.lastname = people.lastname AND dupe.firstname = people.firstname) as duplicate_count'
     end
     args << options
     super(*args)

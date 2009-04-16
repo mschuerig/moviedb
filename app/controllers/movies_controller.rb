@@ -6,15 +6,18 @@ class MoviesController < ApplicationController
     respond_to do |format|
       format.html { render :layout => false }
       format.json do
-        range = parse_range_header
-        ### TODO allow to define mappings
-        order = parse_order_params ? parse_order_params.sub(/\bawards\b/, 'award_count') : nil
-        @movies = MovieItem.find(:all,
-          :include => { :awardings => :award },
-          :offset => range[:offset],
-          :limit => range[:limit],
-          :order => order)
-        @count = MovieItem.count
+        req = RequestConditioner.new(request, {
+          :allowed => [ :title, :release_date, :awards ],
+          :conditions => {
+            :awards => "award_count :op ?"
+          },
+          :order => {
+            :awards => "award_count :dir"
+          }
+        })
+        @movies = MovieItem.find(:all, 
+          req.find_options.merge(:include => { :awardings => :award }))
+        @count = MovieItem.count(req.count_options)
         render
       end
     end

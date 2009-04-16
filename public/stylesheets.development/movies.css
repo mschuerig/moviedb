@@ -38,3 +38,27 @@ h1 {
 #container div.dijitContentPane {
   padding: 0 !important;
 }
+
+.movieIcon {
+  background-image: url(/images/plus.gif);
+  background-repeat: no-repeat;
+  background-position: center center;
+  width: 18px;
+  height: 18px;
+}
+
+.peopleIcon {
+  background-image: url(/images/plus.gif);
+  background-repeat: no-repeat;
+  background-position: center center;
+  width: 18px;
+  height: 18px;
+}
+
+.awardIcon {
+  background-image: url(/images/plus.gif);
+  background-repeat: no-repeat;
+  background-position: center center;
+  width: 18px;
+  height: 18px;
+}

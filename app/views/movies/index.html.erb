@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="/stylesheets/movies.css" type="text/css" />
 
   <script src="/javascripts/dojo/dojo.js" type="text/javascript"
-          djConfig="parseOnLoad:true"></script>
+          djConfig="parseOnLoad:false"></script>
 
   <script type="text/javascript">
     var moviesStore, moviesGrid;
@@ -81,6 +81,7 @@
         query: { name: '*' },
         sortInfo: 1,
         store: store,
+        rowsPerPage: 50,
         structure: [
           { field: "name", name: "Name", width: "auto" }
         ]
@@ -93,19 +94,16 @@
           dijit.showTooltip(msg, e.cellNode);
         }
       });
-     
+      
       return grid;
     }
 
-    dojo.addOnLoad(function(){
+    dojo.addOnLoad(function() {
       moviesStore = new moviedb.Store({ target: "/movies", schema: moviedb.schema.movie });
       moviesGrid = buildMoviesGrid(moviesStore);
 
       peopleStore = new moviedb.Store({ target: "/people", schema: moviedb.schema.person });
       peopleGrid = buildPeopleGrid(peopleStore);
-
-      moviesGrid.startup();
-      peopleGrid.startup();
 
       dojo.subscribe('movie.selected', function(m) {
         console.log("---> ", m); //### REMOVE
@@ -122,24 +120,54 @@
         console.log('CAN SELECT movie: ', !formIsChanged);
         return !formIsChanged;
       });
+
+      dojo.parser.parse();
+
+      dojo.connect(dijit.byId('peopleQueryForm'), 'onSubmit', function(event) {
+        var value = dijit.byId('peopleQuery').attr('value')
+        value = /^\s*$/.test(value) ? '*' : dojo.string.trim(value);
+        peopleGrid.setQuery({ name: value });
+        dojo.stopEvent(event);
+      });
     });
   </script>
 
 </head>
 <body class="tundra">
 
-  <div dojoType="dijit.layout.BorderContainer" jsId="container" id="container" design="headline">
+  <div dojoType="dijit.layout.BorderContainer" id="container" design="headline">
+<!--
     <div dojoType="dijit.layout.ContentPane" region="top">
       <div class="headerWrapper">
         <h1>Movies</h1>
       </div>
     </div>
-    <div dojoType="dijit.layout.ContentPane" region="center">
-      <div id="movieslist"></div>
-    </div>
-    <div dojoType="dijit.layout.TabContainer" id="tabs" jsId="tabs" region="left"
-         tabPosition="left" tabStrip="true" splitter="true" style="width:20em; height:100%">
-      <div dojoType="dijit.layout.ContentPane" id="awardsPane" title="Awards">
+-->
+    <div dojoType="dijit.layout.TabContainer" id="tabs"
+         region="left" tabPosition="left-h" tabStrip="true" splitter="true"
+         style="width:30%; min-width:20em; height:100%">
+      <div dojoType="dijit.layout.ContentPane" id="moviesPane"
+           title="Movies" iconClass="movieIcon">
+        <div id="movieslist"></div>
+      </div>
+      <div dojoType="dijit.layout.ContentPane" id="peoplePane"
+           title="People" iconClass="peopleIcon">
+        <div dojoType="dijit.layout.BorderContainer">
+          <div dojoType="dijit.layout.ContentPane" region="top">
+            <div dojoType="dijit.form.Form" id="peopleQueryForm">
+              <div dojoType="dijit.form.TextBox" id="peopleQuery" style="width:70%"></div>
+              <button dojoType="dijit.form.Button" type="submit" id="filterPeople"
+                      iconClass="filterIcon" showLabel="true" style="width:20%"
+                      >Filter</button>
+            </div>
+          </div>
+          <div dojoType="dijit.layout.ContentPane" region="center">
+            <div id="peoplelist" region="center"></div>
+          </div>
+        </div>
+      </div>
+      <div dojoType="dijit.layout.ContentPane" id="awardsPane"
+           title="Awards" iconClass="awardIcon">
         <div dojoType="dojo.data.ItemFileReadStore"
              url="/awards.json" jsId="awardsStore"></div>
         <div dojoType="dijit.tree.ForestStoreModel"
@@ -152,11 +180,8 @@
              showRoot="false">
         </div>
       </div>
-      <div dojoType="dijit.layout.ContentPane" id="peoplePane" title="People">
-        <div id="peoplelist"></div>
-      </div>
     </div>
-    <div dojoType="dijit.layout.ContentPane" region="bottom">
+    <div dojoType="dijit.layout.ContentPane" region="center">
       <form dojoType="moviedb.Form" id="movieform">
         <ul>
           <li>
@@ -183,6 +208,9 @@
             <textarea dojoType="dijit.form.Textarea"
                       id="movie_summary" name="movie[summary]"
                       style="width:30em"></textarea>
+          </li>
+          <li>
+            
           </li>
         </ul>
       </form>

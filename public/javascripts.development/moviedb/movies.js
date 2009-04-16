@@ -46,7 +46,14 @@ dojo.declare("moviedb.Store", dojox.data.JsonRestStore, {
   },
   _matchingClause: function(query) {
     console.log("***fetch, query: ", query); //### REMOVE
-    return ''; //### TODO build filter condition
+    var queryStr = '';
+    for (var q in query) {
+      var value = query[q];
+      if (value != '*') {
+        queryStr += '[?' + q + "='" + value + "']";
+      }
+    }
+    return queryStr;
   },
   _sortingClause: function(sort) {
     console.log("***fetch, sort: ", sort); //### REMOVE

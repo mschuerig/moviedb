@@ -7,12 +7,17 @@ class PeopleController < ApplicationController
     respond_to do |format|
       format.html { render :layout => false }
       format.json do
-        range = parse_range_header
-        @people = Person.find(:all,
-                              :offset => range[:offset],
-                              :limit => range[:limit],
-                              :order => parse_order_params)
-        @count = Person.count
+        req = RequestConditioner.new(request, { 
+          :allowed => [ :name ],
+          :conditions => {
+            :name => "LOWER(firstname || ' ' || lastname) :op LOWER(?)"
+          },
+          :order => {
+            :name => "lastname :dir, firstname :dir, serial_number :dir"
+          }
+        })
+        @people = Person.find(:all, req.find_options)
+        @count = Person.count(req.count_options)
         render
       end
     end
