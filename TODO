@@ -1,0 +1,35 @@
+
+Rails
+-----
+
+- better JSON Query parsing
+
+- full-text search
+
+- transactions + conflict handling
+ - PUT + If-Unmodified-Since
+ - 409 Conflict + merge
+ - -> dojo.rpc.JsonRest
+
+- authC, authZ
+
+- controller subclass/mixin for JSON server
+
+Dojo
+----
+
+- movie form
+ - new movie
+ - drag & drop for
+  - people
+  - awards
+
+- defore editing an object, check for updates
+ - -> store mixin?
+
+- extract generic, store-backed, schema-based Form dijit
+ - define validations from schema
+
+- transactions + conflict handling
+
+- optimize stylesheets

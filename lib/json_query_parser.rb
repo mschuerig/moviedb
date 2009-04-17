@@ -1,6 +1,8 @@
 
 require 'rack/utils'
 
+# Parse a (small) subset of JSON Query
+# see http://www.sitepen.com/blog/2008/07/16/jsonquery-data-querying-beyond-jsonpath/
 class JSONQueryParser
   COMPARATORS = ['=', '<', '=<', '>=', '>'].join('|').freeze
   
@@ -31,6 +33,8 @@ class JSONQueryParser
     end
     @app.call(env)
   end
+  
+  private
   
   def build_condition(attribute, compare, target)
     { :attribute => Rack::Utils.unescape(attribute.underscore), :op => Rack::Utils.unescape(compare), :target => Rack::Utils.unescape(target) }

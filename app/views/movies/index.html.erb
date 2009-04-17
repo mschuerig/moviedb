@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="/stylesheets/movies.css" type="text/css" />
 
   <script src="/javascripts/dojo/dojo.js" type="text/javascript"
-          djConfig="parseOnLoad:false"></script>
+          djConfig="parseOnLoad:false, debugAtAllCosts:false"></script>
 
   <script type="text/javascript">
     var moviesStore, moviesGrid;
@@ -20,7 +20,7 @@
     
     function buildMoviesGrid(store) {
       var awardsFormatter = function(awards) {
-        return dojo.string.rep('*', awards.length);
+        return awards ? dojo.string.rep('*', awards.length) : '';
       };
       var yearFormatter = function(date) {
         return date ? 1900 + date.getYear() : '';
@@ -156,7 +156,7 @@
           <div dojoType="dijit.layout.ContentPane" region="top">
             <div dojoType="dijit.form.Form" id="peopleQueryForm">
               <div dojoType="dijit.form.TextBox" id="peopleQuery" style="width:70%"></div>
-              <button dojoType="dijit.form.Button" type="submit" id="filterPeople"
+              <button dojoType="dijit.form.Button" type="submit"
                       iconClass="filterIcon" showLabel="true" style="width:20%"
                       >Filter</button>
             </div>
@@ -210,7 +210,9 @@
                       style="width:30em"></textarea>
           </li>
           <li>
-            
+            <button dojoType="dojox.form.BusyButton" type="submit"
+                    busyLabel="Saving..."
+                    >Save Changes</button>
           </li>
         </ul>
       </form>

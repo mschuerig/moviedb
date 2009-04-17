@@ -80,7 +80,12 @@ class MoviesController < ApplicationController
   # PUT /movies/1.xml
   def update
     @movie = Movie.find(params[:id])
-
+    respond_to do |format|
+      if @movie.update_attributes(params[:attributes])
+        format.json { render :template => 'movies/movie' }
+      end
+    end
+=begin
     respond_to do |format|
       if @movie.update_attributes(params[:movie])
         flash[:notice] = 'Movie was successfully updated.'
@@ -91,6 +96,7 @@ class MoviesController < ApplicationController
         format.xml  { render :xml => @movie.errors, :status => :unprocessable_entity }
       end
     end
+=end
   end
 
   # DELETE /movies/1
