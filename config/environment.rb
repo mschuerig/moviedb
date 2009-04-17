@@ -42,6 +42,8 @@ Rails::Initializer.run do |config|
   # config.active_record.observers = :cacher, :garbage_collector, :forum_observer
 
   config.middleware.use "JSONQueryParser"
+  config.middleware.use "CamelCaseToUnderscoreMapper"
+  config.middleware.use "RequestParameterWrapper"
 
   # Set Time.zone default to the specified zone and make Active Record auto-convert to this zone.
   # Run "rake -D time" for a list of tasks for finding time zone names.
