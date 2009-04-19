@@ -40,7 +40,7 @@ module QueryScope
       @order_mappings.merge!(mapping)
     end
     def build_request_conditioner(request)
-      RequestConditioner.new(request, { 
+      RequestConditioner.new(request.headers, request.parameters, { 
         :allowed    => @allowed_attributes,
         :conditions => @condition_mappings,
         :order      => @order_mappings

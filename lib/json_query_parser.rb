@@ -4,6 +4,7 @@ require 'rack/utils'
 # Parse a (small) subset of JSON Query
 # see http://www.sitepen.com/blog/2008/07/16/jsonquery-data-querying-beyond-jsonpath/
 class JSONQueryParser
+  QUERY_PARAMETERS = 'action_controller.request.query_parameters'.freeze
   COMPARATORS = ['=', '<', '=<', '>=', '>'].join('|').freeze
   
   def initialize(app)
@@ -11,7 +12,7 @@ class JSONQueryParser
   end
   
   def call(env)
-    unless env.has_key?('action_controller.request.query_parameters')
+    unless env.has_key?(QUERY_PARAMETERS)
       query = Rack::Utils.unescape(env['QUERY_STRING'].to_s)
       conditions = []
       orders = []
@@ -27,9 +28,9 @@ class JSONQueryParser
           orders << build_order($1, 'DESC')
         end
       end
-      env['action_controller.request.query_parameters'] ||= {}
-      env['action_controller.request.query_parameters']['query'] = conditions unless conditions.empty?
-      env['action_controller.request.query_parameters']['order'] = orders unless orders.empty?
+      env[QUERY_PARAMETERS] ||= {}
+      env[QUERY_PARAMETERS]['query'] = conditions unless conditions.empty?
+      env[QUERY_PARAMETERS]['order'] = orders unless orders.empty?
     end
     @app.call(env)
   end

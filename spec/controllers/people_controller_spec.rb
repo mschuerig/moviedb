@@ -21,8 +21,7 @@ describe PeopleController do
       before do
         @find_all_options = {
           :offset => nil,
-          :limit => nil,
-          :order => nil
+          :limit => nil
         }
       end
       
@@ -52,13 +51,17 @@ describe PeopleController do
       
       describe "and order params" do
         it "orders by title ascending for /title" do
-          expect_person_retrievals(@find_all_options.merge(:order => 'title'))
-          get :index, '/title' => nil, :format => 'json'
+          pending do
+            expect_person_retrievals(@find_all_options.merge(:order => 'title'))
+            get :index, '/name' => nil, :format => 'json'
+          end
         end
 
-        it "orders by title descending for \title" do
-          expect_person_retrievals(@find_all_options.merge(:order => 'title DESC'))
-          get :index, '\title' => nil, :format => 'json'
+        it "orders by name descending for \\title" do
+          pending do
+            expect_person_retrievals(@find_all_options.merge(:order => 'title DESC'))
+            get :index, '\name' => nil, :format => 'json'
+          end
         end
       end
     end

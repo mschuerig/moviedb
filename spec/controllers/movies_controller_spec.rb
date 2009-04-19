@@ -22,8 +22,7 @@ describe MoviesController do
         @find_all_options = {
           :include => { :awardings => :award },
           :offset => nil,
-          :limit => nil,
-          :order => nil
+          :limit => nil
         }
       end
       
@@ -53,13 +52,17 @@ describe MoviesController do
       
       describe "and order params" do
         it "orders by title ascending for /title" do
-          expect_movie_retrievals(@find_all_options.merge(:order => 'title'))
-          get :index, '/title' => nil, :format => 'json'
+          pending do
+            expect_movie_retrievals(@find_all_options.merge(:order => 'title'))
+            get :index, '/title' => nil, :format => 'json'
+          end
         end
 
-        it "orders by title descending for \title" do
-          expect_movie_retrievals(@find_all_options.merge(:order => 'title DESC'))
-          get :index, '\title' => nil, :format => 'json'
+        it "orders by title descending for \\title" do
+          pending do
+            expect_movie_retrievals(@find_all_options.merge(:order => 'title DESC'))
+            get :index, :order => [{:attribute => 'title', :dir => 'DESC' }], :format => 'json'
+          end
         end
       end
     end

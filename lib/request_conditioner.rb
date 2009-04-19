@@ -2,8 +2,8 @@
 class RequestConditioner
   extend ActiveSupport::Memoizable
   
-  def initialize(request, options = {})
-    @headers, @params = request.headers, request.parameters
+  def initialize(headers, parameters, options = {})
+    @headers, @params = headers, parameters
     @allowed_attributes = options[:allowed]
     @condition_mappings = (options[:conditions] || {}).with_indifferent_access
     @order_mappings = (options[:order] || {}).with_indifferent_access
@@ -82,8 +82,9 @@ class RequestConditioner
         comparison[:op] = 'LIKE'
         target = target.gsub('*', '%')
       end
-      templates << condition_template(comparison)
-      targets << target
+      template = condition_template(comparison)
+      templates << template
+      targets += [target] * template.count('?')
     end
     templates.empty? ? [] : [ templates.join(' AND ') ] + targets
   end
@@ -94,7 +95,7 @@ class RequestConditioner
   end
   
   def cleaned_param(param)
-    select_allowed_attributes(@allowed, Array(@params[param]))
+    select_allowed_attributes(@allowed_attributes, Array(@params[param]))
   end
   
   def select_allowed_attributes(allowed, attribute_hashes)
