@@ -14,9 +14,23 @@
   <script type="text/javascript">
     var moviesStore, moviesGrid;
     var peopleStore, peopleGrid;
+    var editors;
+    
+    dojo.find = function(arr, callback, thisObject) {
+      return dojo.filter(arr, callback, thisObject)[0];
+    };
+    dojo.try = function(obj, func, args, defaultValue) {
+      if (dojo.isFunction(obj[func])) {
+        return obj[func].apply(obj, args || []);
+      } else {
+        return defaultValue;
+      }
+    };
 
     dojo.registerModulePath('moviedb', "/javascripts/moviedb");
     dojo.require('moviedb.movies');
+//    dojo.require('moviedb.Editor');
+    dojo.require('moviedb.EditorManager');
     
     function buildMoviesGrid(store) {
       var awardsFormatter = function(awards) {
@@ -69,8 +83,9 @@
 	    console.log('*** onHeaderContextMenu: ', e); //### REMOVE
 	  };
     
-      dojo.connect(grid, 'onSelected', function(idx) {
-        dojo.publish('movie.selected', [grid.getItem(idx)]);
+      dojo.connect(grid, 'onRowDblClick', function(event) {
+console.warn('dbl click: ', arguments); //### REMOVE
+        dojo.publish('movie.selected', [grid.getItem(event.rowIndex)]);
       });
 
       return grid;
@@ -105,23 +120,22 @@
       peopleStore = new moviedb.Store({ target: "/people", schema: moviedb.schema.person });
       peopleGrid = buildPeopleGrid(peopleStore);
 
-      dojo.subscribe('movie.selected', function(m) {
-        console.log("---> ", m); //### REMOVE
-        dijit.byId('movieform').populate(moviesStore, m);
+      dojo.subscribe('movie.selected', function(movie) {
+        var createMovieEditor = function() {
+          var editor = new moviedb.MovieEditor();
+          editor.populate(moviesStore, movie);
+          return editor;
+        };
+        editors.edit(movie, createMovieEditor);
       });
 
       dojo.subscribe('award.selected', function() {
         console.log("** AWARD: ", arguments);
       });
 
-      dojo.connect(moviesGrid, 'onCanSelect', function(rowIdx) {
-        //### FIXME doesn't have an effect.
-        var formIsChanged = dijit.byId('movieform').isChanged();
-        console.log('CAN SELECT movie: ', !formIsChanged);
-        return !formIsChanged;
-      });
-
       dojo.parser.parse();
+
+      editors = new moviedb.EditorManager('editors');
 
       dojo.connect(dijit.byId('peopleQueryForm'), 'onSubmit', function(event) {
         var value = dijit.byId('peopleQuery').attr('value')
@@ -134,7 +148,72 @@
 
 </head>
 <body class="tundra">
+  
+  <!-- Dijits -->
 
+  <div dojoType="dijit.Declaration" widgetClass="moviedb.MovieEditor">
+    <script type="dojo/method">
+      this._form = dijit.byId(this.id + '_form');
+      this._titleWidget = dijit.byId(this.id + '_title');
+      dojo.connect(this._form, 'onChange', this, 'onChange');
+    </script>
+    <script type="dojo/method" event="populate" args="store, object">
+      this.object = object;
+      this._form.populate(store, object);
+    </script>
+    <script type="dojo/method" event="getTitle">
+      return this._titleWidget.attr('value');
+    </script>
+    <script type="dojo/method" event="isModified">
+      return this._form.isModified();
+    </script>
+    <script type="dojo/method" event="onChange">
+      console.log('*** MOVIE ON CHANGE');
+    </script>
+    <div dojoType="moviedb.Form" id="${id}_form">
+    <ul>
+      <li>
+        <label for="${id}_title">Title:</label>
+      </li>
+      <li>
+        <div type="text" dojoType="dijit.form.ValidationTextBox"
+             id="${id}_title" name="title"
+             required="true" trim="true"
+             invalidMessage="Please enter the movie's title."></div>
+      </li>
+      <li>
+        <label for="${id}_release_date">Release Date:</label>
+      </li>
+      <li>
+        <div type="text" dojoType="dijit.form.DateTextBox"
+             id="${id}_releaseDate" name="releaseDate"
+             invalidMessage="Please enter a valid date."></div>
+      </li>
+      <li>
+        <label for="${id}_summary">Summary</label>
+      </li>
+      <li>
+        <div dojoType="dijit.form.Textarea"
+             id="${id}_summary" name="summary"
+             style="width:30em"></div>
+      </li>
+      <li><h3>Director</h3>
+      </li>
+      <li><h3>Actors</h3>
+      </li>
+      <li><h3>Awards</h3>
+      </li>
+      <li>
+        <div dojoType="dojox.form.BusyButton" type="submit"
+             busyLabel="Saving..."
+             >Save Changes</div>
+      </li>
+    </ul>
+    </div>
+  </div>
+
+  <!-- Layout -->
+  
   <div dojoType="dijit.layout.BorderContainer" id="container" design="headline">
 <!--
     <div dojoType="dijit.layout.ContentPane" region="top">
@@ -147,11 +226,11 @@
          region="left" tabPosition="left-h" tabStrip="true" splitter="true"
          style="width:30%; min-width:20em; height:100%">
       <div dojoType="dijit.layout.ContentPane" id="moviesPane"
-           title="Movies" iconClass="movieIcon">
+           title="Movies" iconClass="movieIcon" showLabel="false">
         <div id="movieslist"></div>
       </div>
       <div dojoType="dijit.layout.ContentPane" id="peoplePane"
-           title="People" iconClass="peopleIcon">
+           title="People" iconClass="peopleIcon" showLabel="false">
         <div dojoType="dijit.layout.BorderContainer">
           <div dojoType="dijit.layout.ContentPane" region="top">
             <div dojoType="dijit.form.Form" id="peopleQueryForm">
@@ -167,7 +246,7 @@
         </div>
       </div>
       <div dojoType="dijit.layout.ContentPane" id="awardsPane"
-           title="Awards" iconClass="awardIcon">
+           title="Awards" iconClass="awardIcon" showLabel="false">
         <div dojoType="dojo.data.ItemFileReadStore"
              url="/awards.json" jsId="awardsStore"></div>
         <div dojoType="dijit.tree.ForestStoreModel"
@@ -177,46 +256,10 @@
              jsId="awardsModel"></div>
         <div dojoType="dijit.Tree" jsId="awardsTree" 
              model="awardsModel"
-             showRoot="false">
-        </div>
+             showRoot="false"></div>
       </div>
     </div>
-    <div dojoType="dijit.layout.ContentPane" region="center">
-      <form dojoType="moviedb.Form" id="movieform">
-        <ul>
-          <li>
-            <label for="movie_title">Title:</label>
-          </li>
-          <li>
-            <input type="text" dojoType="dijit.form.ValidationTextBox"
-                   id="movie_title" name="movie[title]"
-                   required="true" trim="true"
-                   invalidMessage="Please enter the movie's title." />
-          </li>
-          <li>
-            <label for="movie_release_date">Release Date:</label>
-          </li>
-          <li>
-            <input type="text" dojoType="dijit.form.DateTextBox"
-                   id="movie_release_date" name="movie[release_date]"
-                   invalidMessage="Please enter a valid date." />
-          </li>
-          <li>
-            <label for="movie_summary">Summary</label>
-          </li>
-          <li>
-            <textarea dojoType="dijit.form.Textarea"
-                      id="movie_summary" name="movie[summary]"
-                      style="width:30em"></textarea>
-          </li>
-          <li>
-            <button dojoType="dojox.form.BusyButton" type="submit"
-                    busyLabel="Saving..."
-                    >Save Changes</button>
-          </li>
-        </ul>
-      </form>
-    </div>
+    <div dojoType="dijit.layout.TabContainer" id="editors" region="center"></div>
   </div>
   
   <div dojoType="dojox.widget.Toaster" positionDirection="tr-down" messageTopic="toast"></div>

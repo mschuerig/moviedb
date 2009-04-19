@@ -14,9 +14,13 @@ module RoleTypeAssociationExtensions
       :conditions => ["roles.role_type_id = role_types.id AND role_types.name = ?", role_name]
     )
   end
-  RoleType.each_name do |name|
-    define_method("as_#{name}") do
-      as(name)
+  
+  module Shortcuts
+    RoleType.each_name do |name|
+      define_method("as_#{name}") do
+        as(name)
+      end
     end
   end
+  include Shortcuts
 end

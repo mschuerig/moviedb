@@ -1,10 +1,21 @@
 
+- image attachments
+- revenue charts
+ - over the years
+ - per year compared to others
+- comet change notifications
+
 Rails
 -----
+
+- tests
+ - full unit tests
+ - feature tests (cucumber)
 
 - better JSON Query parsing
 
 - full-text search
+ - xapit
 
 - transactions + conflict handling
  - PUT + If-Unmodified-Since
@@ -12,17 +23,53 @@ Rails
  - -> dojo.rpc.JsonRest
 
 - authC, authZ
+ - openid, oauth
+ - authlogic
+ - declarative authorization
+
+- business logic
+ - state machine for state dependent behavior
 
 - controller subclass/mixin for JSON server
 
 Dojo
 ----
 
+- tests
+ - DOH
+ - Selenium
+
+- ensure that non-selected tabs are only loaded on demand
+
+- contract for editors
+ - getTitle()
+ - events: onChange, onModified, onReverted
+ - isModified
+
+- editors
+ - movie, person, award
+ - tab w/ icon for movie/person/award + modified
+
+- undo/back button
+
+- offline?
+
+- movie list
+ - filter
+ - awards: hyperlinks
+
 - movie form
  - new movie
  - drag & drop for
   - people
   - awards
+ - use JSON schema for setting up validations
+
+- award tree
+ - action: show recipients
+
+- people list
+ - action: show
 
 - defore editing an object, check for updates
  - -> store mixin?

@@ -4,15 +4,10 @@ dojo.provide('moviedb.Form');
 dojo.declare('moviedb.Form', dijit.form.Form, {
   //### TODO
   // - derive appropriate widgets and validations from a json schema
-  // - propertiesMap: convention|explicit map|mapping function
   // - don't overwrite callback methods, leave them to users
   movie: null,
   store: null,
-  propertiesMap: {
-    'movie_title': 'title',
-    'movie_release_date': 'releaseDate',
-    'movie_summary': 'summary'
-  },
+
   constructor: function() {
     console.log('*** FORM ctor: ', arguments);
   },
@@ -31,25 +26,24 @@ dojo.declare('moviedb.Form', dijit.form.Form, {
       var self = this;
       store.loadItem({ item: movie,
         onItem: function(loadedMovie) {
-          self._for_properties(function(prop, widget) {
+          self._forProperties(function(prop, widget) {
             widget.setValue(store.getValue(loadedMovie, prop));
           });
         }
       });
     } else {
-      for (var prop in this.propertiesMap) {
-        dijit.byId(prop).setValue(null);
-      }
+      this._forProperties(function(prop, widget) {
+        widget.setValue(null);
+      });
     }
-    this._lastChanged = false;
+    this._wasModified = false;
     this.movie = movie;
     this.store = store;
     this._resetSubmitButton();
-    console.log('*** POPULATE EXIT'); //### REMOVE
   },
   save: function() {
     if (this.movie) {
-      this._for_properties(function(prop, widget) {
+      this._forProperties(function(prop, widget) {
         this.store.setValue(this.movie, prop, widget.attr('value'));
       });
       this.store.save({
@@ -59,25 +53,20 @@ dojo.declare('moviedb.Form', dijit.form.Form, {
     }
   },
   onSaved: function() {
-    console.log('***** SAVED'); //### REMOVE
     this._resetSubmitButton();
   },
-  isChanged: function() {
+  isModified: function() {
     if (!this.movie) return false;
-    var changed = false;
-    this._for_properties(function(prop, widget) {
-      if (!changed) {
+    var modified = false;
+    this._forProperties(function(prop, widget) {
+      if (!modified) {
         var orig = this.store.getValue(this.movie, prop) || '';
         var cur = widget.attr('value') || '';
-        changed = orig.toString() != cur.toString();
-/*
-      console.log('* ORIG: ', orig, "\nCUR: ", cur, "\nEQ: ",
-                  cur.toString() == orig.toString());
-*/
+        //### TODO use dojo.date.compare() for dates
+        modified = orig.toString() != cur.toString();
       }
     });
-    console.log("*** is changed: ", changed); //### REMOVE
-    return changed;
+    return modified;
   },
   connectChildren: function() {
     this.inherited(arguments);
@@ -85,27 +74,31 @@ dojo.declare('moviedb.Form', dijit.form.Form, {
     var conns = this._changeConnections;
     dojo.forEach(this.getDescendants(), function(widget) {
       conns.push(self.connect(widget, 'onBlur',
-        dojo.hitch(self, '_checkForChange', widget)));
+        dojo.hitch(self, '_checkIfModified', widget)));
     });
   },
-  _checkForChange: function(widget) {
-    console.log('*** check for change'); //### REMOVE
-    var changed = this.isChanged();
-    if (changed !== this._lastChanged) {
-      if (changed) {
-        this.onChange();
+  _checkIfModified: function(widget) {
+    var modified = this.isModified();
+    if (modified !== this._wasModified) {
+      if (modified) {
+        this.onModified();
       } else {
-        this.onRevert();
+        this.onReverted();
       }
     }
-    this._lastChanged = changed;
+    this._wasModified = modified;
   },
-  _for_properties: function(f) {
-    var propertiesMap = this.propertiesMap;
-    f = dojo.hitch(this, f);
-    for (var prop in propertiesMap) {
-      f(propertiesMap[prop], dijit.byId(prop));
-    }
+  _widgetChange: function(widget) {
+    this.inherited(arguments);
+    this.onChange(widget);
+  },
+  _forProperties: function(func) {
+    func = dojo.hitch(this, func);
+    this.getDescendants().forEach(function(widget) {
+      if (widget.name) {
+        func(widget.name, widget);
+      }
+    });
   },
   _resetSubmitButton: function() {
     this._buttons().forEach(function(button) {
@@ -120,9 +113,12 @@ dojo.declare('moviedb.Form', dijit.form.Form, {
     });
   },
   onChange: function() {
-    console.log("*** ON CHANGE");
+    console.log('*** ON CHANGE');
   },
-  onRevert: function() {
-    console.log("*** ON REVERT");
+  onModified: function() {
+    console.log("*** ON MODIFIED");
+  },
+  onReverted: function() {
+    console.log("*** ON REVERTED");
   }
 });

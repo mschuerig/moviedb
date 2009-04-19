@@ -1,6 +1,7 @@
 
 dojo.provide('moviedb.movies');
 
+dojo.require('dijit.Declaration');
 dojo.require('dijit.Menu');
 dojo.require('dijit.MenuItem');
 dojo.require('dijit.MenuSeparator');
