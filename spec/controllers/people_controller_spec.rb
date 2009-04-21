@@ -1,13 +1,15 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
-describe PeopleController do
+#require 'spec/mocks/scope_expectation'
 
+describe PeopleController do
   def mock_person(stubs={})
     @mock_person ||= mock_model(Person, stubs)
   end
 
   def expect_person_retrievals(options = {})
     Person.should_receive(:find).with(:all, options).and_return([])
+### TODO      within_scope(:find => { :order => 'title'}).
     Person.should_receive(:count).and_return(0)
   end
 
@@ -52,7 +54,7 @@ describe PeopleController do
       describe "and order params" do
         it "orders by title ascending for /title" do
           pending do
-            expect_person_retrievals(@find_all_options.merge(:order => 'title'))
+            expect_person_retrievals(@find_all_options, :order => 'title')
             get :index, '/name' => nil, :format => 'json'
           end
         end

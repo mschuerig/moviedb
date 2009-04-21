@@ -5,6 +5,7 @@ dojo.require('dijit.Declaration');
 dojo.require('dijit.Menu');
 dojo.require('dijit.MenuItem');
 dojo.require('dijit.MenuSeparator');
+dojo.require('dijit.TitlePane');
 dojo.require('dijit.Tooltip');
 dojo.require('dijit.Tree');
 dojo.require('dijit.form.DateTextBox');
@@ -18,7 +19,6 @@ dojo.require('dijit.layout.ContentPane');
 dojo.require('dijit.layout.TabContainer');
 dojo.require('dijit.tree.ForestStoreModel');
 dojo.require('dojo.back');
-dojo.require('dojo.data.ItemFileReadStore');
 dojo.require('dojo.parser');
 dojo.require('dojox.data.JsonRestStore');
 dojo.require('dojox.form.BusyButton');
@@ -27,7 +27,11 @@ dojo.require('dojox.json.query');
 dojo.require('dojox.widget.PlaceholderMenuItem');
 dojo.require('dojox.widget.Toaster');
 dojo.require('moviedb.schema');
+dojo.require('moviedb.AwardView');
+//dojo.require('moviedb.Editor');
+dojo.require('moviedb.EditorManager');
 dojo.require('moviedb.Form');
+//dojo.require('moviedb.View');
 
 dojo.declare("moviedb.Store", dojox.data.JsonRestStore, {
   _processResults: function(results, deferred) {
@@ -41,9 +45,9 @@ dojo.declare("moviedb.Store", dojox.data.JsonRestStore, {
   fetch: function(args) {
     console.log("*** fetch: ", args); //### REMOVE
     var query = args.query;
-      if (query && dojo.isObject(query)) {
-        args.queryStr = '?' + this._matchingClause(query) + this._sortingClause(args.sort);
-      }
+    if (query && dojo.isObject(query)) {
+      args.queryStr = '?' + this._matchingClause(query) + this._sortingClause(args.sort);
+    }
     return this.inherited(arguments);
   },
   _matchingClause: function(query) {

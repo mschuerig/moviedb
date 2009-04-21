@@ -9,7 +9,6 @@ dojo.declare('moviedb.Form', dijit.form.Form, {
   store: null,
 
   constructor: function() {
-    console.log('*** FORM ctor: ', arguments);
   },
   onSubmit: function() {
     if (this.isValid()) {

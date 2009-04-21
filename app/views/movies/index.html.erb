@@ -16,21 +16,35 @@
     var peopleStore, peopleGrid;
     var editors;
     
-    dojo.find = function(arr, callback, thisObject) {
+    dojo.find = function(/*Array|String*/arr, /*Function|String*/callback, /*Object?*/thisObject) {
       return dojo.filter(arr, callback, thisObject)[0];
     };
-    dojo.try = function(obj, func, args, defaultValue) {
+    dojo.try = function(/*Object*/obj, /*Function|String*/func, /*Array?*/args, /*Object?*/defaultValue) {
       if (dojo.isFunction(obj[func])) {
         return obj[func].apply(obj, args || []);
       } else {
         return defaultValue;
       }
     };
+    dojo.groupBy = function(/*Array*/items, /*Function*/extractor) {
+      var keys = [];
+      var groups = {};
+      for (var i = 0, l = items.length; i < l; i++) {
+        var item = items[i];
+        var key = extractor(item);
+        var group = groups[key];
+        if (!group) {
+          keys.push(key);
+          group = groups[key] = [];
+        }
+        group.push(item);
+      }
+      return { keys: keys, groups: groups };
+    };
+
 
     dojo.registerModulePath('moviedb', "/javascripts/moviedb");
     dojo.require('moviedb.movies');
-//    dojo.require('moviedb.Editor');
-    dojo.require('moviedb.EditorManager');
     
     function buildMoviesGrid(store) {
       var awardsFormatter = function(awards) {
@@ -61,14 +75,14 @@
             var awards = movie.awards;
             var awardsMenu = new dijit.Menu({targetNodeIds: e.cellNode});
             awardsMenu.addChild(new dijit.MenuItem({
-              label: 'Overview',
-              onClick: function() { dojo.publish('award.selected', [awards]) }
+              label: 'Overview'//,
+//###FIXME              onClick: function() { dojo.publish('award.selected', [awards]) }
             }));
             awardsMenu.addChild(new dijit.MenuSeparator());
             dojo.forEach(awards, function(award) {
               awardsMenu.addChild(new dijit.MenuItem({
-                label: award.title,
-                onClick: function() { dojo.publish('award.selected', [award]) }
+                label: award.title//,
+//###FIXME                onClick: function() { dojo.publish('award.selected', [award]) }
               }));
             });
             awardsMenu.startup();
@@ -84,7 +98,6 @@
 	  };
     
       dojo.connect(grid, 'onRowDblClick', function(event) {
-console.warn('dbl click: ', arguments); //### REMOVE
         dojo.publish('movie.selected', [grid.getItem(event.rowIndex)]);
       });
 
@@ -104,7 +117,7 @@ console.warn('dbl click: ', arguments); //### REMOVE
       
       moviedb.installTooltips(grid, function(e) {
         var person = e.grid.getItem(e.rowIndex);
-        if (person.dob) {
+        if (person && person.dob) {
           var msg = 'born ' + person.dob; //### TODO i18n
           dijit.showTooltip(msg, e.cellNode);
         }
@@ -122,15 +135,17 @@ console.warn('dbl click: ', arguments); //### REMOVE
 
       dojo.subscribe('movie.selected', function(movie) {
         var createMovieEditor = function() {
-          var editor = new moviedb.MovieEditor();
-          editor.populate(moviesStore, movie);
-          return editor;
+          return new moviedb.MovieEditor(moviesStore, movie);
         };
         editors.edit(movie, createMovieEditor);
       });
 
-      dojo.subscribe('award.selected', function() {
-        console.log("** AWARD: ", arguments);
+      dojo.subscribe('award.selected', function(award) {
+        console.log("** AWARD: ", award);
+        var createAwardView = function() {
+          return new moviedb.AwardView({store: awardsStore, object: award});
+        };
+        editors.edit(award, createAwardView);
       });
 
       dojo.parser.parse();
@@ -152,17 +167,18 @@ console.warn('dbl click: ', arguments); //### REMOVE
   <!-- Dijits -->
 
   <div dojoType="dijit.Declaration" widgetClass="moviedb.MovieEditor">
-    <script type="dojo/method">
+    <script type="dojo/method" event="constructor" args="store, object">
+      this.store = store;
+      this.object = object;
+    </script>
+    <script type="dojo/method" event="startup">
       this._form = dijit.byId(this.id + '_form');
       this._titleWidget = dijit.byId(this.id + '_title');
       dojo.connect(this._form, 'onChange', this, 'onChange');
-    </script>
-    <script type="dojo/method" event="populate" args="store, object">
-      this.object = object;
-      this._form.populate(store, object);
+      this._form.populate(this.store, this.object);
     </script>
     <script type="dojo/method" event="getTitle">
-      return this._titleWidget.attr('value');
+      return this._titleWidget ? this._titleWidget.attr('value') : 'Loading...'; //### TODO i18n
     </script>
     <script type="dojo/method" event="isModified">
       return this._form.isModified();
@@ -170,47 +186,50 @@ console.warn('dbl click: ', arguments); //### REMOVE
     <script type="dojo/method" event="onChange">
       console.log('*** MOVIE ON CHANGE');
     </script>
-    <div dojoType="moviedb.Form" id="${id}_form">
-    <ul>
-      <li>
-        <label for="${id}_title">Title:</label>
-      </li>
-      <li>
-        <div type="text" dojoType="dijit.form.ValidationTextBox"
-             id="${id}_title" name="title"
-             required="true" trim="true"
-             invalidMessage="Please enter the movie's title."></div>
-      </li>
-      <li>
-        <label for="${id}_release_date">Release Date:</label>
-      </li>
-      <li>
-        <div type="text" dojoType="dijit.form.DateTextBox"
-             id="${id}_releaseDate" name="releaseDate"
-             invalidMessage="Please enter a valid date."></div>
-      </li>
-      <li>
-        <label for="${id}_summary">Summary</label>
-      </li>
-      <li>
-        <div dojoType="dijit.form.Textarea"
-             id="${id}_summary" name="summary"
-             style="width:30em"></div>
-      </li>
-      <li><h3>Director</h3>
-      </li>
-      <li><h3>Actors</h3>
-      </li>
-      <li><h3>Awards</h3>
-      </li>
-      <li>
-        <div dojoType="dojox.form.BusyButton" type="submit"
-             busyLabel="Saving..."
-             >Save Changes</div>
-      </li>
-    </ul>
+    <div dojoType="dijit.layout.ContentPane">
+      <div dojoType="moviedb.Form" id="${id}_form">
+        <ul>
+          <li>
+            <label for="${id}_title">Title:</label>
+          </li>
+          <li>
+            <div type="text" dojoType="dijit.form.ValidationTextBox"
+                 id="${id}_title" name="title"
+                 required="true" trim="true"
+                 invalidMessage="Please enter the movie's title."></div>
+          </li>
+          <li>
+            <label for="${id}_release_date">Release Date:</label>
+          </li>
+          <li>
+            <div type="text" dojoType="dijit.form.DateTextBox"
+                 id="${id}_releaseDate" name="releaseDate"
+                 invalidMessage="Please enter a valid date."></div>
+          </li>
+          <li>
+            <label for="${id}_summary">Summary</label>
+          </li>
+          <li>
+            <div dojoType="dijit.form.Textarea"
+                 id="${id}_summary" name="summary"
+                 style="width:30em"></div>
+          </li>
+          <li><h3>Director</h3>
+          </li>
+          <li><h3>Actors</h3>
+          </li>
+          <li><h3>Awards</h3>
+          </li>
+          <li>
+            <div dojoType="dojox.form.BusyButton" type="submit"
+                 busyLabel="Saving..."
+                 >Save Changes</div>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
+
 
   <!-- Layout -->
   
@@ -247,16 +266,20 @@ console.warn('dbl click: ', arguments); //### REMOVE
       </div>
       <div dojoType="dijit.layout.ContentPane" id="awardsPane"
            title="Awards" iconClass="awardIcon" showLabel="false">
-        <div dojoType="dojo.data.ItemFileReadStore"
-             url="/awards.json" jsId="awardsStore"></div>
+        <div dojoType="moviedb.Store"
+             target="/awards" jsId="awardsStore"></div>
         <div dojoType="dijit.tree.ForestStoreModel"
              store="awardsStore"
-             rootLabel="Awards"
+             labelAttr="name"
              childrenAttrs="awards"
              jsId="awardsModel"></div>
         <div dojoType="dijit.Tree" jsId="awardsTree" 
              model="awardsModel"
-             showRoot="false"></div>
+             showRoot="false">
+           <script type="dojo/connect" event="onDblClick" args="item, node">
+             dojo.publish('award.selected', [item, node]);
+           </script>
+        </div>
       </div>
     </div>
     <div dojoType="dijit.layout.TabContainer" id="editors" region="center"></div>

@@ -1,5 +1,5 @@
 
-module Spec
+module Spec #:nodoc:
   module JSONMatchers
     class BeJsonEql
       def initialize(expected)

@@ -4,7 +4,7 @@ class RequestConditioner
   
   def initialize(headers, parameters, options = {})
     @headers, @params = headers, parameters
-    @allowed_attributes = options[:allowed]
+    @allowed_attributes = Array(options[:allowed]).map(&:to_s) if options[:allowed]
     @condition_mappings = (options[:conditions] || {}).with_indifferent_access
     @order_mappings = (options[:order] || {}).with_indifferent_access
   end

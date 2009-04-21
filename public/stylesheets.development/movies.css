@@ -21,6 +21,10 @@ html, body, #container {
   background:#2e2e2e;
 }
 
+.dijitTabPaneWrapper {
+  overflow: auto;
+}
+
 h1 {
   font-family:"Century Gothic", Verdana,Arial,Helvetica,sans-serif;
   width:500px;
@@ -62,4 +66,12 @@ h1 {
   background-position: center center;
   width: 18px;
   height: 18px;
+}
+
+.awarding .list ul {
+  display: inline;
+}
+
+.awarding .list li {
+  display: inline;
 }

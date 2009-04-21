@@ -39,6 +39,9 @@ Dojo
  - DOH
  - Selenium
 
+- a11y
+ - assign proper roles
+
 - ensure that non-selected tabs are only loaded on demand
 
 - contract for editors

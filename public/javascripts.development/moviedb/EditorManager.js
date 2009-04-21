@@ -7,45 +7,39 @@ dojo.declare('moviedb.EditorManager', null, {
     dojo.subscribe(this.container.id + '-removeChild', this, 'editorClosed');
   },
   edit: function(object, createEditorWidget) {
-    console.log('*** edit: ', object); //### REMOVE
     var editor = dojo.find(this.editors, function(item) {
       return item.object === object;
     });
     if (!editor) {
       editor = this._makeEditor(object, createEditorWidget);
     }
-    this.container.selectChild(editor.pane);
-    console.log('**** DOC WIDGET: ', editor.widget); //### REMOVE
+    this.container.selectChild(editor.widget);
     return editor.widget;
   },
-  editorClosed: function(pane) {
-    console.log('*** CLOSED: ', pane);
+  editorClosed: function(widget) {
     this.editors = dojo.filter(this.editors, function(item) {
-      return item.pane !== pane;
+      return item.widget !== widget;
     });
   },
   _makeEditor: function(object, createEditorWidget) {
     var widget = createEditorWidget();
-    var title = widget.getTitle();
-    var pane = new dijit.layout.ContentPane({
-      label: 'foo',
+    widget = dojo.mixin(widget, {
       showLabel: true,
-      title: title,
+      title: widget.getTitle(),
       closable: true,
       onClose: this._makeOnCloseHandler(widget)
     });
-    widget.placeAt(pane.containerNode);
-    this.editors.push({object: object, pane: pane, widget: widget});
-    this.container.addChild(pane);
+    this.container.addChild(widget);
+    this.editors.push({object: object, widget: widget});
     if (this.container.tablist) {
-      var tabButton = this.container.tablist.pane2button[pane];
+      var tabButton = this.container.tablist.pane2button[widget];
       dojo.connect(widget, 'onChange', function() {
         var title = widget.getTitle();
-        pane.attr('title', title);
+        widget.attr('title', title);
         tabButton.attr('label', title);
       });
     }
-    return { object: object, widget: widget, pane: pane };
+    return { object: object, widget: widget };
   },
   _makeOnCloseHandler: function(widget) {
     return function() {

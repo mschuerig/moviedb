@@ -29,6 +29,13 @@ role_types.name = ?},
   has_and_belongs_to_many :people, :include => :roles, :extend => PeopleExtensions
   has_and_belongs_to_many :movies
   
+  named_scope :for_award, lambda { |award|
+    {
+      :joins => :award,
+      :conditions => { :award_id => award }
+    }
+  }
+  
   def name
     "#{award.fullname} (#{year})"
   end

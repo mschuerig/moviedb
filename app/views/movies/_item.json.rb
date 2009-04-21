@@ -1,6 +1,7 @@
-m = {
-  '$ref' => movie.to_param,
-  :title => movie.title,
+m =  {
+#  :id          => movie.to_param,
+  '$ref'       => movie_path(movie),
+  :title       => movie.title,
   :releaseDate => movie.release_date
 }
 unless movie.awardings.empty?

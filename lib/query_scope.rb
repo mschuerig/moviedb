@@ -31,7 +31,7 @@ module QueryScope
       instance_eval(&config_block)
     end
     def allow(*attributes)
-      @allowed_attributes << attributes
+      @allowed_attributes += attributes
     end
     def condition(mapping)
       @condition_mappings.merge!(mapping)
@@ -41,7 +41,7 @@ module QueryScope
     end
     def build_request_conditioner(request)
       RequestConditioner.new(request.headers, request.parameters, { 
-        :allowed    => @allowed_attributes,
+        :allowed    => @allowed_attributes.empty? ? nil : @allowed_attributes,
         :conditions => @condition_mappings,
         :order      => @order_mappings
       })
