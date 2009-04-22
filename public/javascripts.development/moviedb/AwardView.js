@@ -11,6 +11,12 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
   awardingWidget: 'moviedb._AwardingView',
   templatePath: dojo.moduleUrl('moviedb', 'templates/AwardView.html'),
 
+  getFeatures: function(){
+    return {
+      "moviedb.api.View": true
+    };
+  },
+
   startup: function() {
     this.awardings = this.store.getValues(this.object.awardings, 'items');
     this._updateView();
@@ -18,9 +24,6 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
   },
   getTitle: function() {
     return this.object.name;
-  },
-  isModified: function() {
-    return false;
   },
   _updateView: function() {
     dojo.empty(this.listNode);

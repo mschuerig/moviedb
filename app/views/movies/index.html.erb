@@ -190,6 +190,12 @@
       dojo.connect(this._form, 'onChange', this, 'onChange');
       this._form.populate(this.store, this.object);
     </script>
+    <script type="dojo/method" event="getFeatures">
+      return {
+        "moviedb.api.View": true,
+        "moviedb.api.Edit": true
+	  };
+    </script>
     <script type="dojo/method" event="getTitle">
       return this._titleWidget ? this._titleWidget.attr('value') : 'Loading...'; //### TODO i18n
     </script>

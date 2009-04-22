@@ -15,9 +15,18 @@ dojo.declare('moviedb.PersonEditor', [dijit._Widget, dijit._Templated], {
   templatePath: dojo.moduleUrl('moviedb', 'templates/PersonEditor.html'),
   widgetsInTemplate: true,
 
+  getFeatures: function(){
+    return {
+      "moviedb.api.View": true,
+      "moviedb.api.Edit": true
+    };
+  },
+
   startup: function() {
     console.warn(this); //### REMOVE
-    dojo.connect(this.formNode, 'onChange', this, 'onChange');
+    dojo.connect(this.formNode, 'onChange',   this, 'onChange');
+    dojo.connect(this.formNode, 'onModified', this, 'onModified');
+    dojo.connect(this.formNode, 'onReverted', this, 'onReverted');
     this.formNode.populate(this.store, this.object);
   },
   getTitle: function() {
@@ -32,5 +41,9 @@ dojo.declare('moviedb.PersonEditor', [dijit._Widget, dijit._Templated], {
   },
   onChange: function() {
     console.log('*** PERSON ON CHANGE');
+  },
+  onModified: function() {
+  },
+  onReverted: function() {
   }
 });

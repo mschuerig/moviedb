@@ -42,11 +42,15 @@ dojo.declare('moviedb.EditorManager', null, {
     return { object: object, widget: widget };
   },
   _makeOnCloseHandler: function(widget) {
-    return function() {
-      if (widget.isModified()) {
-        return confirm("Are you sure you want to discard your changes?");
-      }
-      return true;
-    };
+    if (widget.getFeatures()['moviedb.api.Edit']) {
+      return function() {
+        if (widget.isModified()) {
+          return confirm("Are you sure you want to discard your changes?");
+        }
+        return true;
+      };
+    } else {
+      return function() { return true; };
+    }
   }
 });
