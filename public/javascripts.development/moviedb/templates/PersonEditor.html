@@ -1,0 +1,45 @@
+<div class="${baseClass}">
+  <div dojoType="moviedb.Form" dojoAttachPoint="formNode">
+    <ul>
+      <li>
+        <label for="${id}_firstname">First name</label>
+      </li>
+      <li>
+        <div type="text" dojoType="dijit.form.ValidationTextBox"
+             id="${id}_firstname" name="firstname"
+             dojoAttachPoint="firstnameField"
+             required="true" trim="true"
+             invalidMessage="Please enter the person's first name."></div>
+      </li>
+      <li>
+        <label for="${id}_lastname">Last name</label>
+      </li>
+      <li>
+        <div type="text" dojoType="dijit.form.ValidationTextBox"
+             id="${id}_lastname" name="lastname"
+             dojoAttachPoint="lastnameField"
+             required="true" trim="true"
+             invalidMessage="Please enter the person's last name."></div>
+      </li>
+      <li>
+        <label for="${id}_dateOfBirth">Date of Birth</label>
+      </li>
+      <li>
+        <div type="text" dojoType="dijit.form.DateTextBox"
+             id="${id}_dateOfBirth" name="dob"
+             invalidMessage="Please enter a valid date."></div>
+      </li>
+      <li>
+        <h3>Movies</h3>
+      </li>
+      <li>
+        <h3>Awards</h3>
+      </li>
+      <li>
+        <div dojoType="dojox.form.BusyButton" type="submit"
+             busyLabel="Saving..."
+             >Save Changes</div>
+      </li>
+    </ul>
+  </div>
+</div>

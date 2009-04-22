@@ -1,7 +1,8 @@
 class PeopleController < ApplicationController
   include QueryScope
   before_filter :load_scope, :only => [:show, :edit, :create]
-
+  before_filter :map_attributes, :only => [ :create, :update ]
+  
   query_scope :only => :index do
     allow     :name
     condition :name => "LOWER(firstname || ' ' || lastname) :op LOWER(?)"
@@ -28,7 +29,7 @@ class PeopleController < ApplicationController
 
     respond_to do |format|
       format.html # show.html.erb
-      format.xml  { render :xml => @person }
+      format.json
     end
   end
 
@@ -71,13 +72,10 @@ class PeopleController < ApplicationController
     @person = Person.find(params[:id])
 
     respond_to do |format|
-      if @person.update_attributes(params[:person])
-        flash[:notice] = 'Person was successfully updated.'
-        format.html { redirect_to(@person) }
-        format.xml  { head :ok }
+      if @person.update_attributes(params[:attributes])
+        format.json { render :action => :show }
       else
-        format.html { render :action => "edit" }
-        format.xml  { render :xml => @person.errors, :status => :unprocessable_entity }
+        ### TODO error response
       end
     end
   end
@@ -104,6 +102,12 @@ class PeopleController < ApplicationController
     if kind = params[:kind]
       kind = RoleType.ensure_valid!(kind, :clean => true, :singularize => true)
       @scope = @scope.send(kind.pluralize)
+    end
+  end
+  
+  def map_attributes
+    if attributes = params[:attributes]
+      attributes[:date_of_birth] = attributes.delete(:dob)
     end
   end
 end

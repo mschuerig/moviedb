@@ -47,6 +47,7 @@ dojo.declare('moviedb.Form', dijit.form.Form, {
       });
       this.store.save({
         onComplete: this.onSaved,
+//### TODO        onError:
         scope: this
       });
     }
@@ -62,7 +63,11 @@ dojo.declare('moviedb.Form', dijit.form.Form, {
         var orig = this.store.getValue(this.movie, prop) || '';
         var cur = widget.attr('value') || '';
         //### TODO use dojo.date.compare() for dates
-        modified = orig.toString() != cur.toString();
+        if (orig instanceof Date || cur instanceof Date) {
+          modified = (dojo.date.compare(orig, cur) !== 0);
+        } else {
+          modified = orig.toString() != cur.toString();
+        }
       }
     });
     return modified;

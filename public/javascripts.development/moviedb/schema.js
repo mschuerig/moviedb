@@ -7,6 +7,12 @@ dojo.declare('moviedb.Movie', null, {
   }
 });
 
+dojo.declare('moviedb.Person', null, {
+  getName: function() {
+    return this.firstname ? dojo.string.substitute('${firstname} ${lastname}', this) : this.name;
+  }
+});
+
 dojo.setObject('moviedb.schema', {
   award: {
     type: 'object',
@@ -34,7 +40,10 @@ dojo.setObject('moviedb.schema', {
     properties: {
       id: { type: 'integer' },
       name: { type: 'string', readonly: true },
+      firstname: { type: 'string' },
+      lastname: { type: 'string' },
       dob: { type: 'date', format: 'date-time' }
-    }
+    },
+    prototype: moviedb.Person.prototype
   }
 });

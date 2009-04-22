@@ -68,10 +68,31 @@ h1 {
   height: 18px;
 }
 
-.awarding .list ul {
-  display: inline;
+.moviedbAwardView .decadeList,
+.moviedbAwardView .decade
+{
+  list-style-type: none;
+  margin: 0;
+  padding: 1em;
 }
 
-.awarding .list li {
+.moviedbAwardView .decade {
+  padding: 0;
+}
+
+.moviedbAwardView .awarding {
+  margin-bottom: 0.2em;
+}
+
+.moviedbAwardView .awarding .year {
+  font-weight: bold;
+}
+
+.moviedbAwardView .awarding .list,
+.moviedbAwardView .awarding .list li
+{
+  list-style-type: none;
   display: inline;
+  margin: 0;
+  padding: 0;
 }

@@ -38,7 +38,7 @@ class MoviesController < ApplicationController
 
     respond_to do |format|
       format.html # show.html.erb
-      format.json { render :template => 'movies/movie' }
+      format.json
       format.xml  { render :xml => @movie }
     end
   end
@@ -82,7 +82,9 @@ class MoviesController < ApplicationController
     @movie = Movie.find(params[:id])
     respond_to do |format|
       if @movie.update_attributes(params[:attributes])
-        format.json { render :template => 'movies/movie' }
+        format.json { render :action => :show }
+      else
+        ### TODO error response
       end
     end
 =begin

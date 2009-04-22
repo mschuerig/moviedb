@@ -31,6 +31,7 @@ dojo.require('moviedb.AwardView');
 //dojo.require('moviedb.Editor');
 dojo.require('moviedb.EditorManager');
 dojo.require('moviedb.Form');
+dojo.require('moviedb.PersonEditor');
 //dojo.require('moviedb.View');
 
 dojo.declare("moviedb.Store", dojox.data.JsonRestStore, {
@@ -48,6 +49,7 @@ dojo.declare("moviedb.Store", dojox.data.JsonRestStore, {
     if (query && dojo.isObject(query)) {
       args.queryStr = '?' + this._matchingClause(query) + this._sortingClause(args.sort);
     }
+    //### TODO add onError unless already defined
     return this.inherited(arguments);
   },
   _matchingClause: function(query) {

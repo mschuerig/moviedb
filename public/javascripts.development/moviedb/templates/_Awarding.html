@@ -1,17 +1,21 @@
 <div class="awarding">
-  <p class="year">{{ awarding.year }}</p>
-  <p class="people">People:
+  <div class="year">{{ awarding.year }}</div>
+  {% ifnotequal awarding.people|length 0 %}
+  <div class="people">People:
     <ul class="list">
       {% for person in awarding.people %}
       <li><a href="{{ person.__id }}">{{ person.name }}</a></li>
       {% endfor %}
     </ul>
-  </p>
-  <p class="movies">Movies:
+  </div>
+  {% endifnotequal %}
+  {% ifnotequal awarding.movies|length 0 %}
+  <div class="movies">Movies:
     <ul class="list">
       {% for movie in awarding.movies %}
       <li><a href="{{ movie.__id }}">{{ movie.title }}</a></li>
       {% endfor %}
     </ul>
-  </p>
+  </div>
+  {% endifnotequal %}
 </div>

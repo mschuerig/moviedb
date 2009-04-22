@@ -1,21 +1,18 @@
 dojo.provide('moviedb.AwardView');
-dojo.require('dijit.layout.ContentPane');
 dojo.require('dijit._Templated');
+dojo.require('dijit._Widget');
 dojo.require('dojox.dtl._Templated');
 
-dojo.declare('moviedb.AwardView', [dijit.layout.ContentPane, dijit._Templated], {
+dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
   store: null,
   object: null,
 
   baseClass: 'moviedbAwardView',
   awardingWidget: 'moviedb._AwardingView',
-
-  templatePath: dojo.moduleUrl("moviedb", "templates/AwardView.html"),
+  templatePath: dojo.moduleUrl('moviedb', 'templates/AwardView.html'),
 
   startup: function() {
-    console.log('*** LOADING awardings for: ', this.object); //### REMOVE
     this.awardings = this.store.getValues(this.object.awardings, 'items');
-    console.log('** AWARDINGS: ', this.awardings);
     this._updateView();
     dojo.connect(this, 'onClick', this, '_publishSelect');
   },
@@ -29,13 +26,7 @@ dojo.declare('moviedb.AwardView', [dijit.layout.ContentPane, dijit._Templated], 
     dojo.empty(this.listNode);
 
     var decades = dojo.groupBy(this.awardings,
-      function(item) {
-        v = Math.floor(item.year / 10) * 10;
-        if (isNaN(v)) {
-          console.error('year NaN: ', item);
-        }
-        return v;
-      } );
+      function(item) { return Math.floor(item.year / 10) * 10; } );
     var keys = decades.keys.sort(function(a, b) { return b - a; });
 
     var itemWidget = dojo.getObject(this.awardingWidget);
@@ -43,7 +34,7 @@ dojo.declare('moviedb.AwardView', [dijit.layout.ContentPane, dijit._Templated], 
     for (var i = 0, l = keys.length, first = true; i < l; i++) {
       var awardings = decades.groups[keys[i]].sort(
         function(a, b) { return b.year - a.year; });
-      var perDecadeList = dojo.create('ul');
+      var perDecadeList = dojo.create('ul', {className: 'decade'});
       awardings.forEach(function(item) {
         var li = dojo.create('li');
         var aw = new itemWidget({awarding: item});
@@ -62,7 +53,6 @@ dojo.declare('moviedb.AwardView', [dijit.layout.ContentPane, dijit._Templated], 
     }
   },
   _publishSelect: function(event) {
-    console.log('*** SELECTED: ', arguments);
     var link = event.target; //### TODO find enclosing link
     dojo.stopEvent(event);
   }

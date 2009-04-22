@@ -74,15 +74,15 @@
           if (movie.awards) {
             var awards = movie.awards;
             var awardsMenu = new dijit.Menu({targetNodeIds: e.cellNode});
-            awardsMenu.addChild(new dijit.MenuItem({
-              label: 'Overview'//,
-//###FIXME              onClick: function() { dojo.publish('award.selected', [awards]) }
-            }));
-            awardsMenu.addChild(new dijit.MenuSeparator());
-            dojo.forEach(awards, function(award) {
+//            awardsMenu.addChild(new dijit.MenuItem({
+//              label: 'Overview'//,
+//              onClick: function() { dojo.publish('award.selected', [awards]) }
+//            }));
+//            awardsMenu.addChild(new dijit.MenuSeparator());
+            dojo.forEach(awards, function(awarding) {
               awardsMenu.addChild(new dijit.MenuItem({
-                label: award.title//,
-//###FIXME                onClick: function() { dojo.publish('award.selected', [award]) }
+                label: awarding.title,
+                onClick: function() { dojo.publish('awarding.selected', [awarding]) }
               }));
             });
             awardsMenu.startup();
@@ -111,10 +111,11 @@
         store: store,
         rowsPerPage: 50,
         structure: [
-          { field: "name", name: "Name", width: "auto" }
+          { name: "Name", get: function(_, item) { return item.getName(); }, width: "auto" }
         ]
       }, 'peoplelist');
       
+/* ### TODO make sure tooltips are removed again
       moviedb.installTooltips(grid, function(e) {
         var person = e.grid.getItem(e.rowIndex);
         if (person && person.dob) {
@@ -122,7 +123,11 @@
           dijit.showTooltip(msg, e.cellNode);
         }
       });
-      
+*/
+      dojo.connect(grid, 'onRowDblClick', function(event) {
+        dojo.publish('person.selected', [grid.getItem(event.rowIndex)]);
+      });
+
       return grid;
     }
 
@@ -135,17 +140,28 @@
 
       dojo.subscribe('movie.selected', function(movie) {
         var createMovieEditor = function() {
-          return new moviedb.MovieEditor(moviesStore, movie);
+          return new moviedb.MovieEditor({store: moviesStore, object: movie});
         };
         editors.edit(movie, createMovieEditor);
       });
 
+      dojo.subscribe('person.selected', function(person) {
+        var createPersonEditor = function() {
+          return new moviedb.PersonEditor({store: peopleStore, object: person});
+        };
+        editors.edit(person, createPersonEditor);
+      });
+
       dojo.subscribe('award.selected', function(award) {
-        console.log("** AWARD: ", award);
+        console.log("** AWARD SELECTED: ", arguments);
         var createAwardView = function() {
           return new moviedb.AwardView({store: awardsStore, object: award});
         };
         editors.edit(award, createAwardView);
+      });
+
+      dojo.subscribe('awarding.selected', function(awarding) {
+        console.log("** AWARDING SELECTED: ", arguments);
       });
 
       dojo.parser.parse();
@@ -166,11 +182,8 @@
   
   <!-- Dijits -->
 
-  <div dojoType="dijit.Declaration" widgetClass="moviedb.MovieEditor">
-    <script type="dojo/method" event="constructor" args="store, object">
-      this.store = store;
-      this.object = object;
-    </script>
+  <div dojoType="dijit.Declaration" widgetClass="moviedb.MovieEditor"
+       defaults="{store: null, object: null}">
     <script type="dojo/method" event="startup">
       this._form = dijit.byId(this.id + '_form');
       this._titleWidget = dijit.byId(this.id + '_title');
@@ -186,11 +199,11 @@
     <script type="dojo/method" event="onChange">
       console.log('*** MOVIE ON CHANGE');
     </script>
-    <div dojoType="dijit.layout.ContentPane">
+    <div>
       <div dojoType="moviedb.Form" id="${id}_form">
         <ul>
           <li>
-            <label for="${id}_title">Title:</label>
+            <label for="${id}_title">Title</label>
           </li>
           <li>
             <div type="text" dojoType="dijit.form.ValidationTextBox"
@@ -199,7 +212,7 @@
                  invalidMessage="Please enter the movie's title."></div>
           </li>
           <li>
-            <label for="${id}_release_date">Release Date:</label>
+            <label for="${id}_releaseDate">Release Date</label>
           </li>
           <li>
             <div type="text" dojoType="dijit.form.DateTextBox"
@@ -214,11 +227,14 @@
                  id="${id}_summary" name="summary"
                  style="width:30em"></div>
           </li>
-          <li><h3>Director</h3>
+          <li>
+            <h3>Director</h3>
           </li>
-          <li><h3>Actors</h3>
+          <li>
+            <h3>Actors</h3>
           </li>
-          <li><h3>Awards</h3>
+          <li>
+            <h3>Awards</h3>
           </li>
           <li>
             <div dojoType="dojox.form.BusyButton" type="submit"

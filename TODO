@@ -17,6 +17,9 @@ Rails
 - full-text search
  - xapit
 
+- update action
+ - error response
+
 - transactions + conflict handling
  - PUT + If-Unmodified-Since
  - 409 Conflict + merge
@@ -38,6 +41,10 @@ Dojo
 - tests
  - DOH
  - Selenium
+
+- data stores
+ - error handling
+ - change notif from server + data notification API
 
 - a11y
  - assign proper roles
