@@ -30,11 +30,11 @@ describe "/movies/index.json.rb" do
         "identifier": "id",
         "totalCount": 2,
         "items": [
-          {"releaseDate": '2001-01-01', "title": "The first movie", "$ref": "1"},
-          {"releaseDate": '2002-02-02', "title": "The second movie", "$ref": "2",
+          {"releaseDate": '2001-01-01', "title": "The first movie", "$ref": "/movies/1"},
+          {"releaseDate": '2002-02-02', "title": "The second movie", "$ref": "/movies/2",
             "awards": [
-              { "title": "Oscar", "$ref": "3" },
-              { "title": "Karlheinz", "$ref": "4" }
+              { "title": "Oscar", "$ref": "/awardings/3" },
+              { "title": "Karlheinz", "$ref": "/awardings/4" }
              ]
           }
         ]

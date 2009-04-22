@@ -18,7 +18,7 @@ describe "/people/index.json.rb" do
         "identifier": "id",
         "totalCount": 1,
         "items": [
-          {"id": 1, "name": "Clint Easterbunny", "dob": "2008-03-23"}
+          { "name": "Clint Easterbunny", "dob": "2008-03-23", "$ref": "/people/1" }
         ]
       }
     END
