@@ -8,7 +8,7 @@ class AwardsController < ApplicationController
         render :layout => false
         end
       format.json do
-        @award_groups = AwardGroup.all
+        @award_groups = Award.top_level
         render
       end
     end

@@ -1,8 +1,10 @@
 aw = {
   :id        => award.to_param,
   :name      => award.name,
-  :awardings => { '$ref' => award_awardings_path(award) }
 }
+if award.awardable?
+  aw[:awardings] = { '$ref' => award_awardings_path(award) }
+end
 unless award.children.empty?
   aw[:awards] = award.children.map { |a| render :partial => 'awards/award.json.rb', :object => a }
 end

@@ -3,17 +3,25 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 describe "/awards/index.json.rb" do
   include AwardsHelper
   
+  def stub_award(id, name, awardable = true)
+    award = stub_model(Award, :id => id, :name => name)
+    award.should_receive(:awardable?).any_number_of_times.and_return(awardable)
+    award
+  end
+  
+  def stub_top_level_award(id, name, awardable = false)
+    award = stub_award(id, name, awardable)
+    children = block_given? ? yield(award) : []
+    award.should_receive(:children).any_number_of_times.and_return(children)
+    award
+  end
+  
   before do
     assigns[:award_groups] = [
-      stub_model(AwardGroup, :id => 1, :name => 'Oscar') { |ag|
-        ag.should_receive(:children).any_number_of_times.and_return([
-          stub_model(Award, :id => 2, :name => 'Best Mover'),
-          stub_model(Award, :id => 3, :name => 'Best Shaker')
-        ])
+      stub_top_level_award(1, 'Oscar') { |aw|
+        [stub_award(2, 'Best Mover'),  stub_award(3, 'Best Shaker')]
       },
-      stub_model(AwardGroup, :id => 4, :name => 'Karlheinz') { |a|
-        a.should_receive(:children).and_return([])
-      }
+      stub_top_level_award(4, 'Karlheinz')
     ]
   end
 
@@ -27,8 +35,8 @@ describe "/awards/index.json.rb" do
         "items": [
           {"name": "Oscar", "id": "1",
            "awards": [
-            {"id": "2", "name": "Best Mover"},
-            {"id": "3", "name": "Best Shaker"}
+            {"id": "2", "name": "Best Mover", "awardings": {"$ref": "/awards/2/awardings" }},
+            {"id": "3", "name": "Best Shaker", "awardings": {"$ref": "/awards/3/awardings" }}
            ]},
           {"name": "Karlheinz", "id": "4"}
         ]

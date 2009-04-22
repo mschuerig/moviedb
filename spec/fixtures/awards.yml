@@ -1,15 +1,30 @@
+oscar:
+  name: Academy Award
+  awardable: false
+emmy:
+  name: Emmy
+  awardable: false
+golden_globe:
+  name: Golden Globe
+  awardable: false
+
 oscar_best_picture:
   name: Best Picture
-  award_group: oscar
+  parent: oscar
+  awardable: true
 oscar_best_actor:
   name: Best Actor in a Leading Role
-  award_group: oscar
+  parent: oscar
+  awardable: true
 oscar_best_actress:
   name: Best Actress in a Leading Role
-  award_group: oscar
+  parent: oscar
+  awardable: true
 oscar_best_supporting_actor:
   name: Best Actor in a Supporting Role
-  award_group: oscar
+  parent: oscar
+  awardable: true
 oscar_best_supporting_actress:
   name: Best Actress in a Supporting Role
-  award_group: oscar
+  parent: oscar
+  awardable: true

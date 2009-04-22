@@ -1,13 +1,20 @@
 class Award < ActiveRecord::Base
-  validates_presence_of :name, :award_group
-  belongs_to :award_group
+  validates_presence_of :name
+  belongs_to :parent, :class_name => 'Award', :foreign_key => :parent_id
+  has_many :children, :class_name => 'Award', :foreign_key => :parent_id, :dependent => :destroy
   has_many :requirements, :class_name => 'AwardRequirement', :dependent => :destroy
   has_many :awardings, :order => 'awardings.year DESC'
   
-  default_scope :include => :award_group, :order => 'name'
+  default_scope :include => :parent, :order => 'name'
+  
+  named_scope :top_level, :conditions => { :parent_id => nil }
   
   def fullname
-    "#{award_group.name}: #{name}"
+    if parent
+      "#{parent.name}: #{name}"
+    else
+      name
+    end
   end
   
   def for_year(year)
@@ -16,9 +23,5 @@ class Award < ActiveRecord::Base
   
   def validate_awarding(awarding)
     requirements.each { |req| req.validate_awarding(awarding) }
-  end
-  
-  def children
-    []
   end
 end

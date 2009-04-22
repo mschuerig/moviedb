@@ -1,7 +1,9 @@
 oscar:
   name: Academy Award
+  awardable: false
 emmy:
   name: Emmy
+  awardable: false
 golden_globe:
   name: Golden Globe
-
+  awardable: false

@@ -6,21 +6,21 @@ describe AwardsController do
     @mock_award ||= mock_model(Award, stubs)
   end
 
-  def mock_award_group(stubs={})
-    @mock_award_group ||= mock_model(AwardGroup, stubs)
+  def mock_top_level_award(stubs={})
+    @mock_top_level_award ||= mock_model(Award, stubs)
   end
   
   describe "GET index" do
     describe "with mime type of json" do
       
       it "exposes the top-level award groups" do
-        AwardGroup.should_receive(:find).and_return([mock_award_group])
+        Award.should_receive(:top_level).and_return([mock_top_level_award])
         get :index, :format => 'json'
-        assigns[:award_groups].should == [mock_award_group]
+        assigns[:award_groups].should == [mock_top_level_award]
       end
 
       it "renders the awards/index.json.rb template" do
-        AwardGroup.should_receive(:find).and_return([mock_award_group])
+        Award.should_receive(:top_level).and_return([mock_top_level_award])
         get :index, :format => 'json'
         response.should render_template('awards/index.json.rb')
       end
