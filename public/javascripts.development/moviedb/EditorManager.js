@@ -25,7 +25,6 @@ dojo.declare('moviedb.EditorManager', null, {
     var widget = createEditorWidget();
     widget = dojo.mixin(widget, {
       showLabel: true,
-      title: widget.getTitle(),
       closable: true,
       onClose: this._makeOnCloseHandler(widget)
     });
@@ -33,11 +32,13 @@ dojo.declare('moviedb.EditorManager', null, {
     this.editors.push({object: object, widget: widget});
     if (this.container.tablist) {
       var tabButton = this.container.tablist.pane2button[widget];
-      dojo.connect(widget, 'onChange', function() {
+      var updateTitle = function() {
         var title = widget.getTitle();
         widget.attr('title', title);
         tabButton.attr('label', title);
-      });
+      };
+      updateTitle();
+      dojo.connect(widget, 'onChange', updateTitle);
     }
     return { object: object, widget: widget };
   },

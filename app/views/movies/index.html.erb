@@ -41,7 +41,18 @@
       }
       return { keys: keys, groups: groups };
     };
-
+    dojo.ancestor = function(/*String|DOMNode*/startNode, /*String*/query, /*String|DOMNode?*/root) {
+      var node = dojo.byId(startNode);
+      var candidates = dojo.query(query, root);
+      root = root ? root : dojo.doc;
+      while (node && node !== root) {
+        if (candidates.indexOf(node) >= 0) {
+          return node;
+        }
+        node = node.parentNode
+      }
+      return null;
+    };
 
     dojo.registerModulePath('moviedb', "/javascripts/moviedb");
     dojo.require('moviedb.movies');
@@ -131,6 +142,23 @@
       return grid;
     }
 
+    function showEditor(editor, store, object) {
+      editor = dojo.isString(editor) ? dojo.getObject(editor) : editor;
+
+      function edit(obj) {
+        var createEditor = function() {
+          return new editor({store: store, object: obj});
+        };
+        editors.edit(obj, createEditor);
+      }
+
+      if (dojo.isString(object)) {
+        store.fetchItemByIdentity({identity: object, onItem: edit});
+      } else {
+        edit(object);
+      }
+    }
+
     dojo.addOnLoad(function() {
       moviesStore = new moviedb.Store({ target: "/movies", schema: moviedb.schema.movie });
       moviesGrid = buildMoviesGrid(moviesStore);
@@ -138,19 +166,9 @@
       peopleStore = new moviedb.Store({ target: "/people", schema: moviedb.schema.person });
       peopleGrid = buildPeopleGrid(peopleStore);
 
-      dojo.subscribe('movie.selected', function(movie) {
-        var createMovieEditor = function() {
-          return new moviedb.MovieEditor({store: moviesStore, object: movie});
-        };
-        editors.edit(movie, createMovieEditor);
-      });
-
-      dojo.subscribe('person.selected', function(person) {
-        var createPersonEditor = function() {
-          return new moviedb.PersonEditor({store: peopleStore, object: person});
-        };
-        editors.edit(person, createPersonEditor);
-      });
+      //### TODO extract commonalities with person.selected
+      dojo.subscribe('movie.selected', dojo.partial(showEditor, 'moviedb.MovieEditor', moviesStore));
+      dojo.subscribe('person.selected', dojo.partial(showEditor, 'moviedb.PersonEditor', peopleStore));
 
       dojo.subscribe('award.selected', function(award) {
         console.log("** AWARD SELECTED: ", arguments);

@@ -56,8 +56,19 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
     }
   },
   _publishSelect: function(event) {
-    var link = event.target; //### TODO find enclosing link
-    dojo.stopEvent(event);
+    dojo.stopEvent(event); //### REMOVE
+    if (this._tryPublish(event, 'people', 'person.selected') ||
+        this._tryPublish(event, 'movies', 'movie.selected')) {
+      dojo.stopEvent(event);
+    }
+  },
+  _tryPublish: function(event, kind, topic) {
+    var link = dojo.ancestor(event.target, '.awarding .' + kind +  ' .list a', this.domNode);
+    if (link && link.pathname) {
+      dojo.publish(topic || (kind + '.selected'), [link.pathname + link.search]);
+      return true;
+    }
+    return false;
   }
 });
 
