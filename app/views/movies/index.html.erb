@@ -122,7 +122,7 @@
         store: store,
         rowsPerPage: 50,
         structure: [
-          { name: "Name", get: function(_, item) { return item.getName(); }, width: "auto" }
+          { name: "Name", get: function(_, item) { return item ? item.getName() : '...'; }, field: 'name', width: "auto" }
         ]
       }, 'peoplelist');
       
