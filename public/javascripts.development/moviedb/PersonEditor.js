@@ -22,7 +22,7 @@ dojo.declare('moviedb.PersonEditor', [dijit._Widget, dijit._Templated], {
     };
   },
 
-  startup: function() {
+  postCreate: function() {
     dojo.connect(this.formNode, 'onChange',   this, 'onChange');
     dojo.connect(this.formNode, 'onModified', this, 'onModified');
     dojo.connect(this.formNode, 'onReverted', this, 'onReverted');

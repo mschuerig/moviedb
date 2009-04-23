@@ -17,7 +17,7 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
     };
   },
 
-  startup: function() {
+  postCreate: function() {
     this.awardings = this.store.getValues(this.object.awardings, 'items');
     this._updateView();
     dojo.connect(this, 'onClick', this, '_publishSelect');
@@ -56,7 +56,6 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
     }
   },
   _publishSelect: function(event) {
-    dojo.stopEvent(event); //### REMOVE
     if (this._tryPublish(event, 'people', 'person.selected') ||
         this._tryPublish(event, 'movies', 'movie.selected')) {
       dojo.stopEvent(event);

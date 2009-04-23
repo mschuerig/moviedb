@@ -202,7 +202,7 @@
 
   <div dojoType="dijit.Declaration" widgetClass="moviedb.MovieEditor"
        defaults="{store: null, object: null}">
-    <script type="dojo/method" event="startup">
+    <script type="dojo/method" event="postCreate">
       this._form = dijit.byId(this.id + '_form');
       this._titleWidget = dijit.byId(this.id + '_title');
       dojo.connect(this._form, 'onChange', this, 'onChange');
