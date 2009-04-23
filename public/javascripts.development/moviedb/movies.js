@@ -28,11 +28,9 @@ dojo.require('dojox.widget.PlaceholderMenuItem');
 dojo.require('dojox.widget.Toaster');
 dojo.require('moviedb.schema');
 dojo.require('moviedb.AwardView');
-//dojo.require('moviedb.Editor');
 dojo.require('moviedb.EditorManager');
 dojo.require('moviedb.Form');
 dojo.require('moviedb.PersonEditor');
-//dojo.require('moviedb.View');
 
 dojo.declare("moviedb.Store", dojox.data.JsonRestStore, {
   _processResults: function(results, deferred) {

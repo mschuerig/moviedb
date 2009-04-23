@@ -1,7 +1,9 @@
 dojo.provide('moviedb.AwardView');
 dojo.require('dijit._Templated');
 dojo.require('dijit._Widget');
+dojo.require('dojo.i18n');
 dojo.require('dojox.dtl._Templated');
+dojo.requireLocalization('moviedb', 'awards');
 
 dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
   store: null,
@@ -16,7 +18,11 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
       "moviedb.api.View": true
     };
   },
-
+  postMixInProperties: function(){
+    var _nlsResources = dojo.i18n.getLocalization('moviedb', 'awards');
+    dojo.mixin(this, _nlsResources);
+    this.inherited(arguments);
+  },
   postCreate: function() {
     this.awardings = this.store.getValues(this.object.awardings, 'items');
     this._updateView();
@@ -45,7 +51,7 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
         dojo.place(li, perDecadeList);
       });
       var decadeTitle = new dijit.TitlePane({
-        title: keys[i] + 's', //### TODO i18n
+        title: dojo.string.substitute(this.decadeTitle, {decade: keys[i]}),
         content: perDecadeList,
         open: first
       });

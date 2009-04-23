@@ -1,0 +1,3 @@
+{
+  decadeTitle: '${decade}s'
+}
