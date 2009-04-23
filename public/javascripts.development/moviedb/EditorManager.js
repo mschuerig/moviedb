@@ -6,12 +6,19 @@ dojo.declare('moviedb.EditorManager', null, {
     this.container = dijit.byId(container);
     dojo.subscribe(this.container.id + '-removeChild', this, 'editorClosed');
   },
-  edit: function(object, createEditorWidget) {
+  edit: function(object, store, widgetType) {
+    if (dojo.isString(object)) {
+      store.fetchItemByIdentity({identity: object, onItem: dojo.hitch(this, '_edit')});
+    } else {
+      this._edit(object, store, widgetType);
+    }
+  },
+  _edit: function(object, store, widgetType) {
     var editor = dojo.find(this.editors, function(item) {
       return item.object === object;
     });
     if (!editor) {
-      editor = this._makeEditor(object, createEditorWidget);
+      editor = this._makeEditor(object, store, widgetType);
     }
     this.container.selectChild(editor.widget);
     return editor.widget;
@@ -21,8 +28,9 @@ dojo.declare('moviedb.EditorManager', null, {
       return item.widget !== widget;
     });
   },
-  _makeEditor: function(object, createEditorWidget) {
-    var widget = createEditorWidget();
+  _makeEditor: function(object, store, widgetType) {
+    widgetType = dojo.isString(widgetType) ? dojo.getObject(widgetType) : widgetType;
+    var widget = new widgetType({store: store, object: object});
     widget = dojo.mixin(widget, {
       showLabel: true,
       closable: true,

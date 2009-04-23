@@ -1,5 +1,6 @@
-
 dojo.provide('moviedb.Form');
+dojo.require('dijit.form.Button');
+dojo.require('dijit.form.Form');
 
 dojo.declare('moviedb.Form', dijit.form.Form, {
   //### TODO
@@ -62,7 +63,6 @@ dojo.declare('moviedb.Form', dijit.form.Form, {
       if (!modified) {
         var orig = this.store.getValue(this.movie, prop) || '';
         var cur = widget.attr('value') || '';
-        //### TODO use dojo.date.compare() for dates
         if (orig instanceof Date || cur instanceof Date) {
           modified = (dojo.date.compare(orig, cur) !== 0);
         } else {

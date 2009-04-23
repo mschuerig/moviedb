@@ -14,50 +14,14 @@
   <script type="text/javascript">
     var moviesStore, moviesGrid;
     var peopleStore, peopleGrid;
+    var awardsStore, awardsTree;
     var editors;
-    
-    dojo.find = function(/*Array|String*/arr, /*Function|String*/callback, /*Object?*/thisObject) {
-      return dojo.filter(arr, callback, thisObject)[0];
-    };
-    dojo.try = function(/*Object*/obj, /*Function|String*/func, /*Array?*/args, /*Object?*/defaultValue) {
-      if (dojo.isFunction(obj[func])) {
-        return obj[func].apply(obj, args || []);
-      } else {
-        return defaultValue;
-      }
-    };
-    dojo.groupBy = function(/*Array*/items, /*Function*/extractor) {
-      var keys = [];
-      var groups = {};
-      for (var i = 0, l = items.length; i < l; i++) {
-        var item = items[i];
-        var key = extractor(item);
-        var group = groups[key];
-        if (!group) {
-          keys.push(key);
-          group = groups[key] = [];
-        }
-        group.push(item);
-      }
-      return { keys: keys, groups: groups };
-    };
-    dojo.ancestor = function(/*String|DOMNode*/startNode, /*String*/query, /*String|DOMNode?*/root) {
-      var node = dojo.byId(startNode);
-      var candidates = dojo.query(query, root);
-      root = root ? root : dojo.doc;
-      while (node && node !== root) {
-        if (candidates.indexOf(node) >= 0) {
-          return node;
-        }
-        node = node.parentNode
-      }
-      return null;
-    };
 
     dojo.registerModulePath('moviedb', "/javascripts/moviedb");
     dojo.require('moviedb.movies');
     
-    function buildMoviesGrid(store) {
+    //### TODO extract MoviesGrid
+    function buildMoviesGrid(store, domNode) {
       var awardsFormatter = function(awards) {
         return awards ? dojo.string.rep('*', awards.length) : '';
       };
@@ -77,7 +41,7 @@
         selectionMode: 'single',
         rowsPerPage: 50,
         keepRows: 300
-      }, 'movieslist');
+      }, domNode);
 
       grid.onCellContextMenu = function(e) {
         if (e.cell.field == "awards") {
@@ -115,7 +79,8 @@
       return grid;
     }
 
-    function buildPeopleGrid(store) {
+    //### TODO extract PeopleGrid
+    function buildPeopleGrid(store, domNode) {
       var grid = new dojox.grid.DataGrid({
         query: { name: '*' },
         sortInfo: 1,
@@ -124,7 +89,7 @@
         structure: [
           { name: "Name", get: function(_, item) { return item ? item.getName() : '...'; }, field: 'name', width: "auto" }
         ]
-      }, 'peoplelist');
+      }, domNode);
       
 /* ### TODO make sure tooltips are removed again
       moviedb.installTooltips(grid, function(e) {
@@ -142,50 +107,31 @@
       return grid;
     }
 
-    function showEditor(editor, store, object) {
-      editor = dojo.isString(editor) ? dojo.getObject(editor) : editor;
-
-      function edit(obj) {
-        var createEditor = function() {
-          return new editor({store: store, object: obj});
-        };
-        editors.edit(obj, createEditor);
-      }
-
-      if (dojo.isString(object)) {
-        store.fetchItemByIdentity({identity: object, onItem: edit});
-      } else {
-        edit(object);
-      }
-    }
-
     dojo.addOnLoad(function() {
+      function showEditor(widgetType, store, object) {
+        editors.edit(object, store, widgetType);
+      }
+      
       moviesStore = new moviedb.Store({ target: "/movies", schema: moviedb.schema.movie });
-      moviesGrid = buildMoviesGrid(moviesStore);
+      moviesGrid = buildMoviesGrid(moviesStore, 'movieslist');
+      dojo.subscribe('movie.selected', dojo.partial(showEditor, 'moviedb.MovieEditor', moviesStore));
 
       peopleStore = new moviedb.Store({ target: "/people", schema: moviedb.schema.person });
-      peopleGrid = buildPeopleGrid(peopleStore);
-
-      //### TODO extract commonalities with person.selected
-      dojo.subscribe('movie.selected', dojo.partial(showEditor, 'moviedb.MovieEditor', moviesStore));
+      peopleGrid = buildPeopleGrid(peopleStore, 'peoplelist');
       dojo.subscribe('person.selected', dojo.partial(showEditor, 'moviedb.PersonEditor', peopleStore));
 
-      dojo.subscribe('award.selected', function(award) {
-        console.log("** AWARD SELECTED: ", arguments);
-        var createAwardView = function() {
-          return new moviedb.AwardView({store: awardsStore, object: award});
-        };
-        editors.edit(award, createAwardView);
-      });
+      awardsStore = new moviedb.Store({ target: "/awards"/*, schema: moviedb.schema.award*/ });
+      awardsTree = new moviedb.AwardsTree({store: awardsStore}, 'awardstree');
+      dojo.subscribe('award.selected', dojo.partial(showEditor, 'moviedb.AwardView', awardsStore));
 
       dojo.subscribe('awarding.selected', function(awarding) {
         console.log("** AWARDING SELECTED: ", arguments);
       });
 
       dojo.parser.parse();
-
       editors = new moviedb.EditorManager('editors');
 
+      //### TODO -> PeopleList widget
       dojo.connect(dijit.byId('peopleQueryForm'), 'onSubmit', function(event) {
         var value = dijit.byId('peopleQuery').attr('value')
         value = /^\s*$/.test(value) ? '*' : dojo.string.trim(value);
@@ -300,26 +246,13 @@
             </div>
           </div>
           <div dojoType="dijit.layout.ContentPane" region="center">
-            <div id="peoplelist" region="center"></div>
+            <div id="peoplelist"></div>
           </div>
         </div>
       </div>
       <div dojoType="dijit.layout.ContentPane" id="awardsPane"
            title="Awards" iconClass="awardIcon" showLabel="false">
-        <div dojoType="moviedb.Store"
-             target="/awards" jsId="awardsStore"></div>
-        <div dojoType="dijit.tree.ForestStoreModel"
-             store="awardsStore"
-             labelAttr="name"
-             childrenAttrs="awards"
-             jsId="awardsModel"></div>
-        <div dojoType="dijit.Tree" jsId="awardsTree" 
-             model="awardsModel"
-             showRoot="false">
-           <script type="dojo/connect" event="onDblClick" args="item, node">
-             dojo.publish('award.selected', [item, node]);
-           </script>
-        </div>
+        <div id="awardstree"></div>
       </div>
     </div>
     <div dojoType="dijit.layout.TabContainer" id="editors" region="center"></div>

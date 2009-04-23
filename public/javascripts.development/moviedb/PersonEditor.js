@@ -1,11 +1,11 @@
 dojo.provide('moviedb.PersonEditor');
 dojo.require('dijit._Templated');
 dojo.require('dijit._Widget');
+dojo.require('dijit.form.Textarea');
 dojo.require('dijit.form.ValidationTextBox');
 dojo.require('dijit.form.DateTextBox');
 dojo.require('dojo.i18n');
 dojo.require('dojox.form.BusyButton');
-dojo.require('dojox.dtl._Templated');
 dojo.require('moviedb.Form');
 dojo.requireLocalization("dijit", "loading");
 

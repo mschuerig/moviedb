@@ -20,59 +20,18 @@ dojo.require('dijit.layout.TabContainer');
 dojo.require('dijit.tree.ForestStoreModel');
 dojo.require('dojo.back');
 dojo.require('dojo.parser');
-dojo.require('dojox.data.JsonRestStore');
-dojo.require('dojox.form.BusyButton');
 dojo.require('dojox.grid.DataGrid');
 dojo.require('dojox.json.query');
 dojo.require('dojox.widget.PlaceholderMenuItem');
 dojo.require('dojox.widget.Toaster');
 dojo.require('moviedb.schema');
+dojo.require('moviedb.AwardsTree');
 dojo.require('moviedb.AwardView');
 dojo.require('moviedb.EditorManager');
 dojo.require('moviedb.Form');
 dojo.require('moviedb.PersonEditor');
+dojo.require('moviedb.Store');
 
-dojo.declare("moviedb.Store", dojox.data.JsonRestStore, {
-  _processResults: function(results, deferred) {
-    dojo.forEach(results.items, function(item) {
-      if (!item.awards) {
-        item.awards = [];
-      }
-    });
-    return results;
-  },
-  fetch: function(args) {
-    console.log("*** fetch: ", args); //### REMOVE
-    var query = args.query;
-    if (query && dojo.isObject(query)) {
-      args.queryStr = '?' + this._matchingClause(query) + this._sortingClause(args.sort);
-    }
-    //### TODO add onError unless already defined
-    return this.inherited(arguments);
-  },
-  _matchingClause: function(query) {
-    console.log("***fetch, query: ", query); //### REMOVE
-    var queryStr = '';
-    for (var q in query) {
-      var value = query[q];
-      if (value != '*') {
-        queryStr += '[?' + q + "='" + value + "']";
-      }
-    }
-    return queryStr;
-  },
-  _sortingClause: function(sort) {
-    console.log("***fetch, sort: ", sort); //### REMOVE
-    if (!dojo.isArray(sort) || sort.length === 0) return '';
-    return '[' + dojo.map(sort, function(attr) {
-      if (dojo.isObject(attr)) {
-        return (attr.descending ? '\\' : '/') + attr.attribute;
-      } else {
-        return '/' + attr;
-      }
-    }).join(',') + ']';
-  }
-});
 
 dojo.setObject('moviedb.installTooltips', function(grid, showTooltip) {
   var hideTooltip = function(e) {
@@ -82,3 +41,44 @@ dojo.setObject('moviedb.installTooltips', function(grid, showTooltip) {
   dojo.connect(grid, "onCellMouseOver", showTooltip);
   dojo.connect(grid, "onCellMouseOut", hideTooltip);
 });
+
+dojo.find = function(/*Array|String*/arr, /*Function|String*/callback, /*Object?*/thisObject) {
+  return dojo.filter(arr, callback, thisObject)[0];
+};
+
+dojo.try = function(/*Object*/obj, /*Function|String*/func, /*Array?*/args, /*Object?*/defaultValue) {
+  if (dojo.isFunction(obj[func])) {
+    return obj[func].apply(obj, args || []);
+  } else {
+    return defaultValue;
+  }
+};
+
+dojo.groupBy = function(/*Array*/items, /*Function*/extractor) {
+  var keys = [];
+  var groups = {};
+  for (var i = 0, l = items.length; i < l; i++) {
+    var item = items[i];
+    var key = extractor(item);
+    var group = groups[key];
+    if (!group) {
+      keys.push(key);
+      group = groups[key] = [];
+    }
+    group.push(item);
+  }
+  return { keys: keys, groups: groups };
+};
+
+dojo.ancestor = function(/*String|DOMNode*/startNode, /*String*/query, /*String|DOMNode?*/root) {
+  var node = dojo.byId(startNode);
+  var candidates = dojo.query(query, root);
+  root = root ? root : dojo.doc;
+  while (node && node !== root) {
+    if (candidates.indexOf(node) >= 0) {
+      return node;
+    }
+    node = node.parentNode;
+  }
+  return null;
+};

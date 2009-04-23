@@ -13,14 +13,42 @@ dojo.declare('moviedb.Person', null, {
   }
 });
 
+//### TODO check whether schema references are ok
 dojo.setObject('moviedb.schema', {
   award: {
+    id : 'award',
     type: 'object',
     properties: {
-      title: { type: 'string' }
+      title: { type: 'string' },
+      children: {
+        type: 'array',
+        optional: true,
+        items: { '$ref': 'award' }
+      },
+      awardings: {
+        type: 'array',
+        optional: true,
+        items: { '$ref': 'awarding' }
+      }
+    }
+  },
+  awarding: {
+    id: 'awarding',
+    name: { type: 'string' },
+    year: { type: 'integer' },
+    people: {
+      type: 'array',
+      optional: true,
+      items: { '$ref': 'person' }
+    },
+    movies: {
+      type: 'array',
+      optional: true,
+      items: { '$ref': 'movie' }
     }
   },
   movie: {
+    id :'movie',
     type: 'object',
     properties: {
       id: { type: 'integer' },
@@ -30,12 +58,13 @@ dojo.setObject('moviedb.schema', {
       awards: {
         type: 'array',
         optional: true,
-        items: moviedb.schema.award
+        items: { '$ref': 'award' }
       }
     },
     prototype: moviedb.Movie.prototype
   },
   person: {
+    id: 'person',
     type: 'object',
     properties: {
       id: { type: 'integer' },

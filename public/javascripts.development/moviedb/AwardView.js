@@ -3,6 +3,7 @@ dojo.require('dijit._Templated');
 dojo.require('dijit._Widget');
 dojo.require('dojo.i18n');
 dojo.require('dojox.dtl._Templated');
+dojo.require('dojox.dtl.contrib.data');
 dojo.requireLocalization('moviedb', 'awards');
 
 dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
@@ -10,7 +11,7 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
   object: null,
 
   baseClass: 'moviedbAwardView',
-  awardingWidget: 'moviedb._AwardingView',
+  awardingsListWidget: 'moviedb._AwardingsList',
   templatePath: dojo.moduleUrl('moviedb', 'templates/AwardView.html'),
 
   getFeatures: function(){
@@ -25,31 +26,26 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
   },
   postCreate: function() {
     this.awardings = this.store.getValues(this.object.awardings, 'items');
-    this._updateView();
+    this._buildView();
     dojo.connect(this, 'onClick', this, '_publishSelect');
   },
   getTitle: function() {
     return this.object.name;
   },
-  _updateView: function() {
+  _buildView: function() {
     dojo.empty(this.listNode);
 
     var decades = dojo.groupBy(this.awardings,
       function(item) { return Math.floor(item.year / 10) * 10; } );
     var keys = decades.keys.sort(function(a, b) { return b - a; });
 
-    var itemWidget = dojo.getObject(this.awardingWidget);
+    var listWidget = dojo.getObject(this.awardingsListWidget);
+    var store = this.store;
 
     for (var i = 0, l = keys.length, first = true; i < l; i++) {
       var awardings = decades.groups[keys[i]].sort(
         function(a, b) { return b.year - a.year; });
-      var perDecadeList = dojo.create('ul', {className: 'decade'});
-      awardings.forEach(function(item) {
-        var li = dojo.create('li');
-        var aw = new itemWidget({awarding: item});
-        aw.placeAt(li);
-        dojo.place(li, perDecadeList);
-      });
+      var perDecadeList = new listWidget({items: awardings, store: store});
       var decadeTitle = new dijit.TitlePane({
         title: dojo.string.substitute(this.decadeTitle, {decade: keys[i]}),
         content: perDecadeList,
@@ -77,7 +73,8 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
   }
 });
 
-dojo.declare('moviedb._AwardingView', [dijit._Widget, dojox.dtl._Templated], {
-  awarding: null,
-  templatePath: dojo.moduleUrl("moviedb", "templates/_Awarding.html")
+dojo.declare('moviedb._AwardingsList', [dijit._Widget, dojox.dtl._Templated], {
+  store: null,
+  items: null,
+  templatePath: dojo.moduleUrl("moviedb", "templates/_AwardingsList.html")
 });
