@@ -1,13 +1,18 @@
 class Award < ActiveRecord::Base
   validates_presence_of :name
+  acts_as_nested_set
   belongs_to :parent, :class_name => 'Award', :foreign_key => :parent_id
   has_many :children, :class_name => 'Award', :foreign_key => :parent_id, :dependent => :destroy
   has_many :requirements, :class_name => 'AwardRequirement', :dependent => :destroy
   has_many :awardings, :order => 'awardings.year DESC'
-  
+
   default_scope :include => :parent, :order => 'name'
   
   named_scope :top_level, :conditions => { :parent_id => nil }
+  
+  def self.awardize(a)
+    a.kind_of?(Award) ? a : Award.find(a)
+  end
   
   def fullname
     if parent
@@ -20,7 +25,7 @@ class Award < ActiveRecord::Base
   def for_year(year)
     Awarding.find_by_year_and_award_id(year, self.id)
   end
-  
+
   def validate_awarding(awarding)
     requirements.each { |req| req.validate_awarding(awarding) }
   end

@@ -45,7 +45,8 @@ dojo.setObject('moviedb.schema', {
       type: 'array',
       optional: true,
       items: { '$ref': 'movie' }
-    }
+    },
+    award: { '$ref': 'award' }
   },
   movie: {
     id :'movie',

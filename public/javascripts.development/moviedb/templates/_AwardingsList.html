@@ -4,6 +4,7 @@
   {% for awarding in awardings %}
   <div class="awarding">
     <div class="year">{{ awarding.year }}</div>
+    <div>{{ awarding.award.name }}</div>
     {% ifnotequal awarding.people|length 0 %}
     <div class="people">People:
       <ul class="list">

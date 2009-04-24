@@ -4,7 +4,7 @@ class AwardingsController < ApplicationController
   def index
     respond_to do |format|
       format.json do
-        @awardings = @scope.all(:include => [:movies, :people])
+        @awardings = @scope.all(:include => [:movies, :people, :award])
         render
       end
     end

@@ -32,7 +32,7 @@ role_types.name = ?},
   named_scope :for_award, lambda { |award|
     {
       :joins => :award,
-      :conditions => { :award_id => award }
+      :conditions => { :award_id => Award.awardize(award).self_and_descendants }
     }
   }
   

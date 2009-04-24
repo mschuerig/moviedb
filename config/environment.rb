@@ -29,6 +29,7 @@ Rails::Initializer.run do |config|
   config.gem "mschuerig-ruby_template_handler", :lib => 'ruby_template_handler'
   config.gem "mschuerig-branch_db", :lib => 'branch_db'
   config.gem "rails_sql_views"
+  config.gem "collectiveidea-awesome_nested_set", :lib => 'awesome_nested_set'
   
   # Only load the plugins named here, in the order given (default is alphabetical).
   # :all can be used as a placeholder for all plugins not explicitly named
