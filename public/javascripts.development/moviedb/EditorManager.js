@@ -1,4 +1,5 @@
 dojo.provide('moviedb.EditorManager');
+dojo.require('moviedb.dojo-ext');
 
 dojo.declare('moviedb.EditorManager', null, {
   editors: [],

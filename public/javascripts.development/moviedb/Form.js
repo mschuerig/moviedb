@@ -4,9 +4,13 @@ dojo.require('dijit.form.Form');
 
 dojo.declare('moviedb.Form', dijit.form.Form, {
   //### TODO
+  // - separate into mixins
+  //  - populating
+  //  - change watch
+  //  - button handling
   // - derive appropriate widgets and validations from a json schema
   // - don't overwrite callback methods, leave them to users
-  movie: null,
+  object: null,
   store: null,
 
   constructor: function() {
@@ -21,13 +25,13 @@ dojo.declare('moviedb.Form', dijit.form.Form, {
     this._resetSubmitButton();
     return this.inherited(arguments);
   },
-  populate: function(store, movie) {
-    if (movie) {
+  populate: function(store, object) {
+    if (object) {
       var self = this;
-      store.loadItem({ item: movie,
-        onItem: function(loadedMovie) {
+      store.loadItem({ item: object,
+        onItem: function(loadedObject) {
           self._forProperties(function(prop, widget) {
-            widget.setValue(store.getValue(loadedMovie, prop));
+            widget.setValue(store.getValue(loadedObject, prop));
           });
         }
       });
@@ -37,14 +41,14 @@ dojo.declare('moviedb.Form', dijit.form.Form, {
       });
     }
     this._wasModified = false;
-    this.movie = movie;
+    this.object = object;
     this.store = store;
     this._resetSubmitButton();
   },
   save: function() {
-    if (this.movie) {
+    if (this.object) {
       this._forProperties(function(prop, widget) {
-        this.store.setValue(this.movie, prop, widget.attr('value'));
+        this.store.setValue(this.object, prop, widget.attr('value'));
       });
       this.store.save({
         onComplete: this.onSaved,
@@ -57,11 +61,11 @@ dojo.declare('moviedb.Form', dijit.form.Form, {
     this._resetSubmitButton();
   },
   isModified: function() {
-    if (!this.movie) return false;
+    if (!this.object) return false;
     var modified = false;
     this._forProperties(function(prop, widget) {
       if (!modified) {
-        var orig = this.store.getValue(this.movie, prop) || '';
+        var orig = this.store.getValue(this.object, prop) || '';
         var cur = widget.attr('value') || '';
         if (orig instanceof Date || cur instanceof Date) {
           modified = (dojo.date.compare(orig, cur) !== 0);

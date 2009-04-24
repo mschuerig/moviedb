@@ -4,6 +4,7 @@ dojo.require('dijit._Widget');
 dojo.require('dojo.i18n');
 dojo.require('dojox.dtl._Templated');
 dojo.require('dojox.dtl.contrib.data');
+dojo.require('moviedb.dojo-ext');
 dojo.requireLocalization('moviedb', 'awards');
 
 dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
