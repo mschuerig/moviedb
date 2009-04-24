@@ -28,11 +28,10 @@
         editors.edit(object, store, widgetType);
       }
       
-/*
       moviesStore = new moviedb.Store({ target: "/movies", schema: moviedb.schema.movie });
       moviesGrid = buildMoviesGrid(moviesStore, 'moviesList');
       moviesGrid.startup();
-*/
+
       dojo.subscribe('movie.selected',  dojo.partial(showEditor, 'moviedb.MovieEditor',  moviesStore));
       dojo.subscribe('person.selected', dojo.partial(showEditor, 'moviedb.PersonEditor', peopleStore));
       dojo.subscribe('award.selected',  dojo.partial(showEditor, 'moviedb.AwardView',    awardsStore));

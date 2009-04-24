@@ -48,9 +48,11 @@ namespace :dojo do
 
       release_dir = File.join(DOJO_RELEASES, "javascripts.#{DOJO_PROFILE}", '/')
       release_name = ''
-      sh %{cd "#{DOJO_BUILD}" && ./build.sh action=clean,release profileFile="#{profile_file}" releaseDir="#{release_dir}" releaseName="#{release_name}" layerOptimize=shrinksafe.keepLines cssOptimize=comments.keepLines}
+#      sh %{cd "#{DOJO_BUILD}" && ./build.sh action=clean,release profileFile="#{profile_file}" releaseDir="#{release_dir}" releaseName="#{release_name}" layerOptimize=shrinksafe.keepLines cssOptimize=comments.keepLines}
+      sh %{cd "#{DOJO_BUILD}" && ./build.sh profileFile="#{profile_file}" releaseDir="#{release_dir}" releaseName="#{release_name}" }
     end
-    
+
+### TODO does the buildLayers option help?
 #    task :stylesheets => :setup do
 #      profile_file = File.join(DOJO_PROFILES, "stylesheets.js")
 #      release_dir = File.join(DOJO_RELEASES, "stylesheets.#{DOJO_PROFILE}", '/')

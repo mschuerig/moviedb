@@ -9,7 +9,11 @@ dojo.declare('moviedb.EditorManager', null, {
   },
   edit: function(object, store, widgetType) {
     if (dojo.isString(object)) {
-      store.fetchItemByIdentity({identity: object, onItem: dojo.hitch(this, '_edit')});
+      var self = this;
+      store.fetchItemByIdentity({
+        identity: object,
+        onItem: function(item) { self._edit(item, store, widgetType); }
+      });
     } else {
       this._edit(object, store, widgetType);
     }
