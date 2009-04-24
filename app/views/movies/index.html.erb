@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="/stylesheets/movies.css" type="text/css" />
 
   <script src="/javascripts/dojo/dojo.js" type="text/javascript"
-          djConfig="parseOnLoad:false, debugAtAllCosts:false"></script>
+          djConfig="parseOnLoad:true, debugAtAllCosts:false"></script>
 
   <script type="text/javascript">
     var moviesStore, moviesGrid;
@@ -19,125 +19,29 @@
 
     dojo.registerModulePath('moviedb', "/javascripts/moviedb");
     dojo.require('moviedb.movies');
-    
-    //### TODO extract MoviesGrid
-    function buildMoviesGrid(store, domNode) {
-      var awardsFormatter = function(awards) {
-        return awards ? dojo.string.rep('*', awards.length) : '';
-      };
-      var yearFormatter = function(date) {
-        return date ? 1900 + date.getYear() : '';
-      };
 
-      var grid = new dojox.grid.DataGrid({
-        query: { title: '*' },
-        sortInfo: -2,
-        store: store,
-        structure: [
-          { field: "title", name: "Title", width: "auto" },
-          { field: "releaseDate", name: "Year", width: "5em", formatter: yearFormatter },
-          { field: "awards", name: "Awards", width: "15%", formatter: awardsFormatter }
-        ],
-        selectionMode: 'single',
-        rowsPerPage: 50,
-        keepRows: 300
-      }, domNode);
-
-      grid.onCellContextMenu = function(e) {
-        if (e.cell.field == "awards") {
-          var movie = e.grid.getItem(e.rowIndex);
-          if (movie.awards) {
-            var awards = movie.awards;
-            var awardsMenu = new dijit.Menu({targetNodeIds: e.cellNode});
-//            awardsMenu.addChild(new dijit.MenuItem({
-//              label: 'Overview'//,
-//              onClick: function() { dojo.publish('award.selected', [awards]) }
-//            }));
-//            awardsMenu.addChild(new dijit.MenuSeparator());
-            dojo.forEach(awards, function(awarding) {
-              awardsMenu.addChild(new dijit.MenuItem({
-                label: awarding.title,
-                onClick: function() { dojo.publish('awarding.selected', [awarding]) }
-              }));
-            });
-            awardsMenu.startup();
-            dojo.connect(awardsMenu, 'onClose', function() {
-              awardsMenu.uninitialize();
-            });
-            awardsMenu._openMyself(e);
-          }
-        }
-	  };
-	  grid.onHeaderContextMenu = function(e) {
-	    console.log('*** onHeaderContextMenu: ', e); //### REMOVE
-	  };
-    
-      dojo.connect(grid, 'onRowDblClick', function(event) {
-        dojo.publish('movie.selected', [grid.getItem(event.rowIndex)]);
-      });
-
-      return grid;
-    }
-
-    //### TODO extract PeopleGrid
-    function buildPeopleGrid(store, domNode) {
-      var grid = new dojox.grid.DataGrid({
-        query: { name: '*' },
-        sortInfo: 1,
-        store: store,
-        rowsPerPage: 50,
-        structure: [
-          { name: "Name", get: function(_, item) { return item ? item.getName() : '...'; }, field: 'name', width: "auto" }
-        ]
-      }, domNode);
-      
-/* ### TODO make sure tooltips are removed again
-      moviedb.installTooltips(grid, function(e) {
-        var person = e.grid.getItem(e.rowIndex);
-        if (person && person.dob) {
-          var msg = 'born ' + person.dob; //### TODO i18n
-          dijit.showTooltip(msg, e.cellNode);
-        }
-      });
-*/
-      dojo.connect(grid, 'onRowDblClick', function(event) {
-        dojo.publish('person.selected', [grid.getItem(event.rowIndex)]);
-      });
-
-      return grid;
-    }
-
+    peopleStore = new moviedb.Store({ target: "/people", schema: moviedb.schema.person });
+    awardsStore = new moviedb.Store({ target: "/awards", schema: moviedb.schema.award });
+  
     dojo.addOnLoad(function() {
       function showEditor(widgetType, store, object) {
         editors.edit(object, store, widgetType);
       }
       
+/*
       moviesStore = new moviedb.Store({ target: "/movies", schema: moviedb.schema.movie });
-      moviesGrid = buildMoviesGrid(moviesStore, 'movieslist');
-      dojo.subscribe('movie.selected', dojo.partial(showEditor, 'moviedb.MovieEditor', moviesStore));
-
-      peopleStore = new moviedb.Store({ target: "/people", schema: moviedb.schema.person });
-      peopleGrid = buildPeopleGrid(peopleStore, 'peoplelist');
+      moviesGrid = buildMoviesGrid(moviesStore, 'moviesList');
+      moviesGrid.startup();
+*/
+      dojo.subscribe('movie.selected',  dojo.partial(showEditor, 'moviedb.MovieEditor',  moviesStore));
       dojo.subscribe('person.selected', dojo.partial(showEditor, 'moviedb.PersonEditor', peopleStore));
-
-      awardsStore = new moviedb.Store({ target: "/awards"/*, schema: moviedb.schema.award*/ });
-      awardsTree = new moviedb.AwardsTree({store: awardsStore}, 'awardstree');
-      dojo.subscribe('award.selected', dojo.partial(showEditor, 'moviedb.AwardView', awardsStore));
+      dojo.subscribe('award.selected',  dojo.partial(showEditor, 'moviedb.AwardView',    awardsStore));
 
       dojo.subscribe('awarding.selected', function(awarding) {
         console.log("** AWARDING SELECTED: ", arguments);
       });
 
-      dojo.parser.parse();
       editors = new moviedb.EditorManager('editors');
-
-      //### TODO -> PeopleList widget
-      dojo.connect(dijit.byId('peopleQueryForm'), 'onSubmit', function(event) {
-        var value = dijit.byId('peopleQuery').attr('value')
-        value = /^\s*$/.test(value) ? '*' : dojo.string.trim(value);
-        peopleGrid.setQuery({ name: value });
-        dojo.stopEvent(event);
-      });
     });
   </script>
 
@@ -232,27 +136,17 @@
          style="width:30%; min-width:20em; height:100%">
       <div dojoType="dijit.layout.ContentPane" id="moviesPane"
            title="Movies" iconClass="movieIcon" showLabel="false">
-        <div id="movieslist"></div>
+        <div id="moviesList"></div>
       </div>
       <div dojoType="dijit.layout.ContentPane" id="peoplePane"
            title="People" iconClass="peopleIcon" showLabel="false">
-        <div dojoType="dijit.layout.BorderContainer">
-          <div dojoType="dijit.layout.ContentPane" region="top">
-            <div dojoType="dijit.form.Form" id="peopleQueryForm">
-              <div dojoType="dijit.form.TextBox" id="peopleQuery" style="width:70%"></div>
-              <button dojoType="dijit.form.Button" type="submit"
-                      iconClass="filterIcon" showLabel="true" style="width:20%"
-                      >Filter</button>
-            </div>
-          </div>
-          <div dojoType="dijit.layout.ContentPane" region="center">
-            <div id="peoplelist"></div>
-          </div>
-        </div>
+        <div dojoType="moviedb.PeopleGrid" store="peopleStore" id="peopleList"></div>
       </div>
       <div dojoType="dijit.layout.ContentPane" id="awardsPane"
            title="Awards" iconClass="awardIcon" showLabel="false">
-        <div id="awardstree"></div>
+        <div dojoType="moviedb.AwardsTree" 
+             store="awardsStore" 
+             id="awardsTree"></div>
       </div>
     </div>
     <div dojoType="dijit.layout.TabContainer" id="editors" region="center"></div>

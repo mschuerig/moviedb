@@ -1,0 +1,16 @@
+<div dojoType="dijit.layout.BorderContainer" class="${baseClass}">
+  <div dojoType="dijit.layout.ContentPane" region="top">
+    <div dojoType="moviedb.Form" dojoAttachPoint="formNode">
+      <div dojoType="dijit.form.TextBox" 
+           dojoAttachPoint="queryNode"
+           trim="true"
+           style="width:70%"></div>
+      <button dojoType="dojox.form.BusyButton" type="submit"
+              iconClass="filterIcon" showLabel="true" style="width:20%"
+              >Filter</button>
+    </div>
+  </div>
+  <div dojoType="dijit.layout.ContentPane" region="center">
+    <div dojoAttachPoint="gridNode"></div>
+  </div>
+</div>
