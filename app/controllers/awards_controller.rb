@@ -4,11 +4,11 @@ class AwardsController < ApplicationController
   def index
     respond_to do |format|
       format.html do
-        @awards = Award.all
+        @awards = Award.all(:include => :children)
         render :layout => false
         end
       format.json do
-        @award_groups = Award.top_level
+        @award_groups = Award.top_level.all(:include => :children)
         render
       end
     end
