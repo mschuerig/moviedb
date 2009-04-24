@@ -24,8 +24,8 @@
     awardsStore = new moviedb.Store({ target: "/awards", schema: moviedb.schema.award });
   
     dojo.addOnLoad(function() {
-      function showEditor(widgetType, store, object) {
-        editors.edit(object, store, widgetType);
+      function showEditor(widgetType, store, object, options) {
+        editors.edit(object, store, widgetType, options);
       }
       
       moviesStore = new moviedb.Store({ target: "/movies", schema: moviedb.schema.movie });
