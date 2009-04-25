@@ -1,5 +1,7 @@
 dojo.provide('moviedb.movies');
 
+//dojo.require('dojo.back');
+dojo.require('dojo.parser');
 dojo.require('dijit.Declaration');
 dojo.require('dijit.Menu');
 dojo.require('dijit.MenuItem');
@@ -17,8 +19,6 @@ dojo.require('dijit.layout.ContentPane');
 dojo.require('dijit.layout.ContentPane');
 dojo.require('dijit.layout.TabContainer');
 dojo.require('dijit.tree.ForestStoreModel');
-dojo.require('dojo.back');
-dojo.require('dojo.parser');
 dojo.require('dojox.grid.DataGrid');
 dojo.require('dojox.json.query');
 dojo.require('dojox.widget.PlaceholderMenuItem');
@@ -29,6 +29,7 @@ dojo.require('aiki.Store');
 dojo.require('moviedb.schema');
 dojo.require('moviedb.AwardsTree');
 dojo.require('moviedb.AwardView');
+dojo.require('moviedb.MovieEditor');
 dojo.require('moviedb.MoviesGrid');
 dojo.require('moviedb.PeopleGrid');
 dojo.require('moviedb.PersonEditor');

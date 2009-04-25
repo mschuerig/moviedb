@@ -1,0 +1,46 @@
+<div class="${baseClass}">
+  <div dojoType="aiki.Form" dojoAttachPoint="formNode">
+    <ul>
+      <li>
+        <label for="${id}_title">Title</label>
+      </li>
+      <li>
+        <div type="text" dojoType="dijit.form.ValidationTextBox"
+             id="${id}_title" name="title"
+             dojoAttachPoint="titleNode"
+             required="true" trim="true"
+             invalidMessage="Please enter the movie's title."></div>
+      </li>
+      <li>
+        <label for="${id}_releaseDate">Release Date</label>
+      </li>
+      <li>
+        <div type="text" dojoType="dijit.form.DateTextBox"
+             id="${id}_releaseDate" name="releaseDate"
+             invalidMessage="Please enter a valid date."></div>
+      </li>
+      <li>
+        <label for="${id}_summary">Summary</label>
+      </li>
+      <li>
+        <div dojoType="dijit.form.Textarea"
+             id="${id}_summary" name="summary"
+             style="width:30em"></div>
+      </li>
+      <li>
+        <h3>Director</h3>
+      </li>
+      <li>
+        <h3>Actors</h3>
+      </li>
+      <li>
+        <h3>Awards</h3>
+      </li>
+      <li>
+        <div dojoType="dojox.form.BusyButton" type="submit"
+             busyLabel="Saving..."
+             >Save Changes</div>
+      </li>
+    </ul>
+  </div>
+</div>
