@@ -2,10 +2,13 @@ dojo.provide('aiki.EditorManager');
 dojo.require('aiki._base');
 
 dojo.declare('aiki.EditorManager', null, {
-  editors: [],
-  //### TODO properties instead of ctor
-  constructor: function(container) {
-    this.container = dijit.byId(container);
+  _editors: [],
+
+  constructor: function(options) {
+    if (options) {
+      dojo.mixin(this, options);
+    }
+    this.container = dijit.byId(this.container);
     dojo.subscribe(this.container.id + '-removeChild', this, 'editorClosed');
   },
   edit: function(object, store, widgetType) {
@@ -20,7 +23,7 @@ dojo.declare('aiki.EditorManager', null, {
     }
   },
   _edit: function(object, store, widgetType) {
-    var editor = aiki.find(this.editors, function(item) {
+    var editor = aiki.find(this._editors, function(item) {
       return item.object === object;
     });
     if (!editor) {
@@ -30,7 +33,7 @@ dojo.declare('aiki.EditorManager', null, {
     return editor.widget;
   },
   editorClosed: function(widget) {
-    this.editors = dojo.filter(this.editors, function(item) {
+    this._editors = dojo.filter(this._editors, function(item) {
       return item.widget !== widget;
     });
   },
@@ -43,7 +46,7 @@ dojo.declare('aiki.EditorManager', null, {
       onClose: this._makeOnCloseHandler(widget)
     });
     this.container.addChild(widget);
-    this.editors.push({object: object, widget: widget});
+    this._editors.push({object: object, widget: widget});
     if (this.container.tablist) {
       var tabButton = this.container.tablist.pane2button[widget];
       var updateTitle = function() {
