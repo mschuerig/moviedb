@@ -28,17 +28,13 @@ dojo.declare('moviedb.PeopleGrid', [dijit._Widget, dijit._Templated], {
   ],
 
   postCreate: function() {
-/*
-    console.warn(this.gridNode);
     this.grid = new dojox.grid.DataGrid({
       structure: this._gridStructure,
       store: this.store,
       sortInfo: this.sortInfo,
       keepRows: this.keepRows
     }, this.gridNode);
-    console.warn(this.grid._started); //### REMOVE
-    this.grid.startup();
-*/
+
 /* ### TODO make sure tooltips are removed again
       moviedb.installTooltips(grid, function(e) {
         var person = e.grid.getItem(e.rowIndex);
