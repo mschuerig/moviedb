@@ -13,14 +13,19 @@ describe AwardsController do
   describe "GET index" do
     describe "with mime type of json" do
       
+      def expect_top_level_awards_are_retrieved
+        Award.should_receive(:top_level).and_return(mock_scope = mock('scope'))
+        mock_scope.should_receive(:all).and_return([mock_top_level_award])
+      end
+      
       it "exposes the top-level award groups" do
-        Award.should_receive(:top_level).and_return([mock_top_level_award])
+        expect_top_level_awards_are_retrieved
         get :index, :format => 'json'
         assigns[:award_groups].should == [mock_top_level_award]
       end
 
       it "renders the awards/index.json.rb template" do
-        Award.should_receive(:top_level).and_return([mock_top_level_award])
+        expect_top_level_awards_are_retrieved
         get :index, :format => 'json'
         response.should render_template('awards/index.json.rb')
       end

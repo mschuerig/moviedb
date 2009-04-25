@@ -33,12 +33,13 @@ describe "/awards/index.json.rb" do
         "label": "name",
         "identifier": "id",
         "items": [
-          {"name": "Oscar", "id": "1",
-           "awards": [
+          {"name": "Oscar", "id": "1", "awardings": { "$ref": "/awards/1/awardings" },
+           "children": [
             {"id": "2", "name": "Best Mover", "awardings": {"$ref": "/awards/2/awardings" }},
             {"id": "3", "name": "Best Shaker", "awardings": {"$ref": "/awards/3/awardings" }}
-           ]},
-          {"name": "Karlheinz", "id": "4"}
+           ]
+          },
+          {"name": "Karlheinz", "id": "4", "awardings": { "$ref": "/awards/4/awardings" }}
         ]
       }
     END

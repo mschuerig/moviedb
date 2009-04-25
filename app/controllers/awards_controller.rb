@@ -6,7 +6,7 @@ class AwardsController < ApplicationController
       format.html do
         @awards = Award.all(:include => :children)
         render :layout => false
-        end
+      end
       format.json do
         @award_groups = Award.top_level.all(:include => :children)
         render
