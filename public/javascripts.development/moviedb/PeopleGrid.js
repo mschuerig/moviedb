@@ -8,7 +8,7 @@ dojo.require('dijit.layout.ContentPane');
 //dojo.require('dojo.i18n');
 dojo.require('dojox.form.BusyButton');
 dojo.require('dojox.grid.DataGrid');
-dojo.require('moviedb.Form');
+dojo.require('aiki.Form');
 
 dojo.declare('moviedb.PeopleGrid', [dijit._Widget, dijit._Templated], {
   store: null,

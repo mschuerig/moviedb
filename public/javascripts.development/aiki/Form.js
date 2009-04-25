@@ -1,8 +1,8 @@
-dojo.provide('moviedb.Form');
+dojo.provide('aiki.Form');
 dojo.require('dijit.form.Button');
 dojo.require('dijit.form.Form');
 
-dojo.declare('moviedb.Form', dijit.form.Form, {
+dojo.declare('aiki.Form', dijit.form.Form, {
   //### TODO
   // - separate into mixins
   //  - populating

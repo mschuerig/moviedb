@@ -1,4 +1,3 @@
-
 dojo.provide('moviedb.movies');
 
 dojo.require('dijit.Declaration');
@@ -24,16 +23,15 @@ dojo.require('dojox.grid.DataGrid');
 dojo.require('dojox.json.query');
 dojo.require('dojox.widget.PlaceholderMenuItem');
 dojo.require('dojox.widget.Toaster');
+dojo.require('aiki.EditorManager');
+dojo.require('aiki.Form');
+dojo.require('aiki.Store');
 dojo.require('moviedb.schema');
 dojo.require('moviedb.AwardsTree');
 dojo.require('moviedb.AwardView');
-dojo.require('moviedb.EditorManager');
-dojo.require('moviedb.Form');
 dojo.require('moviedb.MoviesGrid');
 dojo.require('moviedb.PeopleGrid');
 dojo.require('moviedb.PersonEditor');
-dojo.require('moviedb.Store');
-dojo.require('moviedb.dojo-ext');
 
 dojo.setObject('moviedb.installTooltips', function(grid, showTooltip) {
   var hideTooltip = function(e) {

@@ -1,7 +1,7 @@
-dojo.provide('moviedb.Store');
+dojo.provide('aiki.Store');
 dojo.require('dojox.data.JsonRestStore');
 
-dojo.declare("moviedb.Store", dojox.data.JsonRestStore, {
+dojo.declare("aiki.Store", dojox.data.JsonRestStore, {
   _processResults: function(results, deferred) {
     dojo.forEach(results.items, function(item) {
       if (!item.awards) {

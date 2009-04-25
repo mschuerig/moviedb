@@ -4,7 +4,8 @@ dojo.require('dijit._Widget');
 dojo.require('dojo.i18n');
 dojo.require('dojox.dtl._Templated');
 dojo.require('dojox.dtl.contrib.data');
-dojo.require('moviedb.dojo-ext');
+dojo.require('plugd.ancestor');
+dojo.require('aiki._base');
 dojo.requireLocalization('moviedb', 'awards');
 
 dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
@@ -36,7 +37,7 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
   _buildView: function() {
     dojo.empty(this.listNode);
 
-    var decades = dojo.groupBy(this.awardings,
+    var decades = aiki.groupBy(this.awardings,
       function(item) { return Math.floor(item.year / 10) * 10; } );
     var keys = decades.keys.sort(function(a, b) { return b - a; });
 

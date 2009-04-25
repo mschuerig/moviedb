@@ -6,7 +6,7 @@ dojo.require('dijit.form.ValidationTextBox');
 dojo.require('dijit.form.DateTextBox');
 dojo.require('dojo.i18n');
 dojo.require('dojox.form.BusyButton');
-dojo.require('moviedb.Form');
+dojo.require('aiki.Form');
 dojo.requireLocalization("dijit", "loading");
 
 dojo.declare('moviedb.PersonEditor', [dijit._Widget, dijit._Templated], {

@@ -17,18 +17,19 @@
     var awardsStore, awardsTree;
     var editors;
 
+    dojo.registerModulePath('aiki', "/javascripts/aiki");
     dojo.registerModulePath('moviedb', "/javascripts/moviedb");
     dojo.require('moviedb.movies');
 
-    peopleStore = new moviedb.Store({ target: "/people", schema: moviedb.schema.person });
-    awardsStore = new moviedb.Store({ target: "/awards", schema: moviedb.schema.award });
+    peopleStore = new aiki.Store({ target: "/people", schema: moviedb.schema.person });
+    awardsStore = new aiki.Store({ target: "/awards", schema: moviedb.schema.award });
   
     dojo.addOnLoad(function() {
       function showEditor(widgetType, store, object, options) {
         editors.edit(object, store, widgetType, options);
       }
       
-      moviesStore = new moviedb.Store({ target: "/movies", schema: moviedb.schema.movie });
+      moviesStore = new aiki.Store({ target: "/movies", schema: moviedb.schema.movie });
       moviesGrid = buildMoviesGrid(moviesStore, 'moviesList');
       moviesGrid.startup();
 
@@ -40,7 +41,7 @@
         console.log("** AWARDING SELECTED: ", arguments);
       });
 
-      editors = new moviedb.EditorManager('editors');
+      editors = new aiki.EditorManager('editors');
     });
   </script>
 
@@ -73,7 +74,7 @@
       console.log('*** MOVIE ON CHANGE');
     </script>
     <div>
-      <div dojoType="moviedb.Form" id="${id}_form">
+      <div dojoType="aiki.Form" id="${id}_form">
         <ul>
           <li>
             <label for="${id}_title">Title</label>

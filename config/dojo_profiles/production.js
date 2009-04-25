@@ -45,6 +45,7 @@ dependencies = {
     ["moviedb", "../../../public/javascripts.development/moviedb"],
     ["dijit", "../dijit"],
     ["dojox", "../dojox"],
-	["plugd", "../plugd"]
+	["plugd", "../plugd"],
+    ["aiki", "../../../public/javascripts.development/aiki"]
   ]
 }

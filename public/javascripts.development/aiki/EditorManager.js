@@ -1,8 +1,9 @@
-dojo.provide('moviedb.EditorManager');
-dojo.require('moviedb.dojo-ext');
+dojo.provide('aiki.EditorManager');
+dojo.require('aiki._base');
 
-dojo.declare('moviedb.EditorManager', null, {
+dojo.declare('aiki.EditorManager', null, {
   editors: [],
+  //### TODO properties instead of ctor
   constructor: function(container) {
     this.container = dijit.byId(container);
     dojo.subscribe(this.container.id + '-removeChild', this, 'editorClosed');
@@ -19,7 +20,7 @@ dojo.declare('moviedb.EditorManager', null, {
     }
   },
   _edit: function(object, store, widgetType) {
-    var editor = dojo.find(this.editors, function(item) {
+    var editor = aiki.find(this.editors, function(item) {
       return item.object === object;
     });
     if (!editor) {
@@ -56,7 +57,7 @@ dojo.declare('moviedb.EditorManager', null, {
     return { object: object, widget: widget };
   },
   _makeOnCloseHandler: function(widget) {
-    if (widget.getFeatures()['moviedb.api.Edit']) {
+    if (widget.getFeatures()['aiki.api.Edit']) {
       return function() {
         if (widget.isModified()) {
           return confirm("Are you sure you want to discard your changes?");
