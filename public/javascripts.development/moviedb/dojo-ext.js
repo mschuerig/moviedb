@@ -2,7 +2,16 @@ dojo.provide('moviedb.dojo-ext');
 dojo.require('plugd.ancestor');
 
 dojo.find = function(/*Array|String*/arr, /*Function|String*/callback, /*Object?*/thisObject) {
-  return dojo.filter(arr, callback, thisObject)[0];
+  var pred = dojo.hitch(thisObject, callback);
+  var result;
+  var found = dojo.some(arr, function(v){
+    if(pred(v)) {
+      result = v;
+      return true;
+    }
+    return false;
+  });
+  return result;
 };
 
 dojo.groupBy = function(/*Array*/items, /*Function*/extractor) {
