@@ -1,18 +1,14 @@
-<div dojoType="dijit.layout.BorderContainer" class="${baseClass}">
+<div class="${baseClass}">
   <div dojoType="dijit.layout.ContentPane" region="top">
-    <div dojoType="aiki.Form" dojoAttachPoint="formNode">
+    <div dojoType="dijit.form.Form" dojoAttachPoint="formNode">
       <div dojoType="dijit.form.TextBox" 
            dojoAttachPoint="queryNode"
            trim="true"
            style="width:70%"></div>
-      <button dojoType="dojox.form.BusyButton" type="submit"
+      <button dojoType="dijit.form.Button" type="submit"
               iconClass="filterIcon" showLabel="true" style="width:20%"
               >Filter</button>
     </div>
   </div>
-  <div>
-    This is just damn silly.
-    <div dojoAttachPoint="gridNode" region="center"></div>
-    Ain't see nothing yet.
-  </div>
+  <div dojoType="dojox.grid.DataGrid" dojoAttachPoint="gridNode" region="center"></div>
 </div>

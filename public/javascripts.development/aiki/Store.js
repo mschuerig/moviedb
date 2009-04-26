@@ -13,8 +13,9 @@ dojo.declare("aiki.Store", dojox.data.JsonRestStore, {
   fetch: function(args) {
     console.log("*** fetch: ", args); //### REMOVE
     var query = args.query;
-    if (query && dojo.isObject(query)) {
-      args.queryStr = '?' + this._matchingClause(query) + this._sortingClause(args.sort);
+    var sort  = args.sort;
+    if (query && dojo.isObject(query) || sort && dojo.isObject(sort)) {
+      args.queryStr = '?' + this._matchingClause(query) + this._sortingClause(sort);
     }
     //### TODO add onError unless already defined
     return this.inherited(arguments);

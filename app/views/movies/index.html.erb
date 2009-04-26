@@ -28,10 +28,10 @@
       function showEditor(widgetType, store, object, options) {
         editors.edit(object, store, widgetType, options);
       }
-      
-      moviesStore = new aiki.Store({ target: "/movies", schema: moviedb.schema.movie });
-      moviesGrid = buildMoviesGrid(moviesStore, 'moviesList');
-      moviesGrid.startup();
+
+//      moviesStore = new aiki.Store({ target: "/movies", schema: moviedb.schema.movie });
+//      moviesGrid = buildMoviesGrid(moviesStore, 'moviesList');
+//      moviesGrid.startup();
 
       dojo.subscribe('movie.selected',  dojo.partial(showEditor, 'moviedb.MovieEditor',  moviesStore));
       dojo.subscribe('person.selected', dojo.partial(showEditor, 'moviedb.PersonEditor', peopleStore));
@@ -58,20 +58,21 @@
     <div dojoType="dijit.layout.TabContainer" id="tabs"
          region="left" tabPosition="left-h" tabStrip="true" splitter="true"
          style="width:30%; min-width:20em; height:100%">
-      <div dojoType="dijit.layout.ContentPane" id="moviesPane"
-           title="Movies" iconClass="movieIcon" showLabel="false">
-        <div id="moviesList"></div>
-      </div>
-      <div dojoType="dijit.layout.ContentPane" id="peoplePane"
-           title="People" iconClass="peopleIcon" showLabel="false">
-        <div dojoType="moviedb.PeopleGrid" store="peopleStore" id="peopleList"></div>
-      </div>
-      <div dojoType="dijit.layout.ContentPane" id="awardsPane"
-           title="Awards" iconClass="awardIcon" showLabel="false">
-        <div dojoType="moviedb.AwardsTree" 
-             store="awardsStore" 
-             id="awardsTree"></div>
-      </div>
+<!--
+      <div id="moviesList"
+           title="Movies" iconClass="movieIcon" showLabel="false"
+           ></div>
+-->
+      <div dojoType="moviedb.PeopleGrid"
+           store="peopleStore"
+           id="peopleList"
+           title="People" iconClass="peopleIcon" showLabel="false"
+           ></div>
+      <div dojoType="moviedb.AwardsTree" 
+           store="awardsStore" 
+           id="awardsTree"
+           title="Awards" iconClass="awardIcon" showLabel="false"
+           ></div>
     </div>
     <div dojoType="dijit.layout.TabContainer" id="editors" region="center"></div>
   </div>
