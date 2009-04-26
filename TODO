@@ -38,6 +38,8 @@ Rails
 Dojo
 ----
 
+- error handling
+
 - tests
  - DOH
  - Selenium
