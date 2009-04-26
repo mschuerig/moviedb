@@ -2,6 +2,9 @@ dojo.provide('aiki.EditorManager');
 dojo.require('aiki._base');
 
 dojo.declare('aiki.EditorManager', null, {
+  // summary:
+  //   Manage a list of objects and their associated editors.
+  //
   _editors: [],
 
   constructor: function(options) {

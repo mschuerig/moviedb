@@ -2,6 +2,9 @@ dojo.provide('aiki.form._ButtonsMixin');
 dojo.require('dijit.form.Button');
 
 dojo.declare('aiki.form._ButtonsMixin', null, {
+  // summary:
+  //   Common functions for handling submit buttons in forms.
+  //
   resetSubmitButtons: function() {
     // tags:
     //   protected

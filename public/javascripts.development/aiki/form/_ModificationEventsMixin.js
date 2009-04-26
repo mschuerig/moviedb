@@ -1,6 +1,8 @@
 dojo.provide('aiki.form._ModificationEventsMixin');
 
 dojo.declare('aiki.form._ModificationEventsMixin', null, {
+  // summary:
+  //   Fire events onChange, onModified, and onReverted.
   //
   // NOTE: This mixin expects that the class it is mixed into provides
   // an isModified() method.
@@ -13,9 +15,7 @@ dojo.declare('aiki.form._ModificationEventsMixin', null, {
     var self = this;
     this.unwatchForChanges();
     var conns = this._watchConnections;
-    console.log("************* WATCH OUT"); //### REMOVE
     dojo.forEach(this.getDescendants(), function(widget) {
-      console.debug('* connecting: ', widget); //### REMOVE
       conns.push(self.connect(widget, 'onChange',
         dojo.hitch(self, '_onDescendantChange', widget)));
     });

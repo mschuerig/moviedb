@@ -81,14 +81,7 @@ Dojo
   - granularity: 10 years, 1 year per TitlePane
 
 - Form 
- - extract generic, store-backed, schema-based Form dijit
  - define validations from schema
- - separate into mixins
-  - populating
-  - change watch
-  - button handling
-  - derive appropriate widgets and validations from a json schema
-  - don't overwrite callback methods, leave them to users
 
 - transactions + conflict handling
 

@@ -1,6 +1,9 @@
 dojo.provide('aiki.form._DataMixin');
 
 dojo.declare('aiki.form._DataMixin', null, {
+  // summary:
+  //   Functions for connecting a form to data store items.
+  //
   object: null,
   store: null,
 
