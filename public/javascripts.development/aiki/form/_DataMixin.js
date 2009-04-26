@@ -10,16 +10,12 @@ dojo.declare('aiki.form._DataMixin', null, {
         item: object,
         scope: this,
         onItem: function(loadedObject) {
-          this.forProperties(function(prop, widget) {
-            widget.attr('value', store.getValue(loadedObject, prop));
-          });
+          this.attr('value', loadedObject);
           this.onPopulated(loadedObject);
         }
       });
     } else {
-      this.forProperties(function(prop, widget) {
-        widget.setValue(null);
-      });
+      this.attr('value', {});
       this.onCleared();
     }
     this.object = object;
@@ -28,13 +24,14 @@ dojo.declare('aiki.form._DataMixin', null, {
 
   save: function() {
     if (this.object) {
-      this.forProperties(function(prop, widget) {
-        var value = widget.attr('value');
+      var values = this.attr('value');
+      for (var prop in values) {
+        var value = values[prop];
         if (dojo.config.isDebug) {
           console.debug('Setting value for ', prop, ' to ', value);
         }
         this.store.setValue(this.object, prop, value);
-      });
+      }
       //### TODO what if more than one item is currently being edited?
       this.store.save({
         onComplete: this.onSaved,
@@ -49,22 +46,23 @@ dojo.declare('aiki.form._DataMixin', null, {
       return false;
     }
     var modified = false;
-    this.forProperties(function(prop, widget) {
+    var values = this.attr('value');
+    for (prop in values) {
       if (!modified || dojo.config.isDebug) {
-        var widgetModified;
+        var propModified;
         var orig = this.store.getValue(this.object, prop) || '';
-        var cur = widget.attr('value') || '';
+        var cur = values[prop] || ''; //### TODO is '' ever used?
         if (orig instanceof Date || cur instanceof Date) {
-          widgetModified = (dojo.date.compare(orig, cur) !== 0);
+          propModified = (dojo.date.compare(orig, cur) !== 0);
         } else {
-          widgetModified = orig.toString() != cur.toString();
+          propModified = orig.toString() != cur.toString();
         }
-        if (widgetModified && dojo.config.isDebug) {
-          console.debug('modified widget: ', widget, "\noriginal value: ", orig, "\ncurrent value: ", cur);
+        if (propModified && dojo.config.isDebug) {
+          console.debug('modified property: ', prop, "\noriginal value: ", orig, "\ncurrent value: ", cur);
         }
-        modified = modified || widgetModified;
+        modified = modified || propModified;
       }
-    });
+    };
     return modified;
   },
 
