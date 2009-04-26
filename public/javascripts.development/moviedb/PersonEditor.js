@@ -30,10 +30,10 @@ dojo.declare('moviedb.PersonEditor', [dijit._Widget, dijit._Templated], {
 	}
   },
   postCreate: function() {
+    this.formNode.populate(this.store, this.object);
     dojo.connect(this.formNode, 'onChange',   this, 'onChange');
     dojo.connect(this.formNode, 'onModified', this, 'onModified');
     dojo.connect(this.formNode, 'onReverted', this, 'onReverted');
-    this.formNode.populate(this.store, this.object);
   },
   getTitle: function() {
     if (this.firstnameField) {

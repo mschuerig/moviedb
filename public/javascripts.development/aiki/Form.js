@@ -19,9 +19,11 @@ dojo.declare('aiki.Form', [dijit.form.Form,
     this.resetSubmitButtons();
     return this.inherited(arguments);
   },
-  onPopulated: function() {
+  onPopulated: function(object) {
+    this.onChange();
     this.markUnmodified();
     this.resetSubmitButtons();
+    this.watchForChanges();
   },
   onSaved: function() {
     this.markUnmodified();

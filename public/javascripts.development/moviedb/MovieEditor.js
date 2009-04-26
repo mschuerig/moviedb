@@ -30,8 +30,8 @@ dojo.declare('moviedb.MovieEditor', [dijit._Widget, dijit._Templated], {
 	}
   },
   postCreate: function() {
-    dojo.connect(this.formNode, 'onChange', this, 'onChange');
     this.formNode.populate(this.store, this.object);
+    dojo.connect(this.formNode, 'onChange', this, 'onChange');
   },
   getTitle: function() {
     return this.titleNode ? this.titleNode.attr('value') : this.loadingLabel;

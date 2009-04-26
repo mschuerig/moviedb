@@ -4,31 +4,38 @@ dojo.declare('aiki.form._DataMixin', null, {
   object: null,
   store: null,
 
-  populate: function(store, object) {
+  populate: function(store, object) { //### TODO options, not positional params
     if (object) {
-      var self = this;
-      store.loadItem({ item: object,
+      store.loadItem({
+        item: object,
+        scope: this,
         onItem: function(loadedObject) {
-          self.forProperties(function(prop, widget) {
+          this.forProperties(function(prop, widget) {
             widget.attr('value', store.getValue(loadedObject, prop));
           });
+          this.onPopulated(loadedObject);
         }
       });
     } else {
       this.forProperties(function(prop, widget) {
         widget.setValue(null);
       });
+      this.onCleared();
     }
     this.object = object;
     this.store = store;
-    this.onPopulated();
   },
 
   save: function() {
     if (this.object) {
       this.forProperties(function(prop, widget) {
-        this.store.setValue(this.object, prop, widget.attr('value'));
+        var value = widget.attr('value');
+        if (dojo.config.isDebug) {
+          console.debug('Setting value for ', prop, ' to ', value);
+        }
+        this.store.setValue(this.object, prop, value);
       });
+      //### TODO what if more than one item is currently being edited?
       this.store.save({
         onComplete: this.onSaved,
         onError: this.onError,
@@ -61,7 +68,11 @@ dojo.declare('aiki.form._DataMixin', null, {
     return modified;
   },
 
-  onPopulated: function() {
+  onPopulated: function(item) {
+    // tags:
+    //   callback
+  },
+  onCleared: function() {
     // tags:
     //   callback
   },

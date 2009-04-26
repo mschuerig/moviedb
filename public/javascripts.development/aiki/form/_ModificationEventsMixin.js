@@ -5,23 +5,45 @@ dojo.declare('aiki.form._ModificationEventsMixin', null, {
   // NOTE: This mixin expects that the class it is mixed into provides
   // an isModified() method.
   //
-  connectChildren: function() {
-    // Overrides dijit.form._FormMixin
-    this.inherited(arguments);
+  watchForChanges: function() {
+    // summary:
+    //   start watching for changes to the form.
+    // tags:
+    //   protected
     var self = this;
-    var conns = this._changeConnections;
+    this.unwatchForChanges();
+    var conns = this._watchConnections;
+    console.log("************* WATCH OUT"); //### REMOVE
     dojo.forEach(this.getDescendants(), function(widget) {
-      conns.push(self.connect(widget, 'onBlur',  //### TODO is onBlur a good idea? vs onChange
-        dojo.hitch(self, 'checkIfModified', widget)));
+      console.debug('* connecting: ', widget); //### REMOVE
+      conns.push(self.connect(widget, 'onChange',
+        dojo.hitch(self, '_onDescendantChange', widget)));
     });
   },
+
+  unwatchForChanges: function() {
+    // summary:
+    //   stop watching for changes to the form.
+    // tags:
+    //   protected
+    if (this._watchConnections) {
+      dojo.forEach(this._watchConnections, dojo.disconnect);
+    }
+    this._watchConnections = [];
+  },
+
   markUnmodified: function() {
     // tags:
     //   protected
     this._wasModified = false;
   },
 
-  checkIfModified: function(widget) {
+  _onDescendantChange: function(widget) {
+    this.onChange(widget);
+    this.checkIfModified();
+  },
+
+  checkIfModified: function() {
     // tags:
     //   protected
     var modified = this.isModified();
@@ -35,25 +57,19 @@ dojo.declare('aiki.form._ModificationEventsMixin', null, {
     this._wasModified = modified;
   },
 
-  _widgetChange: function(widget) {
-    // Overrides dijit.form._FormMixin
-    this.inherited(arguments);
-    this.onChange(widget);
-  },
-
   onChange: function() {
     // tags:
     //   callback
-    console.log('*** ON CHANGE'); //### REMOVE
+    console.log('*** FORM ON CHANGE'); //### REMOVE
   },
   onModified: function() {
     // tags:
     //   callback
-    console.log("*** ON MODIFIED"); //### REMOVE
+    console.log("*** FORM ON MODIFIED"); //### REMOVE
   },
   onReverted: function() {
     // tags:
     //   callback
-    console.log("*** ON REVERTED"); //### REMOVE
+    console.log("*** FORM ON REVERTED"); //### REMOVE
   }
 });
