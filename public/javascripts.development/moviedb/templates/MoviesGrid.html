@@ -1,0 +1,14 @@
+<div class="${baseClass}">
+  <div dojoType="dijit.layout.ContentPane" region="top">
+    <div dojoType="dijit.form.Form" dojoAttachPoint="formNode">
+      <div dojoType="dijit.form.TextBox" 
+           dojoAttachPoint="queryNode"
+           trim="true"
+           style="width:70%"></div>
+      <button dojoType="dijit.form.Button" type="submit"
+              iconClass="filterIcon" showLabel="true" style="width:20%"
+              >Filter</button>
+    </div>
+  </div>
+  <div dojoType="dojox.grid.DataGrid" dojoAttachPoint="gridNode" region="center"></div>
+</div>

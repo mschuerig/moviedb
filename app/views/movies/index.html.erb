@@ -21,6 +21,7 @@
     dojo.registerModulePath('moviedb', "/javascripts/moviedb");
     dojo.require('moviedb.movies');
 
+    moviesStore = new aiki.Store({ target: "/movies", schema: moviedb.schema.movie });
     peopleStore = new aiki.Store({ target: "/people", schema: moviedb.schema.person });
     awardsStore = new aiki.Store({ target: "/awards", schema: moviedb.schema.award });
   
@@ -28,10 +29,6 @@
       function showEditor(widgetType, store, object, options) {
         editors.edit(object, store, widgetType, options);
       }
-
-//      moviesStore = new aiki.Store({ target: "/movies", schema: moviedb.schema.movie });
-//      moviesGrid = buildMoviesGrid(moviesStore, 'moviesList');
-//      moviesGrid.startup();
 
       dojo.subscribe('movie.selected',  dojo.partial(showEditor, 'moviedb.MovieEditor',  moviesStore));
       dojo.subscribe('person.selected', dojo.partial(showEditor, 'moviedb.PersonEditor', peopleStore));
@@ -58,20 +55,20 @@
     <div dojoType="dijit.layout.TabContainer" id="tabs"
          region="left" tabPosition="left-h" tabStrip="true" splitter="true"
          style="width:30%; min-width:20em; height:100%">
-<!--
-      <div id="moviesList"
-           title="Movies" iconClass="movieIcon" showLabel="false"
+      <div dojoType="moviedb.MoviesGrid"
+           store="moviesStore"
+           id="moviesList"
+           title="M" iconClass="movieIcon" showLabel="false"
            ></div>
--->
       <div dojoType="moviedb.PeopleGrid"
            store="peopleStore"
            id="peopleList"
-           title="People" iconClass="peopleIcon" showLabel="false"
+           title="P" iconClass="peopleIcon" showLabel="false"
            ></div>
       <div dojoType="moviedb.AwardsTree" 
            store="awardsStore" 
            id="awardsTree"
-           title="Awards" iconClass="awardIcon" showLabel="false"
+           title="A" iconClass="awardIcon" showLabel="false"
            ></div>
     </div>
     <div dojoType="dijit.layout.TabContainer" id="editors" region="center"></div>

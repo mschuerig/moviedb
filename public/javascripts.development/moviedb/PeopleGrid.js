@@ -1,6 +1,5 @@
 dojo.provide('moviedb.PeopleGrid');
 dojo.require('dijit._Templated');
-//dojo.require('dijit._Widget');
 dojo.require('dijit.form.Form');
 dojo.require('dijit.form.TextBox');
 dojo.require('dijit.layout.BorderContainer');
@@ -13,8 +12,9 @@ dojo.require('aiki.Form');
 dojo.declare('moviedb.PeopleGrid', [dijit.layout.BorderContainer, dijit._Templated], {
   store: null,
   sortInfo: 1,
+  query: {name: '*'},
   rowsPerPage: 50,
-  keepRows: 200,
+  keepRows: 300,
   baseClass: 'moviedbPeopleGrid',
   templatePath: dojo.moduleUrl('moviedb', 'templates/PeopleGrid.html'),
   widgetsInTemplate: true,
@@ -30,13 +30,13 @@ dojo.declare('moviedb.PeopleGrid', [dijit.layout.BorderContainer, dijit._Templat
   postCreate: function() {
     this.inherited(arguments);
 
-    this.gridNode.attr('structure', this._gridStructure);
-    this.gridNode.setSortInfo(this.sortInfo);
-    this.gridNode.setQuery({name: '*'});
-    this.gridNode.attr('keepRows', this.keepRows);
-    this.gridNode.setStore(this.store);
-
     var grid = this.gridNode;
+
+    grid.attr('structure', this._gridStructure);
+    grid.setSortInfo(this.sortInfo);
+    grid.setQuery(this.query);
+    grid.attr('keepRows', this.keepRows);
+    grid.setStore(this.store);
 
     dojo.connect(this.formNode, 'onSubmit', dojo.hitch(this, function(event) {
       dojo.stopEvent(event);
