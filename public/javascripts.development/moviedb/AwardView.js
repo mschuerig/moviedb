@@ -16,6 +16,7 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
   yearGranularity: 10,
 
   baseClass: 'moviedbAwardView',
+  iconClass: 'smallIcon awardIcon',
   awardingsListWidget: 'moviedb._AwardingsList',
   templatePath: dojo.moduleUrl('moviedb', 'templates/AwardView.html'),
 

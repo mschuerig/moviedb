@@ -14,6 +14,7 @@ dojo.declare('moviedb.MovieEditor', [dijit._Widget, dijit._Templated], {
   object: null,
 
   baseClass: 'moviedbMovieEditor',
+  iconClass: 'smallIcon movieIcon',
   templatePath: dojo.moduleUrl('moviedb', 'templates/MovieEditor.html'),
   widgetsInTemplate: true,
 

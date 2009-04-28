@@ -51,6 +51,13 @@ h1 {
   height: 32px;
 }
 
+.tinyIcon {
+  background-repeat: no-repeat;
+  background-position: center center;
+  width: 32px; /* FIXME */
+  height: 32px; /* FIXME */
+}
+
 .movieIcon {
   background-image: url(/images/small/film-reel.png);
 }
@@ -134,3 +141,16 @@ h1 {
   margin: 0;
   padding: 0;
 }
+
+#editors .dijitTab .movieIcon {
+  background-image: url(/images/small/film-reel.png);
+}
+
+#editors .dijitTab .personIcon {
+  background-image: url(/images/small/person.png);
+}
+
+#editors .dijitTab .awardIcon {
+  background-image: url(/images/small/oscar.png);
+}
+
