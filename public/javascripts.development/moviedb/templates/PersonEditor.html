@@ -1,10 +1,8 @@
-<div class="${baseClass}">
-  <div dojoType="aiki.Form" dojoAttachPoint="formNode">
-    <ul>
+<div class="${baseClass} moviedbEditor">
+  <div dojoType="aiki.Form" class="personForm" dojoAttachPoint="formNode">
+    <ol>
       <li>
         <label for="${id}_firstname">First name</label>
-      </li>
-      <li>
         <div type="text" dojoType="dijit.form.ValidationTextBox"
              id="${id}_firstname" name="firstname"
              dojoAttachPoint="firstnameField"
@@ -13,8 +11,6 @@
       </li>
       <li>
         <label for="${id}_lastname">Last name</label>
-      </li>
-      <li>
         <div type="text" dojoType="dijit.form.ValidationTextBox"
              id="${id}_lastname" name="lastname"
              dojoAttachPoint="lastnameField"
@@ -23,16 +19,14 @@
       </li>
       <li>
         <label for="${id}_dateOfBirth">Date of Birth</label>
-      </li>
-      <li>
         <div type="text" dojoType="dijit.form.DateTextBox"
              id="${id}_dateOfBirth" name="dob"
              invalidMessage="Please enter a valid date."></div>
       </li>
-      <li>
+      <li class="movies">
         <h3>Movies</h3>
       </li>
-      <li>
+      <li class="awards">
         <h3>Awards</h3>
       </li>
       <li>
@@ -40,6 +34,6 @@
              busyLabel="Saving..."
              >Save Changes</div>
       </li>
-    </ul>
+    </ol>
   </div>
 </div>

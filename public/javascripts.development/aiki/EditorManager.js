@@ -20,19 +20,19 @@ dojo.declare('aiki.EditorManager', null, {
       store.fetchItemByIdentity({
         identity: object,
         scope: this,
-        onItem: function(item) { this._edit(item, store, widgetType); }
+        onItem: function(item) { this._edit(item, store, widgetType, options); }
       });
     } else {
-      this._edit(object, store, widgetType);
+      this._edit(object, store, widgetType, options);
     }
   },
 
-  _edit: function(object, store, widgetType) {
+  _edit: function(object, store, widgetType, options) {
     var editor = aiki.find(this._editors, function(item) {
       return item.object === object;
     });
     if (!editor) {
-      editor = this._makeEditor(object, store, widgetType);
+      editor = this._makeEditor(object, store, widgetType, options);
     }
     this.container.selectChild(editor.widget);
     return editor.widget;
@@ -44,9 +44,11 @@ dojo.declare('aiki.EditorManager', null, {
     });
   },
 
-  _makeEditor: function(object, store, widgetType) {
+  _makeEditor: function(object, store, widgetType, options) {
     widgetType = dojo.isString(widgetType) ? dojo.getObject(widgetType) : widgetType;
-    var widget = new widgetType({store: store, object: object});
+    var widget = new widgetType(dojo.mixin(options || {},
+      { store: store, object: object }));
+
     widget = dojo.mixin(widget, {
       showLabel: true,
       closable: true,

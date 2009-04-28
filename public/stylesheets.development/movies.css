@@ -44,39 +44,72 @@ h1 {
   padding: 0 !important;
 }
 
-.movieIcon {
-  background-image: url(/images/plus.gif);
+.smallIcon {
   background-repeat: no-repeat;
   background-position: center center;
-  width: 18px;
-  height: 18px;
+  width: 32px;
+  height: 32px;
+}
+
+.movieIcon {
+  background-image: url(/images/small/film-reel.png);
 }
 
 .peopleIcon {
-  background-image: url(/images/plus.gif);
-  background-repeat: no-repeat;
-  background-position: center center;
-  width: 18px;
-  height: 18px;
+  background-image: url(/images/small/person.png);
 }
 
 .awardIcon {
-  background-image: url(/images/plus.gif);
-  background-repeat: no-repeat;
-  background-position: center center;
-  width: 18px;
-  height: 18px;
+  background-image: url(/images/small/oscar.png);
 }
 
-.moviedbAwardView .decadeList,
-.moviedbAwardView .decade
+.moviedbEditor ol {
+  list-style-type: none;
+}
+
+.moviedbEditor li {
+  margin-top: 0.5em;
+}
+
+.moviedbEditor label {
+  display: block;
+  font-weight: bold;
+}
+
+.moviedbEditor h3 {
+  font-size: 150%;
+  background-repeat: no-repeat;
+  background-position: top left;
+  width: 48px;
+  height: 48px;
+  padding-left: 50px;
+}
+
+.moviedbEditor .movies h3 {
+  background-image: url(/images/medium/film-reel.png);
+}
+
+.moviedbEditor .director h3 {
+  background-image: url(/images/medium/directors-chair.png);
+}
+
+.moviedbEditor .actors h3 {
+  background-image: url(/images/medium/person.png);
+}
+
+.moviedbEditor .awards h3 {
+  background-image: url(/images/medium/oscar.png);
+}
+
+.moviedbAwardView .groupList,
+.moviedbAwardView .group
 {
   list-style-type: none;
   margin: 0;
   padding: 1em;
 }
 
-.moviedbAwardView .decade {
+.moviedbAwardView .group {
   padding: 0;
 }
 
@@ -85,6 +118,11 @@ h1 {
 }
 
 .moviedbAwardView .awarding .year {
+  font-weight: bold;
+}
+
+.moviedbAwardView .awarding .name {
+  margin: 0;
   font-weight: bold;
 }
 

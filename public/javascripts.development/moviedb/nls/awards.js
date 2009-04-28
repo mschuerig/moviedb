@@ -1,3 +1,3 @@
 {
-  decadeTitle: '${decade}s'
+  groupTitle: '${group}s'
 }

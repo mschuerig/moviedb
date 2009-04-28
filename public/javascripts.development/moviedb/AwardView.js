@@ -11,6 +11,9 @@ dojo.requireLocalization('moviedb', 'awards');
 dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
   store: null,
   object: null,
+  hiliteAwarding: null,
+  showAwardName: false,
+  yearGranularity: 10,
 
   baseClass: 'moviedbAwardView',
   awardingsListWidget: 'moviedb._AwardingsList',
@@ -21,11 +24,15 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
       "moviedb.api.View": true
     };
   },
-  postMixInProperties: function(){
+
+  postMixInProperties: function() {
     var _nlsResources = dojo.i18n.getLocalization('moviedb', 'awards');
     dojo.mixin(this, _nlsResources);
     this.inherited(arguments);
+    this.yearGranularity = parseInt(this.yearGranularity) || 10;
+    this._showAwardingYear = this.yearGranularity > 1;
   },
+
   postCreate: function() {
     this.store.loadItem({
       item: this.object,
@@ -37,40 +44,61 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
       })
     });
   },
+
   getTitle: function() {
     return this.object.name;
   },
+
   _buildView: function() {
     dojo.empty(this.listNode);
 
-    var decades = aiki.groupBy(this.awardings,
-      function(item) { return Math.floor(item.year / 10) * 10; } );
-    var keys = decades.keys.sort(function(a, b) { return b - a; });
+    var groups = aiki.groupBy(this.awardings, this._makeGrouper(this.yearGranularity));
+    var keys = groups.keys.sort(function(a, b) { return b - a; });
 
     var listWidget = dojo.getObject(this.awardingsListWidget);
     var store = this.store;
 
     for (var i = 0, l = keys.length, first = true; i < l; i++) {
-      var awardings = decades.groups[keys[i]].sort(
+      var awardings = groups.groups[keys[i]].sort(
         function(a, b) { return b.year - a.year; });
-      var perDecadeList = new listWidget({items: awardings, store: store});
-      var decadeTitle = new dijit.TitlePane({
-        title: dojo.string.substitute(this.decadeTitle, {decade: keys[i]}),
-        content: perDecadeList,
-        open: first
+
+      var groupIsOpen = this.hiliteAwarding ?
+        (dojo.indexOf(awardings, this.hiliteAwarding) > -1) : false; //### FIXME first;
+
+      var perGroupList = new listWidget({
+        items: awardings,
+        store: store,
+        showAwardName: this.showAwardName,
+        showAwardingYear: this._showAwardingYear
       });
-      var decadeItem = dojo.create('li');
-      decadeTitle.placeAt(decadeItem);
-      dojo.place(decadeItem, this.listNode);
+
+      var groupTitle = new dijit.TitlePane({
+        title: dojo.string.substitute(this.groupTitle, {group: keys[i]}),
+        content: perGroupList,
+        open: groupIsOpen
+      });
+      var groupItem = dojo.create('li');
+      groupTitle.placeAt(groupItem);
+      dojo.place(groupItem, this.listNode);
       first = false;
     }
   },
+
+  _setHintAttr: function(hint) {
+    //### TODO
+  },
+
+  _showAwarding: function(awarding) {
+
+  },
+
   _publishSelect: function(event) {
     if (this._tryPublish(event, 'people', 'person.selected') ||
         this._tryPublish(event, 'movies', 'movie.selected')) {
       dojo.stopEvent(event);
     }
   },
+
   _tryPublish: function(event, kind, topic) {
     var link = dojo.ancestor(event.target, '.awarding .' + kind +  ' .list a', this.domNode);
     if (link && link.pathname) {
@@ -78,6 +106,10 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
       return true;
     }
     return false;
+  },
+
+  _makeGrouper: function(granularity) {
+    return function(item) { return Math.floor(item.year / granularity) * granularity; };
   }
 });
 

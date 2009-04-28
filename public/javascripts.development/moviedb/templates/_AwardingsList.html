@@ -1,10 +1,14 @@
 {% load dojox.dtl.contrib.data %}
 {% bind_data items to store as awardings %}
-<ul class="decade">
+<ol class="group">
   {% for awarding in awardings %}
-  <div class="awarding">
+  <li class="awarding">
+    {% if showAwardingYear %}
     <div class="year">{{ awarding.year }}</div>
-    <div>{{ awarding.award.name }}</div>
+    {% endif %}
+    {% if showAwardName %}
+    <h4 class="name">{{ awarding.award.name }}</h4>
+    {% endif %}
     {% ifnotequal awarding.people|length 0 %}
     <div class="people">People:
       <ul class="list">
@@ -23,6 +27,6 @@
       </ul>
     </div>
     {% endifnotequal %}
-  </div>
+  </li>
   {% endfor %}
-</ul>
+</ol>

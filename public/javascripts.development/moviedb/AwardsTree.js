@@ -16,7 +16,10 @@ dojo.declare('moviedb.AwardsTree', dijit.Tree, {
   postCreate: function() {
     this.inherited(arguments);
     dojo.connect(this, 'onDblClick', function(item, node) {
-      dojo.publish('award.selected', [item]);
+      var hints = {
+        awardGroup: node.hasChildren()
+      };
+      dojo.publish('award.selected', [item, hints]);
     });
   }
 });
