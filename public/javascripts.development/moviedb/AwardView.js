@@ -35,6 +35,17 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
   },
 
   postCreate: function() {
+    //### FIXME hack alert, this should be handled by loadItem
+    this.store.fetchItemByIdentity({
+      identity: this.object.$ref || this.object.__id,
+      onItem: dojo.hitch(this, function(loadedObject) {
+        this.object = loadedObject;
+        this.awardings = this.store.getValues(this.object.awardings, 'items');
+        this._buildView();
+        dojo.connect(this, 'onClick', this, '_publishSelect');
+      })
+    });
+/*
     this.store.loadItem({
       item: this.object,
       onItem: dojo.hitch(this, function(loadedObject) {
@@ -44,6 +55,7 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
         dojo.connect(this, 'onClick', this, '_publishSelect');
       })
     });
+*/
   },
 
   getTitle: function() {
