@@ -56,10 +56,10 @@ dojo.setObject('moviedb.schema', {
       title: { type: 'string' },
       releaseDate: { type: 'date', format: 'date-time' },
       summary: { type: 'string' },
-      awards: {
+      awardings: {
         type: 'array',
         optional: true,
-        items: { '$ref': 'award' }
+        items: { '$ref': 'awarding' }
       }
     },
     prototype: moviedb.Movie.prototype

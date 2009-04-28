@@ -18,8 +18,8 @@ dojo.declare('moviedb.MoviesGrid', [dijit.layout.BorderContainer, dijit._Templat
   templatePath: dojo.moduleUrl('moviedb', 'templates/MoviesGrid.html'),
   widgetsInTemplate: true,
 /*
-  _awardsFormatter: function(awards) {
-    return awards ? dojo.string.rep('*', awards.length) : '';
+  _awardingsFormatter: function(awardings) {
+    return awardings ? dojo.string.rep('*', awardings.length) : '';
   },
   _yearFormatter: function(date) {
     return date ? 1900 + date.getYear() : '';
@@ -29,8 +29,8 @@ dojo.declare('moviedb.MoviesGrid', [dijit.layout.BorderContainer, dijit._Templat
     { field: "title",       name: "Title",  width: "auto" },
     { field: "releaseDate", name: "Year",   width: "5em",
       formatter: function(date) { return date ? 1900 + date.getYear() : ''; } },
-    { field: "awards",      name: "Awards", width: "15%",
-      formatter: function(awards) { return awards ? dojo.string.rep('*', awards.length) : ''; } }
+    { field: "awardings",      name: "Awards", width: "15%",
+      formatter: function(awardings) { return awardings ? dojo.string.rep('*', awardings.length) : ''; } }
   ],
 
   postCreate: function() {
@@ -48,29 +48,34 @@ dojo.declare('moviedb.MoviesGrid', [dijit.layout.BorderContainer, dijit._Templat
       dojo.publish('movie.selected', [grid.getItem(event.rowIndex)]);
     });
 
-    dojo.connect(grid, 'onCellContextMenu', this._gridCellContextMenu);
+    dojo.connect(grid, 'onCellContextMenu', dojo.hitch(this, '_gridCellContextMenu'));
   },
 
   _gridCellContextMenu: function(e) {
-    if (e.cell.field == "awards") {
+    if (e.cell.field == "awardings") {
       var movie = e.grid.getItem(e.rowIndex);
-      if (movie.awards) {
-        var awards = movie.awards;
-        var awardsMenu = new dijit.Menu({targetNodeIds: e.cellNode});
+      var awardings = this.store.getValue(movie, 'awardings');
+      if (awardings) {
+        var awardingsMenu = new dijit.Menu({targetNodeIds: e.cellNode});
 
-        dojo.forEach(awards, function(awarding) {
-          awardsMenu.addChild(new dijit.MenuItem({
-            label: awarding.title,
-            onClick: function() { dojo.publish('awarding.selected', [awarding]); }
+        var self = this;
+        dojo.forEach(awardings, function(awarding) {
+          awardingsMenu.addChild(new dijit.MenuItem({
+            label: self.store.getValue(awarding, 'title'),
+            onClick: dojo.hitch(self, '_awardingSelected', awarding)
           }));
         });
 
-        awardsMenu.startup();
-        dojo.connect(awardsMenu, 'onClose', function() {
-          awardsMenu.uninitialize();
+        awardingsMenu.startup();
+        dojo.connect(awardingsMenu, 'onClose', function() {
+          awardingsMenu.uninitialize();
         });
-        awardsMenu._openMyself(e);
+        awardingsMenu._openMyself(e);
       }
     }
+  },
+
+  _awardingSelected: function(awarding) {
+    dojo.publish('awarding.selected', [awarding]);
   }
 });

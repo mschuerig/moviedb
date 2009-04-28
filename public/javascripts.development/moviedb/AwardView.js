@@ -27,9 +27,15 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
     this.inherited(arguments);
   },
   postCreate: function() {
-    this.awardings = this.store.getValues(this.object.awardings, 'items');
-    this._buildView();
-    dojo.connect(this, 'onClick', this, '_publishSelect');
+    this.store.loadItem({
+      item: this.object,
+      onItem: dojo.hitch(this, function(loadedObject) {
+        this.object = loadedObject;
+        this.awardings = this.store.getValues(this.object.awardings, 'items');
+        this._buildView();
+        dojo.connect(this, 'onClick', this, '_publishSelect');
+      })
+    });
   },
   getTitle: function() {
     return this.object.name;

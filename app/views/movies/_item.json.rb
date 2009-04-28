@@ -1,13 +1,11 @@
-m =  {
-#  :id          => movie.to_param,
-  '$ref'       => movie_path(movie),
+path = movie_path(movie)
+{
+  :id          => path,
+  '$ref'       => path,
   :title       => movie.title,
-  :releaseDate => movie.release_date
-}
-unless movie.awardings.empty?
-  m[:awards] = movie.awardings.map { |a|
+  :releaseDate => movie.release_date,
+  :awardings   => movie.awardings.map { |a|
     render :partial => 'awardings/short.json.rb',
       :locals => { :awarding => a }
   }
-end
-m
+}

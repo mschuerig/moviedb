@@ -22,7 +22,7 @@ ActionController::Routing::Routes.draw do |map|
   # /movies/:movie_id/participants/:id mapping!
   map.connect '/movies/:movie_id/participants/:kind', :controller => 'people'
   map.resources :movies, :member => { :summary => :get } do |movies|
-    movies.resources :awardings, :as => :awards
+    movies.resources :awardings
     movies.resources :people, :as => :participants
   end
   

@@ -2,12 +2,14 @@ dojo.provide('aiki.Store');
 dojo.require('dojox.data.JsonRestStore');
 
 dojo.declare("aiki.Store", dojox.data.JsonRestStore, {
-  _processResults: function(results, deferred) {
+ _processResults: function(results, deferred) {
+/* ### REMOVE
     dojo.forEach(results.items, function(item) {
       if (!item.awards) {
         item.awards = [];
       }
     });
+*/
     return results;
   },
   fetch: function(args) {

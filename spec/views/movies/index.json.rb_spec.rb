@@ -3,6 +3,17 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 describe "/movies/index.json.rb" do
   include MoviesHelper
   
+  def stub_award(id, name, awardable = true)
+    award = stub_model(Award, :id => id, :name => name)
+    award.should_receive(:awardable?).any_number_of_times.and_return(awardable)
+    award
+  end
+
+  def stub_awarding(name, id, award)
+    award = stub_award(award[:id], award[:name]) if award.kind_of?(Hash)
+    stub_model(Awarding, :id => id, :name => name, :award => award)
+  end
+  
   before do
     assigns[:movies] = [
       stub_model(Movie, :id => 1, :title => 'The first movie', :release_date => '2001-01-01') { |m|
@@ -10,12 +21,8 @@ describe "/movies/index.json.rb" do
       },
       stub_model(Movie, :id => 2, :title => 'The second movie', :release_date => '2002-02-02') { |m|
         m.should_receive(:awardings).any_number_of_times.and_return([
-          stub_model(Awarding, :name => 'Oscar') { |a|
-            a.should_receive(:to_param).and_return('3')
-          },
-          stub_model(Awarding, :name => 'Karlheinz') { |a|
-            a.should_receive(:to_param).and_return('4')
-          }
+          stub_awarding('Best Actor',   3, :name => 'Oscar', :id => 5),
+          stub_awarding('Best Schmock', 4, :name => 'Karlheinz', :id => 6)
         ])
       }
     ]
@@ -30,11 +37,13 @@ describe "/movies/index.json.rb" do
         "identifier": "id",
         "totalCount": 2,
         "items": [
-          {"releaseDate": '2001-01-01', "title": "The first movie", "$ref": "/movies/1"},
-          {"releaseDate": '2002-02-02', "title": "The second movie", "$ref": "/movies/2",
-            "awards": [
-              { "title": "Oscar", "$ref": "/awardings/3" },
-              { "title": "Karlheinz", "$ref": "/awardings/4" }
+          {"releaseDate": '2001-01-01', "title": "The first movie", "id": "/movies/1", "$ref": "/movies/1",
+            "awardings": []
+          },
+          {"releaseDate": '2002-02-02', "title": "The second movie", "id": "/movies/2", "$ref": "/movies/2",
+            "awardings": [
+              { "title": "Best Actor",   "id": "/awardings/3", "$ref": "/awardings/3", "award": { "$ref": "/awards/5" } },
+              { "title": "Best Schmock", "id": "/awardings/4", "$ref": "/awardings/4", "award": { "$ref": "/awards/6" } }
              ]
           }
         ]

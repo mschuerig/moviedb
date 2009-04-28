@@ -1,5 +1,6 @@
+path = person_path(person)
 {
-#  :id    => person.to_param,
-  '$ref' => person_path(person),
+  :id    => path,
+  '$ref' => path,
   :name  => person.name
 }

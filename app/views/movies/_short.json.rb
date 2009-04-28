@@ -1,5 +1,6 @@
+path = movie_path(movie)
 {
-#  :id    => movie.to_param,
-  '$ref' => movie_path(movie),
+  :id    => path,
+  '$ref' => path,
   :title => movie.title
 }

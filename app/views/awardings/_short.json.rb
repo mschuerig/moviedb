@@ -1,5 +1,7 @@
+path = awarding_path(awarding)
 { 
-#  :id    => awarding.to_param,
-  '$ref' => awarding_path(awarding),
-  :title => awarding.name
+  :id    => path,
+  '$ref' => path,
+  :title => awarding.name,
+  :award => { '$ref' => award_path(awarding.award) }
 }
