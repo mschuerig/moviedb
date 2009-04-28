@@ -30,6 +30,7 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
     var _nlsResources = dojo.i18n.getLocalization('moviedb', 'awards');
     dojo.mixin(this, _nlsResources);
     this.inherited(arguments);
+    this._groupListWidget = dojo.getObject(this.awardingsListWidget);
     this.yearGranularity = parseInt(this.yearGranularity) || 10;
     this._showAwardingYear = this.yearGranularity > 1;
   },
@@ -41,7 +42,7 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
       onItem: dojo.hitch(this, function(loadedObject) {
         this.object = loadedObject;
         this.awardings = this.store.getValues(this.object.awardings, 'items');
-        this._buildView();
+        this._renderView();
         dojo.connect(this, 'onClick', this, '_publishSelect');
       })
     });
@@ -51,7 +52,7 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
       onItem: dojo.hitch(this, function(loadedObject) {
         this.object = loadedObject;
         this.awardings = this.store.getValues(this.object.awardings, 'items');
-        this._buildView();
+        this._renderView();
         dojo.connect(this, 'onClick', this, '_publishSelect');
       })
     });
@@ -62,38 +63,42 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
     return this.object.name;
   },
 
-  _buildView: function() {
+  _renderView: function() {
     dojo.empty(this.listNode);
 
     var groups = aiki.groupBy(this.awardings, this._makeGrouper(this.yearGranularity));
     var keys = groups.keys.sort(function(a, b) { return b - a; });
 
-    var listWidget = dojo.getObject(this.awardingsListWidget);
-    var store = this.store;
-
-    for (var i = 0, l = keys.length, first = true; i < l; i++) {
+    for (var i = 0, l = keys.length; i < l; i++) {
       var awardings = groups.groups[keys[i]].sort(
         function(a, b) { return b.year - a.year; });
+      this._renderGroup(i, keys[i], awardings);
+    }
+  },
 
-      var groupIsOpen = this.hiliteAwarding ?
-        (dojo.indexOf(awardings, this.hiliteAwarding) > -1) : false; //### FIXME first;
+  _renderGroup: function(num, name, awardings) {
+    {
+      var hiliteAwarding = this.hiliteAwarding;
+      var groupIsOpen = hiliteAwarding ?
+        dojo.some(awardings, function(it) { return it.id == hiliteAwarding.id; })
+        : false; //### FIXME (num == 0);
 
-      var perGroupList = new listWidget({
+      var perGroupList = new this._groupListWidget({
         items: awardings,
-        store: store,
+        store: this.store,
         showAwardName: this.showAwardName,
         showAwardingYear: this._showAwardingYear
       });
 
       var groupTitle = new dijit.TitlePane({
-        title: dojo.string.substitute(this.groupTitle, {group: keys[i]}),
+        title: dojo.string.substitute(this.groupTitle, {group: name}),
         content: perGroupList,
         open: groupIsOpen
       });
+
       var groupItem = dojo.create('li');
       groupTitle.placeAt(groupItem);
       dojo.place(groupItem, this.listNode);
-      first = false;
     }
   },
 

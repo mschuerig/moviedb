@@ -38,9 +38,28 @@
           { showAwardName: true, yearGranularity: 1 } : {};
         editors.edit(award, awardsStore, 'moviedb.AwardView', options);
       });
-      dojo.subscribe('awarding.selected', function(awarding) {
+
+      dojo.subscribe('awarding.selected', function(awarding, hints) {
+        var options = { hiliteAwarding: awarding };
+
         var award = awardsStore.getValue(awarding, 'award');
-        editors.edit(award, awardsStore, 'moviedb.AwardView', { hiliteAwarding: awarding });
+
+        //### FIXME award should have been lazy loaded
+        function lazyLoadingWorkaround(award) {
+          if (hints && hints.context == 'awardGroup') {
+             var group = awardsStore.getValue(award, 'group');
+             if (group) {
+               award = group;
+               options = dojo.mixin(options, { showAwardName: true, yearGranularity: 1 });
+             }
+          }
+          editors.edit(award, awardsStore, 'moviedb.AwardView', options);
+        }
+
+        awardsStore.fetchItemByIdentity({
+          identity: award.$ref || award.__id,
+          onItem: lazyLoadingWorkaround
+        });
       });
 
       editors = new aiki.EditorManager({ container: 'editors' });

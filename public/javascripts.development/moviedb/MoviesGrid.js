@@ -29,7 +29,7 @@ dojo.declare('moviedb.MoviesGrid', [dijit.layout.BorderContainer, dijit._Templat
     { field: "title",       name: "Title",  width: "auto" },
     { field: "releaseDate", name: "Year",   width: "5em",
       formatter: function(date) { return date ? 1900 + date.getYear() : ''; } },
-    { field: "awardings",      name: "Awards", width: "15%",
+    { field: "awardings",      name: "Awards", width: "6em",
       formatter: function(awardings) { return awardings ? dojo.string.rep('*', awardings.length) : ''; } }
   ],
 
@@ -76,6 +76,9 @@ dojo.declare('moviedb.MoviesGrid', [dijit.layout.BorderContainer, dijit._Templat
   },
 
   _awardingSelected: function(awarding) {
-    dojo.publish('awarding.selected', [awarding]);
+    var hints = {
+      context: 'awardGroup'
+    };
+    dojo.publish('awarding.selected', [awarding, hints]);
   }
 });
