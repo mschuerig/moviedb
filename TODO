@@ -38,6 +38,8 @@ Rails
 Dojo
 ----
 
+- adapt to Dojo coding style
+
 - error handling
 
 - tests

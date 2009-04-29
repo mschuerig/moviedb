@@ -28,7 +28,8 @@ dojo.declare("aiki.Store", dojox.data.JsonRestStore, {
     for (var q in query) {
       var value = query[q];
       if (value != '*') {
-        queryStr += '[?' + q + "='" + value + "']";
+        var cmp = value.comparator || '=';
+        queryStr += '[?' + q + cmp + "'" + (value.target || value) + "']";
       }
     }
     return queryStr;

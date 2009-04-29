@@ -7,6 +7,7 @@ dojo.require('dijit.layout.ContentPane');
 //dojo.require('dojo.i18n');
 dojo.require('dojox.form.BusyButton');
 dojo.require('dojox.grid.DataGrid');
+dojo.require('aiki.data');
 dojo.require('aiki.Form');
 
 dojo.declare('moviedb.MoviesGrid', [dijit.layout.BorderContainer, dijit._Templated], {
@@ -43,6 +44,12 @@ dojo.declare('moviedb.MoviesGrid', [dijit.layout.BorderContainer, dijit._Templat
     grid.setQuery(this.query);
     grid.attr('keepRows', this.keepRows);
     grid.setStore(this.store);
+
+    dojo.connect(this.formNode, 'onSubmit', dojo.hitch(this, function(event) {
+      dojo.stopEvent(event);
+      var value = this.queryNode.attr('value');
+      grid.setQuery(aiki.parseQuery(value, ['title', 'year', 'awards']));
+    }));
 
     dojo.connect(grid, 'onRowDblClick', function(event) {
       dojo.publish('movie.selected', [grid.getItem(event.rowIndex)]);
