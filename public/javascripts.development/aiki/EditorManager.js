@@ -36,7 +36,7 @@ dojo.declare('aiki.EditorManager', null, {
     } else {
       this.selectEditor(editor);
       if (options.onReady) {
-        options.onReady(editor.widget);
+        options.onReady(editor.widget, editor.object);
       }
     }
     return editor.widget;
@@ -60,7 +60,7 @@ dojo.declare('aiki.EditorManager', null, {
       { store: store, object: object }));
 
     if (options.onReady) {
-      dojo.connect(widget, 'startup', dojo.partial(options.onReady, widget));
+      dojo.connect(widget, 'startup', dojo.partial(options.onReady, widget, object));
     }
 
     widget = dojo.mixin(widget, {

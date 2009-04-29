@@ -6,6 +6,7 @@ dojo.require('dojox.dtl._Templated');
 dojo.require('dojox.dtl.contrib.data');
 dojo.require('plugd.ancestor');
 dojo.require('aiki._base');
+dojo.require('aiki.dtl.dom');
 dojo.requireLocalization('moviedb', 'awards');
 
 (function() {
@@ -17,6 +18,9 @@ function awardingsListContains(awardings, theAwarding) {
   return dojo.some(awardings, function(it) { return it.id == theAwarding.id; });
 }
 
+function cleanId(store, object) {
+  return store.getIdentity(object).toString().replace(/\W+/g, '_');
+}
 
 dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
   store: null,
@@ -45,7 +49,8 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
   },
 
   postCreate: function() {
-    this._groupManager = new moviedb._AwardGroupManager();
+    this._groupManager = new moviedb._AwardGroupManager(
+      dojo.hitch(this, '_awardingDomID'));
 
     //### FIXME hack alert, this should be handled by loadItem
     this.store.fetchItemByIdentity({
@@ -75,7 +80,6 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
   },
 
   showAwarding: function(awarding) {
-//    setTimeout(dojo.hitch(this._groupManager, 'showAwarding', awarding), 100);
     this._groupManager.showAwarding(awarding);
   },
 
@@ -101,7 +105,7 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
     var perGroupList = new this._groupListWidget({
       items: awardings,
       store: this.store,
-      baseId: 'group_' + num, //### FIXME unique id
+      baseId: this._awardingDomID(),
       showAwardName: this.showAwardName,
       showAwardingYear: this._showAwardingYear
     });
@@ -135,6 +139,11 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
     return false;
   },
 
+  _awardingDomID: function(awarding) {
+    var baseId = this._baseDomId = (this._baseDomId || ('award_' + cleanId(this.store, this.object)));
+    return awarding ? (baseId + '_' + cleanId(this.store, awarding)) : baseId;
+  },
+
   _makeGrouper: function(granularity) {
     return function(item) { return Math.floor(item.year / granularity) * granularity; };
   }
@@ -143,6 +152,10 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
 dojo.declare('moviedb._AwardGroupManager', null, {
   hiliteDuration: 2000,
   _groups: [],
+
+  constructor: function(domIdMaker) {
+    this._domId = domIdMaker;
+  },
 
   add: function(titlePane, awardings) {
     this._groups.push({ titlePane: titlePane, awardings: awardings });
@@ -156,7 +169,8 @@ dojo.declare('moviedb._AwardGroupManager', null, {
       if (!itsGroup.titlePane.open) {
         itsGroup.titlePane.toggle();
       }
-      var awardingNode = dojo.byId(awarding.id); //### FIXME
+      var awardingNode = dojo.byId(this._domId(awarding));
+      console.debug('** dom id: ', this._domId(awarding)); //###
       dijit.scrollIntoView(awardingNode);
 
       dojo.animateProperty({

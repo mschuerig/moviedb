@@ -41,7 +41,10 @@
 
       dojo.subscribe('awarding.selected', function(awarding, hints) {
         var options = {
-          onReady: function(widget) { widget.showAwarding(awarding); }
+          onReady: function(widget) {
+            //### FIXME should have been lazy loaded
+            widget.showAwarding({id: awarding.$ref, __id: awarding.$ref});
+          }
         };
 
         var award = awardsStore.getValue(awarding, 'award');

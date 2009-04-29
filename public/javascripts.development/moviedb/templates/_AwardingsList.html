@@ -2,7 +2,7 @@
 {% bind_data items to store as awardings %}
 <ol class="group">
   {% for awarding in awardings %}
-  <li id="{{ awarding.id }}" class="awarding">
+  <li id="{{ baseId }}_{{ awarding.getIdentity|cleanId }}" class="awarding">
     {% if showAwardingYear %}
     <div class="year">{{ awarding.year }}</div>
     {% endif %}
