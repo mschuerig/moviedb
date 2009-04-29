@@ -22,6 +22,19 @@ function cleanId(store, object) {
   return store.getIdentity(object).toString().replace(/\W+/g, '_');
 }
 
+function hilite(node, duration) {
+  dojo.animateProperty({
+    node: node,
+    duration: duration || 2000,
+    properties: {
+      backgroundColor: {
+        start: '#FFFF00',
+        end:   '#FFFFFF'
+      }
+    }
+  }).play();
+}
+
 dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
   store: null,
   object: null,
@@ -79,6 +92,10 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
     return this.object.name;
   },
 
+  openTopGroup: function() {
+    this._groupManager.openTopGroup();
+  },
+
   showAwarding: function(awarding) {
     this._groupManager.showAwarding(awarding);
   },
@@ -98,10 +115,6 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
   },
 
   _renderGroup: function(num, name, awardings) {
-    var groupIsOpen = false; /*= hiliteAwarding ?
-      awardingsListContains(awardings, hiliteAwarding)
-      : false; //### FIXME (num == 0);*/
-
     var perGroupList = new this._groupListWidget({
       items: awardings,
       store: this.store,
@@ -113,7 +126,7 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
     var groupTitle = new dijit.TitlePane({
       title: dojo.string.substitute(this.groupTitle, {group: name}),
       content: perGroupList,
-      open: groupIsOpen
+      open: false
     });
 
     var groupItem = dojo.create('li');
@@ -161,28 +174,28 @@ dojo.declare('moviedb._AwardGroupManager', null, {
     this._groups.push({ titlePane: titlePane, awardings: awardings });
   },
 
+  openTopGroup: function() {
+    var topGroup = this._groups[0];
+    if (topGroup) {
+      this._openGroup(topGroup);
+      dijit.scrollIntoView(topGroup.titlePane.domNode);
+    }
+  },
+
   showAwarding: function(awarding) {
-    console.debug('**** SHOW AWARDING: ', awarding); //###
     var itsGroup = aiki.find(this._groups,
       function(group) { return awardingsListContains(group.awardings, awarding); });
     if (itsGroup) {
-      if (!itsGroup.titlePane.open) {
-        itsGroup.titlePane.toggle();
-      }
+      this._openGroup(itsGroup);
       var awardingNode = dojo.byId(this._domId(awarding));
-      console.debug('** dom id: ', this._domId(awarding)); //###
       dijit.scrollIntoView(awardingNode);
+      hilite(awardingNode, this.hiliteDuration);
+    }
+  },
 
-      dojo.animateProperty({
-        node: awardingNode,
-        duration: this.hiliteDuration,
-        properties: {
-          backgroundColor: {
-            start: '#FFFF00',
-            end:   '#FFFFFF'
-          }
-        }
-      }).play();
+  _openGroup: function(group) {
+    if (!group.titlePane.open) {
+      group.titlePane.toggle();
     }
   }
 });

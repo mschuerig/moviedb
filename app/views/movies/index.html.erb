@@ -33,9 +33,14 @@
       dojo.subscribe('movie.selected',  dojo.partial(showEditor, 'moviedb.MovieEditor',  moviesStore));
       dojo.subscribe('person.selected', dojo.partial(showEditor, 'moviedb.PersonEditor', peopleStore));
 
-      dojo.subscribe('award.selected',  function(award, hints) {
-        var options = (hints && hints.awardGroup) ?
-          { showAwardName: true, yearGranularity: 1 } : {};
+      dojo.subscribe('award.selected', function(award, hints) {
+        var options = {
+          onReady: function(widget) { widget.openTopGroup(); }
+        };
+        if (hints && hints.awardGroup) {
+          options.showAwardName = true;
+          options.yearGranularity = 1;
+        }
         editors.edit(award, awardsStore, 'moviedb.AwardView', options);
       });
 
@@ -55,7 +60,8 @@
              var group = awardsStore.getValue(award, 'group');
              if (group) {
                award = group;
-               options = dojo.mixin(options, { showAwardName: true, yearGranularity: 1 });
+               options.showAwardName = true;
+               options.yearGranularity = 1;
              }
           }
           editors.edit(award, awardsStore, 'moviedb.AwardView', options);
