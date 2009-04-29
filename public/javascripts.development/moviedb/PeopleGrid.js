@@ -15,7 +15,6 @@ dojo.declare('moviedb.PeopleGrid', [dijit.layout.BorderContainer, dijit._Templat
   query: {name: '*'},
   rowsPerPage: 50,
   keepRows: 300,
-  baseClass: 'moviedbPeopleGrid',
   templatePath: dojo.moduleUrl('moviedb', 'templates/PeopleGrid.html'),
   widgetsInTemplate: true,
 

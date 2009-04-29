@@ -142,6 +142,15 @@ h1 {
   padding: 0;
 }
 
+#awardsTree {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  bottom: 5px;
+  left: 5px;
+  border: 1px #ccc solid !important;
+}
+
 #editors .dijitTab .movieIcon {
   background-image: url(/images/small/film-reel.png);
 }

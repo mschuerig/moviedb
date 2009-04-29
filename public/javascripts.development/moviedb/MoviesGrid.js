@@ -15,7 +15,6 @@ dojo.declare('moviedb.MoviesGrid', [dijit.layout.BorderContainer, dijit._Templat
   sortInfo: -2,
   rowsPerPage: 50,
   keepRows: 300,
-  baseClass: 'moviedbMoviesGrid',
   templatePath: dojo.moduleUrl('moviedb', 'templates/MoviesGrid.html'),
   widgetsInTemplate: true,
 /*
