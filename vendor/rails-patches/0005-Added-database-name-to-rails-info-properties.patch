@@ -1,0 +1,28 @@
+From 0ad76691a78f86bbb67aba6d5ea5d149ad14819d Mon Sep 17 00:00:00 2001
+From: Michael Schuerig <michael@schuerig.de>
+Date: Wed, 8 Apr 2009 14:02:34 +0200
+Subject: [PATCH 6/6] Added database name to /rails/info/properties.
+
+---
+ railties/builtin/rails_info/rails/info.rb |    5 +++++
+ 1 files changed, 5 insertions(+), 0 deletions(-)
+
+diff --git a/railties/builtin/rails_info/rails/info.rb b/railties/builtin/rails_info/rails/info.rb
+index b4fc3bf..48ebf10 100644
+--- a/railties/builtin/rails_info/rails/info.rb
++++ b/railties/builtin/rails_info/rails/info.rb
+@@ -139,6 +139,11 @@ module Rails
+       git_branch
+     end
+ 
++    # The name of the database for the current environment.
++    property 'Database' do
++      ActiveRecord::Base.configurations[RAILS_ENV]['database']
++    end
++
+     # The name of the database adapter for the current environment.
+     property 'Database adapter' do
+       ActiveRecord::Base.configurations[RAILS_ENV]['adapter']
+-- 
+1.6.2.2
+

@@ -1,0 +1,41 @@
+From 8a0bc332c470c5cfd80042ee51fa6d39f0270a4e Mon Sep 17 00:00:00 2001
+From: Michael Schuerig <michael@schuerig.de>
+Date: Thu, 2 Apr 2009 09:36:45 +0200
+Subject: [PATCH] Show installed middleware in builtin rails info (/rails/info/properties).
+
+---
+ railties/builtin/rails_info/rails/info.rb |   11 ++++++++++-
+ 1 files changed, 10 insertions(+), 1 deletions(-)
+
+diff --git a/railties/builtin/rails_info/rails/info.rb b/railties/builtin/rails_info/rails/info.rb
+index a20d9bf..0dd1c09 100644
+--- a/railties/builtin/rails_info/rails/info.rb
++++ b/railties/builtin/rails_info/rails/info.rb
+@@ -56,7 +56,12 @@ module Rails
+         returning table = '<table>' do
+           properties.each do |(name, value)|
+             table << %(<tr><td class="name">#{CGI.escapeHTML(name.to_s)}</td>)
+-            table << %(<td class="value">#{CGI.escapeHTML(value.to_s)}</td></tr>)
++            formatted_value = if value.kind_of?(Array)
++                  "<ul>" + value.map { |v| "<li>#{CGI.escapeHTML(v.to_s)}</li>" }.join + "</ul>"
++                else
++                  CGI.escapeHTML(value.to_s)
++                end
++            table << %(<td class="value">#{formatted_value}</td></tr>)
+           end
+           table << '</table>'
+         end
+@@ -102,6 +107,10 @@ module Rails
+       end
+     end
+ 
++    property 'Middleware' do
++      ActionController::Dispatcher.middleware.active.map(&:inspect)
++    end
++
+     # The Rails Git revision, if it's checked out into vendor/rails.
+     property 'Edge Rails revision' do
+       edge_rails_revision
+-- 
+1.6.2.1
+

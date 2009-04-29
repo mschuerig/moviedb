@@ -1,0 +1,40 @@
+From fb843e6eedda7813806238282158ad521daf7b22 Mon Sep 17 00:00:00 2001
+From: Michael Schuerig <michael@schuerig.de>
+Date: Fri, 24 Apr 2009 23:09:26 +0200
+Subject: [PATCH 2/2] Check if the object is an item in *any* store, not just the particular current one.
+
+---
+ dtl/contrib/data.js |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/dtl/contrib/data.js b/dtl/contrib/data.js
+index 3bc54f8..51fe585 100644
+--- a/dtl/contrib/data.js
++++ b/dtl/contrib/data.js
+@@ -35,20 +35,20 @@ dojo.require("dojox.dtl._base");
+ 						key = key.slice(0, -1);
+ 					}
+ 					if(!store.hasAttribute(item, key)){
+-						return;
++						return undefined;
+ 					}
+ 				}
+ 
+ 				var values = store.getValues(item, key);
+ 				if(!values){
+-					return;
++					return undefined;
+ 				}
+ 				if(!dojo.isArray(values)){
+ 					return new ddcd._BoundItem(values, store);
+ 				}
+ 
+ 				values = dojo.map(values, function(value){
+-					if(dojo.isObject(value) && store.isItem(value)){
++					if(dojo.isObject(value) && store.isItem(value, true)){
+ 						return new ddcd._BoundItem(value, store);
+ 					}
+ 					return value;
+-- 
+1.6.2.4
+

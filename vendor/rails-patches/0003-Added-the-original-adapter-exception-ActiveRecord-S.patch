@@ -1,0 +1,90 @@
+From 2edf1a496aeee0f172b0589d22096a685bfff07b Mon Sep 17 00:00:00 2001
+From: Michael Schuerig <michael@schuerig.de>
+Date: Sun, 5 Apr 2009 09:50:55 +0200
+Subject: [PATCH 3/6] Added the original adapter exception ActiveRecord::StatementInvalid.
+
+---
+ activerecord/lib/active_record/base.rb             |    5 +++++
+ .../connection_adapters/abstract_adapter.rb        |    2 +-
+ .../connection_adapters/mysql_adapter.rb           |    4 ++--
+ .../connection_adapters/postgresql_adapter.rb      |    4 ++--
+ .../connection_adapters/sqlite_adapter.rb          |    2 +-
+ 5 files changed, 11 insertions(+), 6 deletions(-)
+
+diff --git a/activerecord/lib/active_record/base.rb b/activerecord/lib/active_record/base.rb
+index 8e912d8..a6f4704 100755
+--- a/activerecord/lib/active_record/base.rb
++++ b/activerecord/lib/active_record/base.rb
+@@ -53,6 +53,11 @@ module ActiveRecord #:nodoc:
+ 
+   # Raised when SQL statement cannot be executed by the database (for example, it's often the case for MySQL when Ruby driver used is too old).
+   class StatementInvalid < ActiveRecordError
++    attr_reader :original_exception
++    def initialize(message, original_exception)
++      super(message)
++      @original_exception = original_exception
++    end
+   end
+ 
+   # Raised when a record cannot be inserted because it would violate a uniqueness constraint.
+diff --git a/activerecord/lib/active_record/connection_adapters/abstract_adapter.rb b/activerecord/lib/active_record/connection_adapters/abstract_adapter.rb
+index dd1d4ab..95fa6b8 100755
+--- a/activerecord/lib/active_record/connection_adapters/abstract_adapter.rb
++++ b/activerecord/lib/active_record/connection_adapters/abstract_adapter.rb
+@@ -214,7 +214,7 @@ module ActiveRecord
+ 
+       def translate_exception(e, message)
+         # override in derived class
+-        ActiveRecord::StatementInvalid.new(message)
++        ActiveRecord::StatementInvalid.new(message, e)
+       end
+ 
+         def format_log_entry(message, dump = nil)
+diff --git a/activerecord/lib/active_record/connection_adapters/mysql_adapter.rb b/activerecord/lib/active_record/connection_adapters/mysql_adapter.rb
+index 8f21bb9..96a606a 100644
+--- a/activerecord/lib/active_record/connection_adapters/mysql_adapter.rb
++++ b/activerecord/lib/active_record/connection_adapters/mysql_adapter.rb
+@@ -567,9 +567,9 @@ module ActiveRecord
+         def translate_exception(exception, message)
+           case exception.errno
+           when 1062
+-            RecordNotUnique.new(message)
++            RecordNotUnique.new(message, exception)
+           when 1452
+-            InvalidForeignKey.new(message)
++            InvalidForeignKey.new(message, exception)
+           else
+             super
+           end
+diff --git a/activerecord/lib/active_record/connection_adapters/postgresql_adapter.rb b/activerecord/lib/active_record/connection_adapters/postgresql_adapter.rb
+index 079c5c3..9ad3ecb 100644
+--- a/activerecord/lib/active_record/connection_adapters/postgresql_adapter.rb
++++ b/activerecord/lib/active_record/connection_adapters/postgresql_adapter.rb
+@@ -925,9 +925,9 @@ module ActiveRecord
+         def translate_exception(exception, message)
+           case exception.message
+           when /duplicate key value violates unique constraint/
+-            RecordNotUnique.new(message)
++            RecordNotUnique.new(message, exception)
+           when /violates foreign key constraint/
+-            InvalidForeignKey.new(message)
++            InvalidForeignKey.new(message, exception)
+           else
+             super
+           end
+diff --git a/activerecord/lib/active_record/connection_adapters/sqlite_adapter.rb b/activerecord/lib/active_record/connection_adapters/sqlite_adapter.rb
+index d709450..1005525 100644
+--- a/activerecord/lib/active_record/connection_adapters/sqlite_adapter.rb
++++ b/activerecord/lib/active_record/connection_adapters/sqlite_adapter.rb
+@@ -424,7 +424,7 @@ module ActiveRecord
+         def translate_exception(exception, message)
+           case exception.message
+           when /column(s)? .* (is|are) not unique/
+-            RecordNotUnique.new(message)
++            RecordNotUnique.new(message, exception)
+           else
+             super
+           end
+-- 
+1.6.2.2
+

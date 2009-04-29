@@ -1,0 +1,133 @@
+From 3e693875c61aeb0ac8dcb9bc5773214d0d527a6f Mon Sep 17 00:00:00 2001
+From: Michael Schuerig <michael@schuerig.de>
+Date: Sun, 5 Apr 2009 01:19:29 +0200
+Subject: [PATCH 1/6] Translate adapter errors that indicate a violated uniqueness constraint
+ to ActiveRecord::RecordNotUnique exception derived from
+ ActiveReecord::StatementInvalid.
+
+---
+ activerecord/lib/active_record/base.rb             |    4 ++++
+ .../connection_adapters/abstract_adapter.rb        |    7 ++++++-
+ .../connection_adapters/mysql_adapter.rb           |   11 +++++++++++
+ .../connection_adapters/postgresql_adapter.rb      |    9 +++++++++
+ .../connection_adapters/sqlite_adapter.rb          |   10 ++++++++++
+ activerecord/test/cases/adapter_test.rb            |    7 +++++++
+ 6 files changed, 47 insertions(+), 1 deletions(-)
+
+diff --git a/activerecord/lib/active_record/base.rb b/activerecord/lib/active_record/base.rb
+index 9943a70..118dae0 100755
+--- a/activerecord/lib/active_record/base.rb
++++ b/activerecord/lib/active_record/base.rb
+@@ -55,6 +55,10 @@ module ActiveRecord #:nodoc:
+   class StatementInvalid < ActiveRecordError
+   end
+
++  # Raised when a record cannot be inserted because it would violate a uniqueness constraint.
++  class RecordNotUnique < StatementInvalid
++  end
++
+   # Raised when number of bind variables in statement given to <tt>:condition</tt> key (for example, when using +find+ method)
+   # does not match number of expected variables.
+   #
+diff --git a/activerecord/lib/active_record/connection_adapters/abstract_adapter.rb b/activerecord/lib/active_record/connection_adapters/abstract_adapter.rb
+index a8cd9f0..dd1d4ab 100755
+--- a/activerecord/lib/active_record/connection_adapters/abstract_adapter.rb
++++ b/activerecord/lib/active_record/connection_adapters/abstract_adapter.rb
+@@ -209,9 +209,14 @@ module ActiveRecord
+           @last_verification = 0
+           message = "#{e.class.name}: #{e.message}: #{sql}"
+           log_info(message, name, 0)
+-          raise ActiveRecord::StatementInvalid, message
++          raise translate_exception(e, message)
+         end
+
++      def translate_exception(e, message)
++        # override in derived class
++        ActiveRecord::StatementInvalid.new(message)
++      end
++
+         def format_log_entry(message, dump = nil)
+           if ActiveRecord::Base.colorize_logging
+             if @@row_even
+diff --git a/activerecord/lib/active_record/connection_adapters/mysql_adapter.rb b/activerecord/lib/active_record/connection_adapters/mysql_adapter.rb
+index 9300df2..245dfde 100644
+--- a/activerecord/lib/active_record/connection_adapters/mysql_adapter.rb
++++ b/activerecord/lib/active_record/connection_adapters/mysql_adapter.rb
+@@ -562,6 +562,17 @@ module ActiveRecord
+         where_sql
+       end
+
++      protected
++
++        def translate_exception(exception, message)
++          case exception.errno
++          when 1062
++            RecordNotUnique.new(message)
++          else
++            super
++          end
++        end
++
+       private
+         def connect
+           encoding = @config[:encoding]
+diff --git a/activerecord/lib/active_record/connection_adapters/postgresql_adapter.rb b/activerecord/lib/active_record/connection_adapters/postgresql_adapter.rb
+index 4d88463..9b30371 100644
+--- a/activerecord/lib/active_record/connection_adapters/postgresql_adapter.rb
++++ b/activerecord/lib/active_record/connection_adapters/postgresql_adapter.rb
+@@ -922,6 +922,15 @@ module ActiveRecord
+             end
+         end
+
++        def translate_exception(exception, message)
++          case exception.message
++          when /duplicate key value violates unique constraint/
++            RecordNotUnique.new(message)
++          else
++            super
++          end
++        end
++
+       private
+         # The internal PostgreSQL identifier of the money data type.
+         MONEY_COLUMN_TYPE_OID = 790 #:nodoc:
+diff --git a/activerecord/lib/active_record/connection_adapters/sqlite_adapter.rb b/activerecord/lib/active_record/connection_adapters/sqlite_adapter.rb
+index afd6472..d709450 100644
+--- a/activerecord/lib/active_record/connection_adapters/sqlite_adapter.rb
++++ b/activerecord/lib/active_record/connection_adapters/sqlite_adapter.rb
+@@ -420,6 +420,16 @@ module ActiveRecord
+             'INTEGER PRIMARY KEY NOT NULL'.freeze
+           end
+         end
++
++        def translate_exception(exception, message)
++          case exception.message
++          when /column(s)? .* (is|are) not unique/
++            RecordNotUnique.new(message)
++          else
++            super
++          end
++        end
++
+     end
+
+     class SQLite2Adapter < SQLiteAdapter # :nodoc:
+diff --git a/activerecord/test/cases/adapter_test.rb b/activerecord/test/cases/adapter_test.rb
+index 0477064..e197eaf 100644
+--- a/activerecord/test/cases/adapter_test.rb
++++ b/activerecord/test/cases/adapter_test.rb
+@@ -130,4 +130,11 @@ class AdapterTest < ActiveRecord::TestCase
+       assert_equal " LIMIT 1,7 OFFSET 7", @connection.add_limit_offset!("", :limit=>sql_inject, :offset=>7)
+     end
+   end
++  
++  def test_uniqueness_violations_are_translated_to_specific_exception
++    @connection.execute "INSERT INTO subscribers(nick) VALUES('me')"
++    assert_raises(ActiveRecord::RecordNotUnique) do
++      @connection.execute "INSERT INTO subscribers(nick) VALUES('me')"
++    end
++  end
+ end
+-- 
+1.6.2.2
+

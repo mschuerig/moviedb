@@ -1,0 +1,133 @@
+From 86e29d0255d2c6c35149ec8e1807fd1ccb8d691d Mon Sep 17 00:00:00 2001
+From: Michael Schuerig <michael@schuerig.de>
+Date: Fri, 24 Apr 2009 19:21:45 +0200
+Subject: [PATCH 1/2] Added dojo.may -- calls a function/method if it exists.
+
+---
+ may.js         |   29 +++++++++++++++++++++++++
+ tests/may.html |   64 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ tests/may.js   |    4 +++
+ 3 files changed, 97 insertions(+), 0 deletions(-)
+ create mode 100644 may.js
+ create mode 100644 tests/may.html
+ create mode 100644 tests/may.js
+
+diff --git a/may.js b/may.js
+new file mode 100644
+index 0000000..9a3bb0a
+--- /dev/null
++++ b/may.js
+@@ -0,0 +1,29 @@
++dojo.provide("plugd.may");
++// dojo.may plugin:
++(function(d){
++  d.may = function(/* Object? */obj, /* Function|String */func, /* Array? */args, /* Object? */defaultValue) {
++    // summary: Call obj.func if it is a function.
++    //
++    // obj: Object?
++    //   Object on which func is called. If null, dojo.global is used.
++    //
++    // func: String|Function
++    //   The function to call, if it exists.
++    //
++    // args: Array?
++    //   An optional array of arguments for func.
++    //
++    // defaultValue: Object?
++    //   An optional value to be returned if func cannot be called.
++    //
++    obj = (obj == null) ? dojo.global : obj;
++    if (!dojo.isFunction(func)) {
++      func = obj[func];
++    }
++    if (dojo.isFunction(func)) {
++      return func.apply(obj, args || []);
++    } else {
++      return defaultValue;
++    }
++  };
++})(dojo);
+diff --git a/tests/may.html b/tests/may.html
+new file mode 100644
+index 0000000..539aaa3
+--- /dev/null
++++ b/tests/may.html
+@@ -0,0 +1,64 @@
++<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
++	      "http://www.w3.org/TR/html4/strict.dtd">
++<html>
++  <head>
++	<title>Testing dojo.may</title>
++	<script type="text/javascript" src="../../dojo/dojo.js" djConfig="isDebug: true"></script>
++
++	<script type="text/javascript" src="../may.js"></script>
++
++	<script type="text/javascript">
++	  dojo.require("doh.runner");
++
++	  dojo.addOnLoad(function(){
++        var myTestFunction = function(arg) { return arg; };
++        dojo.global.myTestFunction = myTestFunction;
++        
++        var C = function(value){
++          this.value = value;
++          this.method = function() {
++            this.called = true;
++            return this.value;
++          }
++        };
++
++	    doh.register("may", 
++	      [
++            function globalNonExistingByString(t){
++              t.is('no', dojo.may(null, 'no', [], 'no'));
++            },
++            function globalExistingByString(t){
++              t.is('yeah', dojo.may(null, 'myTestFunction', ['yeah']));
++            },
++            function globalExistingByFunction(t){
++              t.is('yeah', dojo.may(null, myTestFunction, ['yeah']));
++            },
++            function nonExistingMethodByString(t){
++              var obj = new C();
++              t.is(0, dojo.may(obj, 'noMethod', [], 0));
++              t.f(obj.called);
++            },
++            function nonExistingMethodByFunction(t){
++              // is this case sensible at all?
++            },
++            function existingMethodByString(t){
++              var obj = new C(1);
++              t.is(1, dojo.may(obj, 'method'));
++              t.t(obj.called);
++            },
++            function existingMethodByFunction(t){
++              var obj = new C(2);
++              t.is(2, dojo.may(obj, obj.method));
++              t.t(obj.called);
++            }
++          ]
++	    );
++	    doh.run();
++	  });
++	</script>
++	<body>
++
++	  <h1>May Plugin QuickTest</h1>
++	  
++	</body>
++</html>
+diff --git a/tests/may.js b/tests/may.js
+new file mode 100644
+index 0000000..52f0346
+--- /dev/null
++++ b/tests/may.js
+@@ -0,0 +1,4 @@
++dojo.provide("plugd.tests.may");
++if(dojo.isBrowser){
++  doh.registerUrl("plugd.tests.may", dojo.moduleUrl("plugd.tests", "may.html"));
++}
+\ No newline at end of file
+-- 
+1.6.2.4
+

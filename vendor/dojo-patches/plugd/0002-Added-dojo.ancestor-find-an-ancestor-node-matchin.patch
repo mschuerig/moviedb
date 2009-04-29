@@ -1,0 +1,133 @@
+From 81722bacb136f121b4a35780fafa4f35574917ad Mon Sep 17 00:00:00 2001
+From: Michael Schuerig <michael@schuerig.de>
+Date: Fri, 24 Apr 2009 20:08:32 +0200
+Subject: [PATCH 2/2] Added dojo.ancestor -- find an ancestor node matching a query expression.
+
+---
+ ancestor.js         |   32 ++++++++++++++++++++++++++
+ tests/ancestor.html |   62 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ tests/ancestor.js   |    4 +++
+ 3 files changed, 98 insertions(+), 0 deletions(-)
+ create mode 100644 ancestor.js
+ create mode 100644 tests/ancestor.html
+ create mode 100644 tests/ancestor.js
+
+diff --git a/ancestor.js b/ancestor.js
+new file mode 100644
+index 0000000..6420df3
+--- /dev/null
++++ b/ancestor.js
+@@ -0,0 +1,32 @@
++dojo.provide("plugd.ancestor");
++// dojo.ancestor plugin:
++(function(d){
++
++  dojo.ancestor = function(/* String|DOMNode */startNode, /* String */query, /* String|DOMNode? */root) {
++    // summary: Find an ancestor of startNode matching query, while staying below root.
++    //
++    // startNode: String|DOMNode
++    //   Start node for the search of a node matching query.
++    //   This node is included in the search.
++    //
++    // query: String
++    //   A CSS-selector query expression.
++    //   The same as with dojo.query.
++    //
++    // root: String|DOMNode
++    //   Optional root node. Default dojo.doc.
++    //   The query expression starts at this node.
++    //   The search does not include this node.
++    //
++    var node = dojo.byId(startNode);
++    root = root ? dojo.byId(root) : dojo.doc;
++    var candidates = dojo.query(query, root);
++    while (node && node !== root) {
++      if (candidates.indexOf(node) >= 0) {
++        return node;
++      }
++      node = node.parentNode;
++    }
++    return null;
++  };
++})(dojo);
+diff --git a/tests/ancestor.html b/tests/ancestor.html
+new file mode 100644
+index 0000000..a1bb8d3
+--- /dev/null
++++ b/tests/ancestor.html
+@@ -0,0 +1,62 @@
++<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
++	      "http://www.w3.org/TR/html4/strict.dtd">
++<html>
++  <head>
++	<title>Testing dojo.ancestor</title>
++	<script type="text/javascript" src="../../dojo/dojo.js" djConfig="isDebug: true"></script>
++
++	<script type="text/javascript" src="../ancestor.js"></script>
++
++	<script type="text/javascript">
++	  dojo.require("doh.runner");
++
++	  dojo.addOnLoad(function(){
++	    doh.register("ancestor",
++	      [
++            function ancestorByString(t){
++              t.is(dojo.byId('hit'),
++                dojo.ancestor('start', 'a'));
++            },
++            function ancestorByNode(t){
++              t.is(dojo.byId('hit'),
++                dojo.ancestor(dojo.byId('start'), 'a'));
++            },
++            function ancestorWithRootById(t){
++              t.is(dojo.byId('hit'),
++                dojo.ancestor('start', 'a', 'root'));
++            },
++            function ancestorWithRootByNode(t){
++              t.is(dojo.byId('hit'),
++                dojo.ancestor('start', 'a', dojo.byId('root')));
++            },
++            function ancestorWithRootByString(t){
++              t.is(dojo.byId('hit'),
++                dojo.ancestor('start', 'a', 'root'));
++            },
++            function ancestorExcludesRoot(t){
++              t.is(null,
++                dojo.ancestor('start', 'div', 'root'));
++            },
++            function queryStartsAtRoot(t){
++              t.is(dojo.byId('hit'),
++                dojo.ancestor('start', 'div a'));
++              t.is(null,
++                dojo.ancestor('start', 'div a', 'root'));
++            }
++          ]
++	    );
++	    doh.run();
++	  });
++	</script>
++	<body>
++
++	  <h1>Ancestor Plugin QuickTest</h1>
++
++      <div id="root" class="outer">
++        <p class="inner">
++          <a id="hit" href="http://dojotoolkit.org"><em><span id="start">Dojo</span> Toolkit</em></a>
++        </p>
++      </div>
++
++	</body>
++</html>
+diff --git a/tests/ancestor.js b/tests/ancestor.js
+new file mode 100644
+index 0000000..035070d
+--- /dev/null
++++ b/tests/ancestor.js
+@@ -0,0 +1,4 @@
++dojo.provide("plugd.tests.ancestor");
++if(dojo.isBrowser){
++  doh.registerUrl("plugd.tests.ancestor", dojo.moduleUrl("plugd.tests", "ancestor.html"));
++}
+-- 
+1.6.2.4
+

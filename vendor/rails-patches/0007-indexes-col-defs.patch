@@ -1,0 +1,54 @@
+diff --git a/activerecord/lib/active_record/connection_adapters/postgresql_adapter.rb b/activerecord/lib/active_record/connection_adapters/postgresql_adapter.rb
+index 4961793..3a50c47 100644
+--- a/activerecord/lib/active_record/connection_adapters/postgresql_adapter.rb
++++ b/activerecord/lib/active_record/connection_adapters/postgresql_adapter.rb
+@@ -651,28 +651,14 @@ module ActiveRecord
+           ORDER BY i.relname
+         SQL
+ 
+-
+-        indexes = []
+-
+-        indexes = result.map do |row|
++        result.map { |row|
+           index_name = row[0]
+           unique = row[1] == 't'
+-          indkey = row[2].split(" ")
++          indkey = row[2].split(" ").map { |n| n.to_i - 1 }
+           oid = row[3]
+-
+-          columns = query(<<-SQL, "Columns for index #{row[0]} on #{table_name}").inject({}) {|attlist, r| attlist[r[1]] = r[0]; attlist}
+-          SELECT a.attname, a.attnum
+-          FROM pg_attribute a
+-          WHERE a.attrelid = #{oid}
+-          AND a.attnum IN (#{indkey.join(",")})
+-          SQL
+-
+-          column_names = indkey.map {|attnum| columns[attnum] }
++          column_names = column_definitions(oid.to_i).values_at(*indkey).map(&:first)
+           IndexDefinition.new(table_name, index_name, unique, column_names)
+-
+-        end
+-
+-        indexes
++        }
+       end
+ 
+       # Returns the list of all column definitions for a table.
+@@ -1057,12 +1057,14 @@ module ActiveRecord
+         # Query implementation notes:
+         #  - format_type includes the column size constraint, e.g. varchar(50)
+         #  - ::regclass is a function that gives the id for a table name
+-        def column_definitions(table_name) #:nodoc:
++        def column_definitions(table_name_or_oid) #:nodoc:
++          relid = table_name_or_oid.kind_of?(Fixnum) ? table_name_or_oid :
++            "'#{quote_table_name(table_name_or_oid)}'::regclass"
+           query <<-end_sql
+             SELECT a.attname, format_type(a.atttypid, a.atttypmod), d.adsrc, a.attnotnull
+               FROM pg_attribute a LEFT JOIN pg_attrdef d
+                 ON a.attrelid = d.adrelid AND a.attnum = d.adnum
+-             WHERE a.attrelid = '#{quote_table_name(table_name)}'::regclass
++             WHERE a.attrelid = #{relid}
+                AND a.attnum > 0 AND NOT a.attisdropped
+              ORDER BY a.attnum
+           end_sql

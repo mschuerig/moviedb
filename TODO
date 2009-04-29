@@ -40,6 +40,8 @@ Dojo
 
 - adapt to Dojo coding style
 
+- correct partial and lazy loading
+
 - error handling
 
 - tests

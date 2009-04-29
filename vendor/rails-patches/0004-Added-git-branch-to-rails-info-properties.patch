@@ -1,0 +1,43 @@
+From 0ce08ec4e4d6d9c7028ae34c5b3f8d8b96e8ea3d Mon Sep 17 00:00:00 2001
+From: Michael Schuerig <michael@schuerig.de>
+Date: Tue, 7 Apr 2009 21:10:52 +0200
+Subject: [PATCH 4/6] Added git branch to /rails/info/properties.
+
+---
+ railties/builtin/rails_info/rails/info.rb |   13 +++++++++++++
+ 1 files changed, 13 insertions(+), 0 deletions(-)
+
+diff --git a/railties/builtin/rails_info/rails/info.rb b/railties/builtin/rails_info/rails/info.rb
+index 0dd1c09..b4fc3bf 100644
+--- a/railties/builtin/rails_info/rails/info.rb
++++ b/railties/builtin/rails_info/rails/info.rb
+@@ -80,6 +80,15 @@ module Rails
+         ensure
+           ENV['LC_ALL'] = env_lang
+         end
++      
++        def git_branch
++          branch = silence_stderr { `git rev-parse --symbolic-full-name HEAD` }
++          if $? == 0
++            branch.sub(%r{^refs/heads/}, '').chomp
++          else
++            '<none>'
++          end
++        end
+     end
+ 
+     # The Ruby version and platform, e.g. "1.8.2 (powerpc-darwin8.2.0)".
+@@ -125,6 +134,10 @@ module Rails
+     property 'Environment' do
+       RAILS_ENV
+     end
++    
++    property 'Git branch' do
++      git_branch
++    end
+ 
+     # The name of the database adapter for the current environment.
+     property 'Database adapter' do
+-- 
+1.6.2.2
+
