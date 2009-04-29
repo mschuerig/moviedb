@@ -69,35 +69,7 @@ describe MoviesController do
   end
   
 =begin
-  describe "GET index" do
-
-    it "exposes all movies as @movies" do
-      Movie.should_receive(:find).with(:all).and_return([mock_movie])
-      get :index
-      assigns[:movies].should == [mock_movie]
-    end
-
-    describe "with mime type of xml" do
-  
-      it "renders all movies as xml" do
-        Movie.should_receive(:find).with(:all).and_return(movies = mock("Array of Movies"))
-        movies.should_receive(:to_xml).and_return("generated XML")
-        get :index, :format => 'xml'
-        response.body.should == "generated XML"
-      end
-    
-    end
-
-  end
-
   describe "GET show" do
-
-    it "exposes the requested movie as @movie" do
-      Movie.should_receive(:find).with("37").and_return(mock_movie)
-      get :show, :id => "37"
-      assigns[:movie].should equal(mock_movie)
-    end
-    
     describe "with mime type of xml" do
 
       it "renders the requested movie as xml" do
@@ -106,29 +78,7 @@ describe MoviesController do
         get :show, :id => "37", :format => 'xml'
         response.body.should == "generated XML"
       end
-
     end
-    
-  end
-
-  describe "GET new" do
-  
-    it "exposes a new movie as @movie" do
-      Movie.should_receive(:new).and_return(mock_movie)
-      get :new
-      assigns[:movie].should equal(mock_movie)
-    end
-
-  end
-
-  describe "GET edit" do
-  
-    it "exposes the requested movie as @movie" do
-      Movie.should_receive(:find).with("37").and_return(mock_movie)
-      get :edit, :id => "37"
-      assigns[:movie].should equal(mock_movie)
-    end
-
   end
 
   describe "POST create" do

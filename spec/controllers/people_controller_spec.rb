@@ -14,11 +14,6 @@ describe PeopleController do
   end
 
   describe "GET index" do
-    it "returns the static people page" do
-      get :index
-      response.should render_template('people/index.html.erb')
-    end
-  
     describe "with mime type of json" do
       before do
         @find_all_options = {
@@ -68,37 +63,9 @@ describe PeopleController do
       end
     end
   end
-  
+
 =begin
-  describe "GET index" do
-
-    it "exposes all peoples as @peoples" do
-      Person.should_receive(:find).with(:all).and_return([mock_person])
-      get :index
-      assigns[:people].should == [mock_person]
-    end
-
-    describe "with mime type of xml" do
-  
-      it "renders all peoples as xml" do
-        Person.should_receive(:find).with(:all).and_return(people = mock("Array of People"))
-        people.should_receive(:to_xml).and_return("generated XML")
-        get :index, :format => 'xml'
-        response.body.should == "generated XML"
-      end
-    
-    end
-
-  end
-
   describe "GET show" do
-
-    it "exposes the requested person as @person" do
-      Person.should_receive(:find).with("37").and_return(mock_person)
-      get :show, :id => "37"
-      assigns[:person].should equal(mock_person)
-    end
-    
     describe "with mime type of xml" do
 
       it "renders the requested person as xml" do
@@ -107,29 +74,7 @@ describe PeopleController do
         get :show, :id => "37", :format => 'xml'
         response.body.should == "generated XML"
       end
-
     end
-    
-  end
-
-  describe "GET new" do
-  
-    it "exposes a new person as @person" do
-      Person.should_receive(:new).and_return(mock_person)
-      get :new
-      assigns[:person].should equal(mock_person)
-    end
-
-  end
-
-  describe "GET edit" do
-  
-    it "exposes the requested person as @person" do
-      Person.should_receive(:find).with("37").and_return(mock_person)
-      get :edit, :id => "37"
-      assigns[:person].should equal(mock_person)
-    end
-
   end
 
   describe "POST create" do

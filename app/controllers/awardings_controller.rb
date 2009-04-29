@@ -18,5 +18,4 @@ class AwardingsController < ApplicationController
       @scope = @scope.for_award(award_id)
     end
   end
-
 end

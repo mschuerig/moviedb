@@ -4,5 +4,4 @@ class WelcomeController < ApplicationController
       format.html { redirect_to movies_url }
     end
   end
-
 end
