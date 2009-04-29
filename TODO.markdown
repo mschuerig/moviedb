@@ -1,4 +1,7 @@
 
+General
+-------
+
 - image attachments
 - revenue charts
  - over the years
