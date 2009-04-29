@@ -75,7 +75,8 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
   },
 
   showAwarding: function(awarding) {
-    setTimeout(dojo.hitch(this._groupManager, 'showAwarding', awarding), 100);
+//    setTimeout(dojo.hitch(this._groupManager, 'showAwarding', awarding), 100);
+    this._groupManager.showAwarding(awarding);
   },
 
   _renderView: function() {
@@ -118,14 +119,6 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
     return groupTitle;
   },
 
-  _setHintAttr: function(hint) {
-    //### TODO
-  },
-
-  _showAwarding: function(awarding) {
-
-  },
-
   _publishSelect: function(event) {
     if (this._tryPublish(event, 'people', 'person.selected') ||
         this._tryPublish(event, 'movies', 'movie.selected')) {
@@ -150,10 +143,13 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
 dojo.declare('moviedb._AwardGroupManager', null, {
   hiliteDuration: 2000,
   _groups: [],
+
   add: function(titlePane, awardings) {
     this._groups.push({ titlePane: titlePane, awardings: awardings });
   },
+
   showAwarding: function(awarding) {
+    console.debug('**** SHOW AWARDING: ', awarding); //###
     var itsGroup = aiki.find(this._groups,
       function(group) { return awardingsListContains(group.awardings, awarding); });
     if (itsGroup) {

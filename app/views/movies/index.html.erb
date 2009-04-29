@@ -40,7 +40,9 @@
       });
 
       dojo.subscribe('awarding.selected', function(awarding, hints) {
-        var options = { hiliteAwarding: awarding };
+        var options = {
+          onReady: function(widget) { widget.showAwarding(awarding); }
+        };
 
         var award = awardsStore.getValue(awarding, 'award');
 
