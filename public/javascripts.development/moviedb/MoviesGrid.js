@@ -4,12 +4,13 @@ dojo.require('dijit.form.Form');
 dojo.require('dijit.form.TextBox');
 dojo.require('dijit.layout.BorderContainer');
 dojo.require('dijit.layout.ContentPane');
+dojo.require('dijit.Tooltip');
 //dojo.require('dojo.i18n');
 dojo.require('dojox.form.BusyButton');
 dojo.require('dojox.grid.DataGrid');
-dojo.require('aiki.data');
 dojo.require('aiki.Form');
 dojo.require('aiki.QueryParser');
+dojo.require('aiki.QueryTooltip');
 
 dojo.declare('moviedb.MoviesGrid', [dijit.layout.BorderContainer, dijit._Templated], {
   store: null,
@@ -38,6 +39,10 @@ dojo.declare('moviedb.MoviesGrid', [dijit.layout.BorderContainer, dijit._Templat
     this.inherited(arguments);
 
     this._queryParser = new aiki.QueryParser(['title', 'year', 'awards'], 'title');
+    new aiki.QueryTooltip({
+      queryParser: this._queryParser,
+      connectId: [this.queryFieldNode.domNode]
+    });
 
     var grid = this.gridNode;
 

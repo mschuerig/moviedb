@@ -4,7 +4,7 @@ class PeopleController < ApplicationController
   before_filter :map_attributes, :only => [ :create, :update ]
   
   query_scope :only => :index do
-    allow     :name
+    allow     :name, :firstname, :lastname, :dob, :birthday
     condition :name => "LOWER(firstname || ' ' || lastname) :op LOWER(?)"
     order     :name => "lastname :dir, firstname :dir, serial_number :dir"
   end

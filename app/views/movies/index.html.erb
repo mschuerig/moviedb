@@ -34,12 +34,15 @@
 
       dojo.subscribe('movie.selected',  dojo.partial(showEditor, 'moviedb.MovieEditor',  moviesStore));
 
+      dojo.subscribe('movie.new', function() {
+        editors.new(moviesStore, 'moviedb.MovieEditor');
+      });
+
       // Person event handlers
 
       dojo.subscribe('person.selected', dojo.partial(showEditor, 'moviedb.PersonEditor', peopleStore));
     
       dojo.subscribe('person.new', function() {
-        console.log('*** NEW PERSON');
         editors.new(peopleStore, 'moviedb.PersonEditor');
       });
 

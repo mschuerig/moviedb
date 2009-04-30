@@ -30,7 +30,11 @@ dojo.declare('moviedb.PeopleGrid', [dijit.layout.BorderContainer, dijit._Templat
   postCreate: function() {
     this.inherited(arguments);
 
-    aiki.parseQuery(value, ['title', 'year', 'awards'], 'title');
+    this._queryParser = new aiki.QueryParser(['name', 'firstname', 'lastname', 'birthday', 'dob'], 'name');
+    new aiki.QueryTooltip({
+      queryParser: this._queryParser,
+      connectId: [this.queryFieldNode.domNode]
+    });
 
     var grid = this.gridNode;
 
