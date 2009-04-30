@@ -1,5 +1,7 @@
 class MoviesController < ApplicationController
+  include LazyJason
   include QueryScope
+  before_filter :load_scope, :except => :index
   
   query_scope :resource => :movie_item, :only => :index do
     allow     :title, :release_year, :release_date, :award_count
@@ -8,8 +10,6 @@ class MoviesController < ApplicationController
     rename    [:awards, :award_count, 'award-count'] => :award_count
   end
   
-  # GET /movies
-  # GET /movies.json
   def index
     respond_to do |format|
       format.html { render :layout => false }
@@ -23,7 +23,7 @@ class MoviesController < ApplicationController
   end
 
   def summary
-    @movie = Movie.find(params[:id])
+    @movie = scope.find(params[:id])
     respond_to do |format|
       format.json do
         render :template => 'movies/summary'
@@ -31,51 +31,25 @@ class MoviesController < ApplicationController
     end
   end
   
-  # GET /movies/1
-  # GET /movies/1.json
-  def show
-    @movie = Movie.find(params[:id])
-
-    respond_to do |format|
-      format.json
-    end
+  private
+  
+  def scope
+    @scope
   end
-
-  # POST /movies
-  # POST /movies.json
-  def create
-    @movie = Movie.new(params[:attributes])
-
-    respond_to do |format|
-      if @movie.save
-        format.json { render :action => :show, :location => movie_path(@movie) }
-      else
-        ### TODO
-      end
-    end
+  
+  def set_object(value)
+    @movie = value
   end
-
-  # PUT /movies/1
-  # PUT /movies/1.json
-  def update
-    @movie = Movie.find(params[:id])
-    respond_to do |format|
-      if @movie.update_attributes(params[:attributes])
-        format.json { render :action => :show }
-      else
-        ### TODO error response
-      end
-    end
+  
+  def set_object_list(values)
+    @movies = values
   end
-
-  # DELETE /movies/1
-  # DELETE /movies/1.json
-  def destroy
-    @movie = Movie.find(params[:id])
-    @movie.destroy
-
-    respond_to do |format|
-      format.html { redirect_to(people_url) } ### TODO
-    end
+  
+  def set_count(count)
+    @count = count
+  end
+  
+  def load_scope
+    @scope = Movie
   end
 end
