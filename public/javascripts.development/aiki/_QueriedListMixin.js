@@ -31,6 +31,12 @@ dojo.declare('aiki._QueriedListMixin', null, {
       var queryStr = queryField.attr('value');
       grid.setQuery(queryParser.parse(queryStr));
     });
+
+    if (dojo.isFunction(queryForm.resetSubmitButtons)) {
+      dojo.connect(grid, '_onFetchComplete', function() { // NOTE abuse a DataGrid private hook
+        queryForm.resetSubmitButtons();
+      });
+    }
   },
 
   _makeQueryFieldTooltip: function(fieldWidget, attributes, defaultAttribute) {

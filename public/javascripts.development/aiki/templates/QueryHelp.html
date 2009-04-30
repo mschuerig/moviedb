@@ -1,0 +1,15 @@
+<div>
+  <p>
+    You can just enter some text or specify any of these attributes:
+  </p>
+  <ul class="queryAttributes">
+    {% for attribute in attributes %}
+    <li{% ifequal attribute defaultAttribute %} class="default"{% endifequal %}>
+      {{ attribute }}
+    </li>
+    {% endfor %}
+  </ul>
+  <p>
+    <em>e.g.</em> foo:bar
+  </p>
+</div>
