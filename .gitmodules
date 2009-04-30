@@ -1,3 +1,6 @@
 [submodule "vendor/plugins/acts_as_xapian"]
 	path = vendor/plugins/acts_as_xapian
 	url = git://github.com/Overbryd/acts_as_xapian.git
+[submodule "public/javascripts.development/aiki"]
+	path = public/javascripts.development/aiki
+	url = git://github.com/mschuerig/aiki.git
