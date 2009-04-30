@@ -88,4 +88,27 @@ describe RequestConditioner do
       @rc.order.should == "normal DESC, mapped1 ASC, mapped2 ASC"
     end
   end
+  
+  describe "with simple rename and multiple rename mappings" do
+    before do
+      @renames = {
+         :first_name => :firstname,
+         [:birthday, 'date-of-birth'] => :date_of_birth
+      }
+    end
+
+    it "renames a simple mapping" do
+      rc = RequestConditioner.new({},
+        {  :order  => [{ :attribute => 'first_name' }] },
+        { :rename => @renames })
+      rc.order.should == "firstname ASC"
+    end
+
+    it "renames each from a multiple mapping" do
+      rc = RequestConditioner.new({},
+        { :order  => [{:attribute => 'date-of-birth'}, {:attribute => 'birthday'}] },
+        { :rename => @renames })
+      rc.order.should == "date_of_birth ASC, date_of_birth ASC"
+    end
+  end
 end

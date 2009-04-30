@@ -4,6 +4,7 @@ class RequestConditioner
   
   def initialize(headers, parameters, options = {})
     @headers, @params = headers, parameters
+    @renames = flatten_renames(options[:rename] || {})
     @allowed_attributes = Array(options[:allowed]).map(&:to_s) if options[:allowed]
     @condition_mappings = (options[:conditions] || {}).with_indifferent_access
     @order_mappings = (options[:order] || {}).with_indifferent_access
@@ -95,7 +96,8 @@ class RequestConditioner
   end
   
   def cleaned_param(param)
-    select_allowed_attributes(@allowed_attributes, Array(@params[param]))
+    renamed_hashes = rename_attributes(Array(@params[param]))
+    select_allowed_attributes(@allowed_attributes, renamed_hashes)
   end
   
   def select_allowed_attributes(allowed, attribute_hashes)
@@ -105,9 +107,25 @@ class RequestConditioner
       attribute_hashes
     end
   end
+  
+  def rename_attributes(attribute_hashes)
+    attribute_hashes.inject([]) do |renamed, hash|
+      hash[:attribute] = @renames[hash[:attribute]] || hash[:attribute]
+      renamed << hash
+    end
+  end
 
   def coerce_to_nil(a)
     a.blank? ? nil : a
+  end
+  
+  def flatten_renames(mappings)
+    mappings.inject({}) do |flattened, (from_keys, to_key)|
+      Array(from_keys).each do |from_key|
+        flattened[from_key.to_s] = to_key.to_s
+      end
+      flattened
+    end
   end
   
   # based on ActiveRecord::Base#replace_named_bind_variables

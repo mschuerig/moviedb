@@ -2,11 +2,10 @@ class MoviesController < ApplicationController
   include QueryScope
   
   query_scope :resource => :movie_item, :only => :index do
-    allow     :title, :year, :release_date, :awards, :awardings
-    condition :year      => "release_year :op ?"
-    order     :year      => "release_date :dir"
-    condition :awardings => "award_count :op ?"
-    order     :awardings => "award_count :dir"
+    allow     :title, :release_year, :release_date, :award_count
+    rename    :year => :release_year
+    rename    :date => :release_date
+    rename    [:awards, :award_count, 'award-count'] => :award_count
   end
   
   # GET /movies

@@ -25,13 +25,17 @@ module QueryScope
 
   class QueryScopeBuilder
     def initialize(config_block)
-      @allowed_attributes = []
+      @renames            = {}
       @condition_mappings = {}
-      @order_mappings = {}
+      @order_mappings     = {}
+      @allowed_attributes = []
       instance_eval(&config_block)
     end
     def allow(*attributes)
       @allowed_attributes += attributes
+    end
+    def rename(mapping)
+      @renames.merge!(mapping)
     end
     def condition(mapping)
       @condition_mappings.merge!(mapping)
@@ -42,6 +46,7 @@ module QueryScope
     def build_request_conditioner(request)
       RequestConditioner.new(request.headers, request.parameters, { 
         :allowed    => @allowed_attributes.empty? ? nil : @allowed_attributes,
+        :rename     => @renames,
         :conditions => @condition_mappings,
         :order      => @order_mappings
       })
