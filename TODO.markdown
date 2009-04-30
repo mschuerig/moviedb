@@ -13,6 +13,8 @@ Rails
 
 * tests
      - full unit tests
+     - controller tests
+         - include update conflicts
      - better abstraction for JSON view tests
      - feature tests (cucumber)
 * better JSON Query parsing

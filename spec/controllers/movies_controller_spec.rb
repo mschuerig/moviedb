@@ -6,6 +6,10 @@ describe MoviesController do
     @mock_movie_item ||= mock_model(MovieItem, stubs)
   end
 
+  def mock_movie(stubs={})
+    @mock_movie ||= mock_model(Movie, stubs)
+  end
+
   def expect_movie_retrievals(options = {})
     MovieItem.should_receive(:find).with(:all, options).and_return([])
     MovieItem.should_receive(:count).and_return(0)
@@ -52,14 +56,14 @@ describe MoviesController do
       
       describe "and order params" do
         it "orders by title ascending for /title" do
-          pending do
+          pending do ### TODO pending a scope expectation
             expect_movie_retrievals(@find_all_options.merge(:order => 'title'))
             get :index, '/title' => nil, :format => 'json'
           end
         end
 
         it "orders by title descending for \\title" do
-          pending do
+          pending do ### TODO pending a scope expectation
             expect_movie_retrievals(@find_all_options.merge(:order => 'title DESC'))
             get :index, :order => [{:attribute => 'title', :dir => 'DESC' }], :format => 'json'
           end
@@ -68,15 +72,14 @@ describe MoviesController do
     end
   end
   
-=begin
   describe "GET show" do
-    describe "with mime type of xml" do
+    describe "with mime type of json" do
 
-      it "renders the requested movie as xml" do
+      it "renders the requested movie as json" do
         Movie.should_receive(:find).with("37").and_return(mock_movie)
-        mock_movie.should_receive(:to_xml).and_return("generated XML")
-        get :show, :id => "37", :format => 'xml'
-        response.body.should == "generated XML"
+        get :show, :id => "37", :format => 'json'
+        response.should render_template('movies/show.json.rb')
+        assigns(:movie).should equal(mock_movie)
       end
     end
   end
@@ -87,18 +90,19 @@ describe MoviesController do
       
       it "exposes a newly created movie as @movie" do
         Movie.should_receive(:new).with({'these' => 'params'}).and_return(mock_movie(:save => true))
-        post :create, :movie => {:these => 'params'}
+        post :create, :attributes => {:these => 'params'}
+        response.should render_template('movies/show.json.rb')
         assigns(:movie).should equal(mock_movie)
       end
 
-      it "redirects to the created movie" do
-        Movie.stub!(:new).and_return(mock_movie(:save => true))
+      it "points in the location header to the created movie" do
+        Movie.stub!(:new).and_return(mock_movie(:id => 42, :save => true))
         post :create, :movie => {}
-        response.should redirect_to(movie_url(mock_movie))
+        response.headers['location'].should == '/movies/42'
       end
-      
     end
     
+=begin
     describe "with invalid params" do
 
       it "exposes a newly created but unsaved movie as @movie" do
@@ -112,12 +116,13 @@ describe MoviesController do
         post :create, :movie => {}
         response.should render_template('new')
       end
-      
     end
+=end      
     
   end
 
-  describe "PUT udpate" do
+=begin
+  describe "PUT update" do
 
     describe "with valid params" do
 

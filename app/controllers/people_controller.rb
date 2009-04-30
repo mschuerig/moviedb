@@ -27,7 +27,6 @@ class PeopleController < ApplicationController
     @person = @scope.find(params[:id])
 
     respond_to do |format|
-      format.html # show.html.erb
       format.json
     end
   end
@@ -40,7 +39,7 @@ class PeopleController < ApplicationController
 
     respond_to do |format|
       if @person.save
-        format.json { render :action => :show }
+        format.json { render :action => :show, :location => person_path(@person) }
       else
         ### TODO
       end

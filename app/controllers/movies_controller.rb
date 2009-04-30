@@ -45,13 +45,13 @@ class MoviesController < ApplicationController
   # POST /movies
   # POST /movies.json
   def create
-    @movie = Movie.new(params[:movie])
+    @movie = Movie.new(params[:attributes])
 
     respond_to do |format|
       if @movie.save
-        flash[:notice] = 'Movie was successfully created.'
+        format.json { render :action => :show, :location => movie_path(@movie) }
       else
-        format.html { render :action => "new" }
+        ### TODO
       end
     end
   end
