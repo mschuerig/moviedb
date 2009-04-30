@@ -8,9 +8,10 @@ dojo.require('dijit.layout.ContentPane');
 dojo.require('dojox.form.BusyButton');
 dojo.require('dojox.grid.DataGrid');
 dojo.require('aiki.Form');
-dojo.require('aiki.QueryParser');
+dojo.require('aiki._QueriedListMixin');
 
-dojo.declare('moviedb.PeopleGrid', [dijit.layout.BorderContainer, dijit._Templated], {
+dojo.declare('moviedb.PeopleGrid',
+    [dijit.layout.BorderContainer, dijit._Templated, aiki._QueriedListMixin], {
   store: null,
   sortInfo: 1,
   query: {name: '*'},
@@ -19,7 +20,7 @@ dojo.declare('moviedb.PeopleGrid', [dijit.layout.BorderContainer, dijit._Templat
   templatePath: dojo.moduleUrl('moviedb', 'templates/PeopleGrid.html'),
   widgetsInTemplate: true,
 
-  _gridStructure: [
+  gridStructure: [
     { name: "Name",
       get: function(_, item) { return item ? item.getName() : '...'; },
       field: 'name',
@@ -27,33 +28,19 @@ dojo.declare('moviedb.PeopleGrid', [dijit.layout.BorderContainer, dijit._Templat
     }
   ],
 
+  allowedQueryAttributes: ['name', 'firstname', 'lastname', 'birthday', 'dob'],
+      defaultQueryAttribute: 'name',
+
   postCreate: function() {
     this.inherited(arguments);
 
-    this._queryParser = new aiki.QueryParser(['name', 'firstname', 'lastname', 'birthday', 'dob'], 'name');
-    new aiki.QueryTooltip({
-      queryParser: this._queryParser,
-      connectId: [this.queryFieldNode.domNode]
-    });
-
     var grid = this.gridNode;
+    this._initGrid(grid, this);
 
-    grid.attr('structure', this._gridStructure);
-    grid.setSortInfo(this.sortInfo);
-    grid.setQuery(this.query);
-    grid.attr('keepRows', this.keepRows);
-    grid.setStore(this.store);
+    this._connectEvents(grid, this.newPersonNode, 'person');
 
-    dojo.connect(this.queryNode, 'onSubmit', dojo.hitch(this, function(event) {
-      dojo.stopEvent(event);
-      var queryStr = this.queryFieldNode.attr('value');
-      grid.setQuery(this._queryParser.parse(queryStr));
-    }));
-
-    dojo.connect(this.newPersonNode, 'onSubmit', dojo.hitch(this, function(event) {
-      dojo.stopEvent(event);
-      dojo.publish('person.new');
-    }));
+    this._connectQuerying(grid, this.queryNode, this.queryFieldNode,
+      this.allowedQueryAttributes, this.defaultQueryAttribute);
 
     dojo.connect(grid, 'onRowDblClick', function(event) {
       dojo.publish('person.selected', [grid.getItem(event.rowIndex)]);

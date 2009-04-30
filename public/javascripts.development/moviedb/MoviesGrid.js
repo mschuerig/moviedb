@@ -9,10 +9,10 @@ dojo.require('dijit.Tooltip');
 dojo.require('dojox.form.BusyButton');
 dojo.require('dojox.grid.DataGrid');
 dojo.require('aiki.Form');
-dojo.require('aiki.QueryParser');
-dojo.require('aiki.QueryTooltip');
+dojo.require('aiki._QueriedListMixin');
 
-dojo.declare('moviedb.MoviesGrid', [dijit.layout.BorderContainer, dijit._Templated], {
+dojo.declare('moviedb.MoviesGrid',
+    [dijit.layout.BorderContainer, dijit._Templated, aiki._QueriedListMixin], {
   store: null,
   sortInfo: -2,
   rowsPerPage: 50,
@@ -27,7 +27,7 @@ dojo.declare('moviedb.MoviesGrid', [dijit.layout.BorderContainer, dijit._Templat
     return date ? 1900 + date.getYear() : '';
   },
 */
-  _gridStructure: [
+  gridStructure: [
     { field: "title",       name: "Title",  width: "auto" },
     { field: "releaseDate", name: "Year",   width: "5em",
       formatter: function(date) { return date ? 1900 + date.getYear() : ''; } },
@@ -35,37 +35,19 @@ dojo.declare('moviedb.MoviesGrid', [dijit.layout.BorderContainer, dijit._Templat
       formatter: function(awardings) { return awardings ? dojo.string.rep('*', awardings.length) : ''; } }
   ],
 
+  allowedQueryAttributes: ['title', 'year', 'awards'],
+  defaultQueryAttribute: 'title',
+
   postCreate: function() {
     this.inherited(arguments);
 
-    this._queryParser = new aiki.QueryParser(['title', 'year', 'awards'], 'title');
-    new aiki.QueryTooltip({
-      queryParser: this._queryParser,
-      connectId: [this.queryFieldNode.domNode]
-    });
-
     var grid = this.gridNode;
+    this._initGrid(grid, this);
 
-    grid.attr('structure', this._gridStructure);
-    grid.setSortInfo(this.sortInfo);
-    grid.setQuery(this.query);
-    grid.attr('keepRows', this.keepRows);
-    grid.setStore(this.store);
+    this._connectEvents(grid, this.newMovieNode, 'movie');
 
-    dojo.connect(this.queryNode, 'onSubmit', dojo.hitch(this, function(event) {
-      dojo.stopEvent(event);
-      var queryStr = this.queryFieldNode.attr('value');
-      grid.setQuery(this._queryParser.parse(queryStr));
-    }));
-
-    dojo.connect(this.newMovieNode, 'onSubmit', dojo.hitch(this, function(event) {
-      dojo.stopEvent(event);
-      dojo.publish('movie.new');
-    }));
-
-    dojo.connect(grid, 'onRowDblClick', function(event) {
-      dojo.publish('movie.selected', [grid.getItem(event.rowIndex)]);
-    });
+    this._connectQuerying(grid, this.queryNode, this.queryFieldNode,
+      this.allowedQueryAttributes, this.defaultQueryAttribute);
 
     dojo.connect(grid, 'onCellContextMenu', dojo.hitch(this, '_gridCellContextMenu'));
   },
