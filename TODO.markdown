@@ -56,10 +56,13 @@ Dojo
      - drag & drop for
          - people
          - awards
-     - use JSON schema for setting up validations
 * defore editing an object, check for updates
      - -> store mixin?
-* Form 
+* Form
+     - submit button
+         - distinguish Create/Save
+         - enable only when form modified
+         - enable only when form valid
      - define validations from schema
 * transactions + conflict handling
 * optimize stylesheets

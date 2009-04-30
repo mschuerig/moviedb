@@ -19,28 +19,42 @@ dojo.declare('aiki.form._DataMixin', null, {
       });
     } else {
       this.attr('value', {});
-      this.onCleared();
+      this.onPopulated();
     }
     this.object = object;
     this.store = store;
   },
 
   save: function() {
+    var onComplete;
     if (this.object) {
-      var values = this.attr('value');
-      for (var prop in values) {
-        var value = values[prop];
-        if (dojo.config.isDebug) {
-          console.debug('Setting value for ', prop, ' to ', value);
-        }
+      onComplete = this.onSaved;
+      this._writeBackValues(dojo.hitch(this, function(prop, value) {
         this.store.setValue(this.object, prop, value);
-      }
-      //### TODO what if more than one item is currently being edited?
-      this.store.save({
-        onComplete: this.onSaved,
-        onError: this.onError,
-        scope: this
+      }));
+    } else {
+      onComplete = dojo.hitch(this, function() { this.onCreated(); this.onSaved(); }); //### TODO pass through args
+      var newItem = {};
+      this._writeBackValues(function(prop, value) {
+        newItem[prop] = value;
       });
+      this.object = this.store.newItem(newItem);
+    }
+    this.store.save({
+      onComplete: onComplete,
+      onError: this.onError,
+      scope: this
+    });
+  },
+
+  _writeBackValues: function(setter) {
+    var values = this.attr('value');
+    for (var prop in values) {
+      var value = values[prop];
+      if (dojo.config.isDebug) {
+        console.debug('Setting value for ', prop, ' to ', value);
+      }
+      setter(prop, value);
     }
   },
 
@@ -73,7 +87,7 @@ dojo.declare('aiki.form._DataMixin', null, {
     // tags:
     //   callback
   },
-  onCleared: function() {
+  onCreated: function() {
     // tags:
     //   callback
   },

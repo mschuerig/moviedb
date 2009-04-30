@@ -28,6 +28,10 @@ dojo.declare('aiki.EditorManager', null, {
     }
   },
 
+  new: function(store, widgetType, options) {
+    this._edit(null, store, widgetType, options || {});
+  },
+
   _edit: function(object, store, widgetType, options) {
     var editor = this._editorForObject(object);
     if (!editor) {

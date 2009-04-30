@@ -21,18 +21,28 @@ class PeopleController < ApplicationController
     end
   end
 
+  # GET /people/1
+  # GET /people/1.json
+  def show
+    @person = @scope.find(params[:id])
+
+    respond_to do |format|
+      format.html # show.html.erb
+      format.json
+    end
+  end
+
+  
   # POST /people
   # POST /people.json
   def create
-    @person = @scope.new(params[:person])
+    @person = @scope.new(params[:attributes])
 
     respond_to do |format|
       if @person.save
-        format.html { redirect_to(@person) }
-        format.xml  { render :xml => @person, :status => :created, :location => @person }
+        format.json { render :action => :show }
       else
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @person.errors, :status => :unprocessable_entity }
+        ### TODO
       end
     end
   end

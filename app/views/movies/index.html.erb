@@ -24,14 +24,26 @@
     moviesStore = new aiki.Store({ target: "/movies",    schema: moviedb.schema.movie });
     peopleStore = new aiki.Store({ target: "/people",    schema: moviedb.schema.person });
     awardsStore = new aiki.Store({ target: "/awards",    schema: moviedb.schema.award });
-  
+
     dojo.addOnLoad(function() {
       function showEditor(widgetType, store, object, options) {
         editors.edit(object, store, widgetType, options);
       }
+    
+      // Movie event handlers
 
       dojo.subscribe('movie.selected',  dojo.partial(showEditor, 'moviedb.MovieEditor',  moviesStore));
+
+      // Person event handlers
+
       dojo.subscribe('person.selected', dojo.partial(showEditor, 'moviedb.PersonEditor', peopleStore));
+    
+      dojo.subscribe('person.new', function() {
+        console.log('*** NEW PERSON');
+        editors.new(peopleStore, 'moviedb.PersonEditor');
+      });
+
+      // Award(ding)s event handlers
 
       dojo.subscribe('award.selected', function(award, hints) {
         var options = {

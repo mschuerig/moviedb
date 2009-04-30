@@ -31,4 +31,11 @@ dojo.provide('aiki._base');
      return { keys: keys, groups: groups };
    };
 
+   a.relay = function(/*Object*/source, /*Object*/dest /*, String ... */) {
+     for (var i = 2, l = arguments.length; i < l; i++) {
+       var event = arguments[i];
+       dojo.connect(source, event, dest, event);
+     }
+   };
+
 })(aiki);

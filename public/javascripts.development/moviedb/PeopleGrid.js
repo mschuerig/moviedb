@@ -8,6 +8,7 @@ dojo.require('dijit.layout.ContentPane');
 dojo.require('dojox.form.BusyButton');
 dojo.require('dojox.grid.DataGrid');
 dojo.require('aiki.Form');
+dojo.require('aiki.QueryParser');
 
 dojo.declare('moviedb.PeopleGrid', [dijit.layout.BorderContainer, dijit._Templated], {
   store: null,
@@ -29,6 +30,8 @@ dojo.declare('moviedb.PeopleGrid', [dijit.layout.BorderContainer, dijit._Templat
   postCreate: function() {
     this.inherited(arguments);
 
+    aiki.parseQuery(value, ['title', 'year', 'awards'], 'title');
+
     var grid = this.gridNode;
 
     grid.attr('structure', this._gridStructure);
@@ -37,10 +40,15 @@ dojo.declare('moviedb.PeopleGrid', [dijit.layout.BorderContainer, dijit._Templat
     grid.attr('keepRows', this.keepRows);
     grid.setStore(this.store);
 
-    dojo.connect(this.formNode, 'onSubmit', dojo.hitch(this, function(event) {
+    dojo.connect(this.queryNode, 'onSubmit', dojo.hitch(this, function(event) {
       dojo.stopEvent(event);
-      var value = this.queryNode.attr('value');
-      grid.setQuery({ name: value == '' ? '*' : value });
+      var queryStr = this.queryFieldNode.attr('value');
+      grid.setQuery(this._queryParser.parse(queryStr));
+    }));
+
+    dojo.connect(this.newPersonNode, 'onSubmit', dojo.hitch(this, function(event) {
+      dojo.stopEvent(event);
+      dojo.publish('person.new');
     }));
 
     dojo.connect(grid, 'onRowDblClick', function(event) {

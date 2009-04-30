@@ -1,8 +1,8 @@
 <div class="${baseClass}" dojoAttachPoint="containerNode">
   <div dojoType="dijit.layout.ContentPane" region="top">
-    <div dojoType="dijit.form.Form" dojoAttachPoint="formNode">
-      <div dojoType="dijit.form.TextBox" 
-           dojoAttachPoint="queryNode"
+    <div dojoType="dijit.form.Form" dojoAttachPoint="queryNode">
+      <div dojoType="dijit.form.TextBox"
+           dojoAttachPoint="queryFieldNode"
            trim="true"
            style="width:70%"></div>
       <button dojoType="dijit.form.Button" type="submit"
@@ -11,4 +11,11 @@
     </div>
   </div>
   <div dojoType="dojox.grid.DataGrid" dojoAttachPoint="gridNode" region="center"></div>
+  <div dojoType="dijit.layout.ContentPane" region="bottom">
+    <div dojoType="dijit.form.Form" dojoAttachPoint="newPersonNode">
+      <button dojoType="dijit.form.Button" type="submit"
+              iconClass="newPersonIcon" showLabel="true"
+              >New Person</button>
+    </div>
+  </div>
 </div>

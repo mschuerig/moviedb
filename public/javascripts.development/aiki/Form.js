@@ -7,24 +7,32 @@ dojo.require('aiki.form._ModificationEventsMixin');
 dojo.declare('aiki.Form', [dijit.form.Form,
   aiki.form._DataMixin, aiki.form._ButtonsMixin, aiki.form._ModificationEventsMixin], {
 
-  onSubmit: function() {
+  onSubmit: function(event) {
+    dojo.stopEvent(event);
     if (this.isValid()) {
       this.save();
     }
     return false;
   },
+
   onReset: function() {
     this.resetSubmitButtons();
     return this.inherited(arguments);
   },
+
   onPopulated: function(object) {
     this.onChange();
     this.markUnmodified();
     this.resetSubmitButtons();
     this.watchForChanges();
   },
+
   onSaved: function() {
     this.markUnmodified();
+    this.resetSubmitButtons();
+  },
+
+  onError: function() {
     this.resetSubmitButtons();
   }
 });
