@@ -1,4 +1,6 @@
 gem 'test-unit', '1.2.3' if RUBY_VERSION.to_f >= 1.9
+rspec_plugin_dir = File.expand_path(File.dirname(__FILE__) + '/../../vendor/plugins/rspec')
+$LOAD_PATH.unshift("#{rspec_plugin_dir}/lib") if File.exist?(rspec_plugin_dir)
 
 # Don't load rspec if running "rake gems:*"
 unless ARGV.any? {|a| a =~ /^gems/}
