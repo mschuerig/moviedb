@@ -2,7 +2,7 @@ dojo.provide('moviedb.AwardView');
 dojo.require('dijit._Templated');
 dojo.require('dijit._Widget');
 dojo.require('dojo.i18n');
-dojo.require('dojox.dtl._Templated');
+dojo.require('dojox.dtl._DomTemplated');
 dojo.require('dojox.dtl.contrib.data');
 dojo.require('plugd.ancestor');
 dojo.require('aiki._base');
@@ -18,10 +18,12 @@ function awardingsListContains(awardings, theAwarding) {
   return dojo.some(awardings, function(it) { return it.id == theAwarding.id; });
 }
 
+//### TODO extract
 function cleanId(store, object) {
   return store.getIdentity(object).toString().replace(/\W+/g, '_');
 }
 
+//### TODO extract
 function hilite(node, duration) {
   dojo.animateProperty({
     node: node,
@@ -115,19 +117,20 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
   },
 
   _renderGroup: function(num, name, awardings) {
+    var listNode = dojo.create('div');
+    var groupTitle = new dijit.TitlePane({
+      title: dojo.string.substitute(this.groupTitle, {group: name}),
+      open: false,
+      content: listNode
+    });
+
     var perGroupList = new this._groupListWidget({
       items: awardings,
       store: this.store,
       baseId: this._awardingDomID(),
       showAwardName: this.showAwardName,
       showAwardingYear: this._showAwardingYear
-    });
-
-    var groupTitle = new dijit.TitlePane({
-      title: dojo.string.substitute(this.groupTitle, {group: name}),
-      content: perGroupList,
-      open: false
-    });
+    }, listNode);
 
     var groupItem = dojo.create('li');
     groupTitle.placeAt(groupItem);
@@ -200,7 +203,7 @@ dojo.declare('moviedb._AwardGroupManager', null, {
   }
 });
 
-dojo.declare('moviedb._AwardingsList', [dijit._Widget, dojox.dtl._Templated], {
+dojo.declare('moviedb._AwardingsList', [dijit._Widget, dojox.dtl._DomTemplated], {
   store: null,
   items: null,
   baseId: null,
