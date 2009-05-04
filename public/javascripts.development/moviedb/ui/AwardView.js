@@ -1,4 +1,4 @@
-dojo.provide('moviedb.AwardView');
+dojo.provide('moviedb.ui.AwardView');
 dojo.require('dijit._Templated');
 dojo.require('dijit._Widget');
 dojo.require('dojo.i18n');
@@ -37,7 +37,7 @@ function hilite(node, duration) {
   }).play();
 }
 
-dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
+dojo.declare('moviedb.ui.AwardView', [dijit._Widget, dijit._Templated], {
   store: null,
   object: null,
   showAwardName: false,
@@ -45,8 +45,8 @@ dojo.declare('moviedb.AwardView', [dijit._Widget, dijit._Templated], {
 
   baseClass: 'moviedbAwardView',
   iconClass: 'smallIcon awardIcon',
-  awardingsListWidget: 'moviedb._AwardingsList',
-  templatePath: dojo.moduleUrl('moviedb', 'templates/AwardView.html'),
+  awardingsListWidget: 'moviedb.ui._AwardingsList',
+  templatePath: dojo.moduleUrl('moviedb', 'ui/_AwardView/AwardView.html'),
 
   getFeatures: function(){
     return {
@@ -203,11 +203,11 @@ dojo.declare('moviedb._AwardGroupManager', null, {
   }
 });
 
-dojo.declare('moviedb._AwardingsList', [dijit._Widget, dojox.dtl._DomTemplated], {
+dojo.declare('moviedb.ui._AwardingsList', [dijit._Widget, dojox.dtl._DomTemplated], {
   store: null,
   items: null,
   baseId: null,
-  templatePath: dojo.moduleUrl("moviedb", "templates/_AwardingsList.html")
+  templatePath: dojo.moduleUrl("moviedb", "ui/_AwardView/_AwardingsList.html")
 });
 
 })();

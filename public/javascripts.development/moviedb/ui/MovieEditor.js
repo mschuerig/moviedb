@@ -1,4 +1,4 @@
-dojo.provide('moviedb.MovieEditor');
+dojo.provide('moviedb.ui.MovieEditor');
 dojo.require('dojo.i18n');
 dojo.require('dijit._Templated');
 dojo.require('dijit._Widget');
@@ -9,13 +9,13 @@ dojo.require('dojox.form.BusyButton');
 dojo.require('aiki.Form');
 dojo.requireLocalization("dijit", "loading");
 
-dojo.declare('moviedb.MovieEditor', [dijit._Widget, dijit._Templated], {
+dojo.declare('moviedb.ui.MovieEditor', [dijit._Widget, dijit._Templated], {
   store: null,
   object: null,
 
   baseClass: 'moviedbMovieEditor',
   iconClass: 'smallIcon movieIcon',
-  templatePath: dojo.moduleUrl('moviedb', 'templates/MovieEditor.html'),
+  templatePath: dojo.moduleUrl('moviedb', 'ui/_MovieEditor/MovieEditor.html'),
   widgetsInTemplate: true,
 
   getFeatures: function() {

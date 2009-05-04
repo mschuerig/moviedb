@@ -1,4 +1,4 @@
-dojo.provide('moviedb.PersonEditor');
+dojo.provide('moviedb.ui.PersonEditor');
 dojo.require('dijit._Templated');
 dojo.require('dijit._Widget');
 dojo.require('dijit.form.Textarea');
@@ -9,13 +9,13 @@ dojo.require('dojox.form.BusyButton');
 dojo.require('aiki.Form');
 dojo.requireLocalization("dijit", "loading");
 
-dojo.declare('moviedb.PersonEditor', [dijit._Widget, dijit._Templated], {
+dojo.declare('moviedb.ui.PersonEditor', [dijit._Widget, dijit._Templated], {
   store: null,
   object: null,
 
   baseClass: 'moviedbPersonEditor',
   iconClass: 'smallIcon personIcon',
-  templatePath: dojo.moduleUrl('moviedb', 'templates/PersonEditor.html'),
+  templatePath: dojo.moduleUrl('moviedb', 'ui/_PersonEditor/PersonEditor.html'),
   widgetsInTemplate: true,
 
   getFeatures: function(){

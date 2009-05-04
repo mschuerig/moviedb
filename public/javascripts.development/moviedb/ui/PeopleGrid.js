@@ -1,4 +1,4 @@
-dojo.provide('moviedb.PeopleGrid');
+dojo.provide('moviedb.ui.PeopleGrid');
 dojo.require('dijit._Templated');
 dojo.require('dijit.form.Form');
 dojo.require('dijit.form.TextBox');
@@ -10,14 +10,14 @@ dojo.require('dojox.grid.DataGrid');
 dojo.require('aiki.BusyForm');
 dojo.require('aiki._QueriedListMixin');
 
-dojo.declare('moviedb.PeopleGrid',
+dojo.declare('moviedb.ui.PeopleGrid',
     [dijit.layout.BorderContainer, dijit._Templated, aiki._QueriedListMixin], {
   store: null,
   sortInfo: 1,
   query: {name: '*'},
   rowsPerPage: 50,
   keepRows: 300,
-  templatePath: dojo.moduleUrl('moviedb', 'templates/PeopleGrid.html'),
+  templatePath: dojo.moduleUrl('moviedb', 'ui/_PeopleGrid/PeopleGrid.html'),
   widgetsInTemplate: true,
 
   gridStructure: [

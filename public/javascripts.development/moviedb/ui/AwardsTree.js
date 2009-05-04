@@ -1,8 +1,8 @@
-dojo.provide('moviedb.AwardsTree');
+dojo.provide('moviedb.ui.AwardsTree');
 dojo.require('dijit.Tree');
 dojo.require('dijit.tree.ForestStoreModel');
 
-dojo.declare('moviedb.AwardsTree', dijit.Tree, {
+dojo.declare('moviedb.ui.AwardsTree', dijit.Tree, {
   store: null,
 
   postMixInProperties: function() {

@@ -1,4 +1,4 @@
-dojo.provide('moviedb.MoviesGrid');
+dojo.provide('moviedb.ui.MoviesGrid');
 dojo.require('dijit._Templated');
 dojo.require('dijit.form.Form');
 dojo.require('dijit.form.TextBox');
@@ -11,13 +11,13 @@ dojo.require('dojox.grid.DataGrid');
 dojo.require('aiki.BusyForm');
 dojo.require('aiki._QueriedListMixin');
 
-dojo.declare('moviedb.MoviesGrid',
+dojo.declare('moviedb.ui.MoviesGrid',
     [dijit.layout.BorderContainer, dijit._Templated, aiki._QueriedListMixin], {
   store: null,
   sortInfo: -2,
   rowsPerPage: 50,
   keepRows: 300,
-  templatePath: dojo.moduleUrl('moviedb', 'templates/MoviesGrid.html'),
+  templatePath: dojo.moduleUrl('moviedb', 'ui/_MoviesGrid/MoviesGrid.html'),
   widgetsInTemplate: true,
 /*
   _awardingsFormatter: function(awardings) {
