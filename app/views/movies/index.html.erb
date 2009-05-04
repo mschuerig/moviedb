@@ -27,7 +27,7 @@
 
     dojo.addOnLoad(function() {
       function showEditor(widgetType, store, object, options) {
-        editors.edit(object, store, widgetType, options);
+        editors.editObject(object, store, widgetType, options);
       }
     
       // Movie event handlers
@@ -35,7 +35,7 @@
       dojo.subscribe('movie.selected',  dojo.partial(showEditor, 'moviedb.MovieEditor',  moviesStore));
 
       dojo.subscribe('movie.new', function() {
-        editors.new(moviesStore, 'moviedb.MovieEditor');
+        editors.newObject(moviesStore, 'moviedb.MovieEditor');
       });
 
       // Person event handlers
@@ -43,7 +43,7 @@
       dojo.subscribe('person.selected', dojo.partial(showEditor, 'moviedb.PersonEditor', peopleStore));
     
       dojo.subscribe('person.new', function() {
-        editors.new(peopleStore, 'moviedb.PersonEditor');
+        editors.newObject(peopleStore, 'moviedb.PersonEditor');
       });
 
       // Award(ding)s event handlers
@@ -56,7 +56,7 @@
           options.showAwardName = true;
           options.yearGranularity = 1;
         }
-        editors.edit(award, awardsStore, 'moviedb.AwardView', options);
+        editors.editObject(award, awardsStore, 'moviedb.AwardView', options);
       });
 
       dojo.subscribe('awarding.selected', function(awarding, hints) {
@@ -79,7 +79,7 @@
                options.yearGranularity = 1;
              }
           }
-          editors.edit(award, awardsStore, 'moviedb.AwardView', options);
+          editors.editObject(award, awardsStore, 'moviedb.AwardView', options);
         }
 
         awardsStore.fetchItemByIdentity({

@@ -1,7 +1,7 @@
 class PeopleController < ApplicationController
   include LazyJason
   include QueryScope
-  before_filter :load_scope ### FIXME, :only => [:show, :edit, :create]
+  before_filter :load_scope
   before_filter :map_attributes, :only => [ :create, :update ]
   
   query_scope :only => :index do

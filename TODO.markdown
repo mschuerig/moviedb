@@ -39,6 +39,8 @@ Dojo
 
 * adapt to Dojo coding style
 * error handling
+* aiki.Store
+     - replace with JRS + service
 * tests
      - DOH
      - Selenium
