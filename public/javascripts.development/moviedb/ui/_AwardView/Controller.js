@@ -21,29 +21,23 @@ dojo.declare('moviedb.ui._AwardView.Controller', null, {
   },
 
   load: function() {
-      //### FIXME hack alert, this should be handled by loadItem
     var loaded = new dojo.Deferred();
 
-    this.store.fetchItemByIdentity({
-      identity: this.object.$ref || this.object.__id,
-      onItem: dojo.hitch(this, function(loadedObject) {
-        this.object = loadedObject;
-        var awardings = this.store.getValues(this.object.awardings, 'items');
-        loaded.callback(this._groupAwardings(awardings));
-        dojo.connect(this.view, 'onClick', this, '_publishSelect');
-      })
-    });
-/*
+    //### TODO cleanup
     this.store.loadItem({
       item: this.object,
       onItem: dojo.hitch(this, function(loadedObject) {
         this.object = loadedObject;
-        this.awardings = this.store.getValues(this.object.awardings, 'items');
-        this._renderView();
-        dojo.connect(this, 'onClick', this, '_publishSelect');
+        var awardings = this.store.getValue(this.object, 'awardings');
+        this.store.loadItem({
+          item: awardings,
+          onItem: dojo.hitch(this, function(loadedAwardings) {
+            dojo.connect(this, 'onClick', this, '_publishSelect');
+            loaded.callback(this._groupAwardings(loadedAwardings));
+          })
+        });
       })
     });
-*/
     return loaded;
   },
 

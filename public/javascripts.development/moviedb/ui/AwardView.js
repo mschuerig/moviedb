@@ -33,6 +33,7 @@ dojo.declare('moviedb.ui.AwardView',
     this.controller = this._makeController();
     var whenLoaded = this.controller.load();
     whenLoaded.addCallback(this, '_renderView');
+    whenLoaded.addCallback(this, 'onReady');
   },
 
   _makeController: function() {
@@ -41,5 +42,8 @@ dojo.declare('moviedb.ui.AwardView',
 
   _makeGroupListWidget: function(awardings, node) {
     return this.controller._makeGroupListWidget(this._groupListWidget, awardings, node);
+  },
+
+  onReady: function() {
   }
 });

@@ -5,7 +5,8 @@ dojo.require('aiki.Delegator');
 dojo.require('moviedb.ui._generic.EditorController');
 
 dojo.declare('moviedb.ui._generic.Editor',
-  [dijit._Widget, dijit._Templated, aiki.Delegator('controller', 'getTitle', 'isModified')], {
+  [dijit._Widget, dijit._Templated,
+   aiki.Delegator('controller', 'getTitle', 'isModified')], {
 
   store: null,
   object: null,
@@ -26,6 +27,8 @@ dojo.declare('moviedb.ui._generic.Editor',
     return new moviedb.ui._generic.EditorController(this.store, this.object, this);
   },
 
+  onReady: function() {
+  },
   onCreated: function() {
   },
   onSaved: function() {

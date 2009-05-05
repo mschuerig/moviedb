@@ -44,6 +44,14 @@ class RequestConditioner
     parse_range_header[1]
   end
   
+  def first_item
+    parse_range_header[2]
+  end
+
+  def last_item
+    parse_range_header[3]
+  end
+  
   def order
     coerce_to_nil(order_clause)
   end
@@ -57,7 +65,7 @@ class RequestConditioner
       first_item, last_item = $1.to_i, $2.to_i
       offset = first_item
       limit = last_item > 0 ? last_item - offset + 1 : nil
-      [ offset, limit ]
+      [ offset, limit, first_item, last_item ]
     else
       [nil, nil]
     end

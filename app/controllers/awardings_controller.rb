@@ -5,6 +5,8 @@ class AwardingsController < ApplicationController
     respond_to do |format|
       format.json do
         @awardings = @scope.all(:include => [:movies, :people, :award])
+        @count = @awardings.size
+        response.headers['Content-Range'] = "items 0-#{@count - 1}/#{@count}" ### FIXME
         render
       end
     end
