@@ -25,10 +25,10 @@ function awardingsListContains(awardings, theAwarding) {
 
 dojo.declare('moviedb.ui._AwardView.GroupManager', null, {
   hiliteDuration: 2000,
-  _groups: [],
 
   constructor: function(domIdMaker) {
     this._domId = domIdMaker;
+    this._groups = [];
   },
 
   add: function(titlePane, awardings) {

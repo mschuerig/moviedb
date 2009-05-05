@@ -3,7 +3,6 @@ dojo.require('dijit._Templated');
 dojo.require('dijit._Widget');
 dojo.require('moviedb.ui._AwardView.Controller');
 dojo.require('moviedb.ui._AwardView.View');
-dojo.require('moviedb.ui._AwardView.GroupManager');
 dojo.require('aiki.Delegator');
 
 dojo.declare('moviedb.ui.AwardView',

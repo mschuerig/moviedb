@@ -1,4 +1,5 @@
 dojo.provide('moviedb.ui._AwardView.Controller');
+dojo.require('moviedb.ui._AwardView.GroupManager');
 dojo.require('plugd.ancestor');
 dojo.require('aiki._base');
 
