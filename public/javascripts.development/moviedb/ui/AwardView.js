@@ -8,7 +8,9 @@ dojo.require('aiki.Delegator');
 
 dojo.declare('moviedb.ui.AwardView',
   [dijit._Widget, dijit._Templated, moviedb.ui._AwardView.View,
-   aiki.Delegator('controller', 'getFeatures', 'getTitle', 'openTopGroup', 'showAwarding')], {
+   aiki.Delegator('controller', 'getTitle', 'openTopGroup', 'showAwarding')], {
+
+  _groupListWidget: 'moviedb.ui._AwardView.AwardingsList',
 
   showAwardName: false,
   yearGranularity: 10,
@@ -16,15 +18,29 @@ dojo.declare('moviedb.ui.AwardView',
   store: null,
   object: null,
 
+  getFeatures: function(){
+    return {
+      "aiki.api.View": true
+    };
+  },
+
+  postMixInProperties: function() {
+    this._groupListWidget = dojo.getObject(this._groupListWidget);
+    this.inherited(arguments);
+  },
+
   postCreate: function() {
-    this.controller = this._buildController(this);
+    this.inherited(arguments);
+    this.controller = this._makeController();
     var whenLoaded = this.controller.load();
     whenLoaded.addCallback(this, '_renderView');
   },
 
-  _buildController: function(view) {
-    this.controller = new moviedb.ui._AwardView.Controller(this.store, this.object, view);
+  _makeController: function() {
+    return new moviedb.ui._AwardView.Controller(this.store, this.object, this);
+  },
 
-    return this.controller;
+  _makeGroupListWidget: function(awardings, node) {
+    return this.controller._makeGroupListWidget(this._groupListWidget, awardings, node);
   }
 });

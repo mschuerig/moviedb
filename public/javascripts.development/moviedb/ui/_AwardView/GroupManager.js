@@ -16,6 +16,13 @@ function hilite(node, duration) {
   }).play();
 }
 
+function awardingsListContains(awardings, theAwarding) {
+  if (!theAwarding) {
+    return false;
+  }
+  return dojo.some(awardings, function(it) { return it.id == theAwarding.id; });
+}
+
 dojo.declare('moviedb.ui._AwardView.GroupManager', null, {
   hiliteDuration: 2000,
   _groups: [],
@@ -38,7 +45,7 @@ dojo.declare('moviedb.ui._AwardView.GroupManager', null, {
 
   showAwarding: function(awarding) {
     var itsGroup = aiki.find(this._groups,
-      function(group) { return this._awardingsListContains(group.awardings, awarding); });
+      function(group) { return awardingsListContains(group.awardings, awarding); });
     if (itsGroup) {
       this._openGroup(itsGroup);
       var awardingNode = dojo.byId(this._domId(awarding));
@@ -51,13 +58,6 @@ dojo.declare('moviedb.ui._AwardView.GroupManager', null, {
     if (!group.titlePane.open) {
       group.titlePane.toggle();
     }
-  },
-
-  _awardingsListContains: function(awardings, theAwarding) {
-    if (!theAwarding) {
-      return false;
-    }
-    return dojo.some(awardings, function(it) { return it.id == theAwarding.id; });
   }
 });
 })();

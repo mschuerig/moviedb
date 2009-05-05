@@ -3,26 +3,18 @@ dojo.require('dojo.i18n');
 dojo.require('moviedb.ui._AwardView.AwardingsList');
 dojo.requireLocalization('moviedb', 'awards');
 
-(function() {
-
-//### TODO extract
-function cleanId(store, object) {
-  return store.getIdentity(object).toString().replace(/\W+/g, '_');
-}
-
 dojo.declare('moviedb.ui._AwardView.View', null, {
   baseClass: 'moviedbAwardView',
   iconClass: 'smallIcon awardIcon',
-  awardingsListWidget: 'moviedb.ui._AwardView.AwardingsList',
   templatePath: dojo.moduleUrl('moviedb', 'ui/_AwardView/AwardView.html'),
 
   postMixInProperties: function() {
     var _nlsResources = dojo.i18n.getLocalization('moviedb', 'awards');
     dojo.mixin(this, _nlsResources);
     this.inherited(arguments);
-    this._awardingsListWidget = dojo.getObject(this.awardingsListWidget);
-    this.yearGranularity = parseInt(this.yearGranularity) || 10;
-    this._showAwardingYear = this.yearGranularity > 1;
+  },
+
+  onGroupAdded: function(titlePane, awardings) {
   },
 
   _renderView: function(awardings) {
@@ -34,12 +26,11 @@ dojo.declare('moviedb.ui._AwardView.View', null, {
       titlePane.placeAt(groupItem);
       dojo.place(groupItem, this.listNode);
 
-//### FIXME      this._groupManager.add(titlePane, awardings);
+      this.onGroupAdded(titlePane, group.awardings);
     }
   },
 
   _renderGroup: function(num, name, awardings) {
-    console.debug('** RENDER GROUP: ', num, name, awardings.length, awardings); //### REMOVE
     var contentNode = dojo.create('div');
 
     var groupTitle = new dijit.TitlePane({
@@ -48,21 +39,8 @@ dojo.declare('moviedb.ui._AwardView.View', null, {
       content: contentNode
     });
 
-    var perGroupList = new this._awardingsListWidget({
-      items: awardings,
-      store: this.store,
-      baseId: this._awardingDomID(),
-      showAwardName: this.showAwardName,
-      showAwardingYear: this._showAwardingYear
-    }, contentNode);
+    this._makeGroupListWidget(awardings, contentNode);
 
     return groupTitle;
-  },
-
-  _awardingDomID: function(awarding) {
-    var baseId = this._baseDomId = (this._baseDomId || ('award_' + cleanId(this.store, this.object)));
-    return awarding ? (baseId + '_' + cleanId(this.store, awarding)) : baseId;
   }
 });
-
-})();
