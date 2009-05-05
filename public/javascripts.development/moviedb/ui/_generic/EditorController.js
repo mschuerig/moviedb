@@ -1,6 +1,6 @@
-dojo.provide('moviedb.ui._MovieEditor.Controller');
+dojo.provide('moviedb.ui._generic.EditorController');
 
-dojo.declare('moviedb.ui._MovieEditor.Controller', null, {
+dojo.declare('moviedb.ui._generic.EditorController', null, {
   constructor: function(store, object, view) {
     this.store = store;
     this.object = object;
@@ -10,7 +10,8 @@ dojo.declare('moviedb.ui._MovieEditor.Controller', null, {
   },
 
   relay: function(dest) {
-    aiki.relay(this.view.formNode, dest, 'onChange', 'onModified', 'onReverted');
+    aiki.relay(this.view.formNode, dest,
+      'onCreated', 'onSaved', 'onError', 'onChange', 'onModified', 'onReverted');
   },
 
   getTitle: function() {
