@@ -1,4 +1,4 @@
-dojo.provide('moviedb.ui._AwardView.AwardGroupManager');
+dojo.provide('moviedb.ui._AwardView.GroupManager');
 
 (function() {
 
@@ -16,7 +16,7 @@ function hilite(node, duration) {
   }).play();
 }
 
-dojo.declare('moviedb.ui._AwardView.AwardGroupManager', null, {
+dojo.declare('moviedb.ui._AwardView.GroupManager', null, {
   hiliteDuration: 2000,
   _groups: [],
 

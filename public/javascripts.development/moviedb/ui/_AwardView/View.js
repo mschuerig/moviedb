@@ -1,4 +1,4 @@
-dojo.provide('moviedb.ui._AwardView.AwardViewView');
+dojo.provide('moviedb.ui._AwardView.View');
 dojo.require('dojo.i18n');
 dojo.require('moviedb.ui._AwardView.AwardingsList');
 dojo.requireLocalization('moviedb', 'awards');
@@ -10,7 +10,7 @@ function cleanId(store, object) {
   return store.getIdentity(object).toString().replace(/\W+/g, '_');
 }
 
-dojo.declare('moviedb.ui._AwardView.AwardViewView', null, {
+dojo.declare('moviedb.ui._AwardView.View', null, {
   baseClass: 'moviedbAwardView',
   iconClass: 'smallIcon awardIcon',
   awardingsListWidget: 'moviedb.ui._AwardView.AwardingsList',

@@ -1,14 +1,14 @@
-dojo.provide('moviedb.ui._AwardView.AwardViewController');
+dojo.provide('moviedb.ui._AwardView.Controller');
 dojo.require('plugd.ancestor');
 dojo.require('aiki._base');
 
-dojo.declare('moviedb.ui._AwardView.AwardViewController', null, {
+dojo.declare('moviedb.ui._AwardView.Controller', null, {
   constructor: function(store, object, view) {
     this.store = store;
     this.object = object;
     this.view = view;
 
-    this._groupManager = new moviedb.ui._AwardView.AwardGroupManager(
+    this._groupManager = new moviedb.ui._AwardView.GroupManager(
       dojo.hitch(this.view, '_awardingDomID'));
   },
 

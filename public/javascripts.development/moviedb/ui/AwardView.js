@@ -1,9 +1,9 @@
 dojo.provide('moviedb.ui.AwardView');
 dojo.require('dijit._Templated');
 dojo.require('dijit._Widget');
-dojo.require('moviedb.ui._AwardView.AwardViewController');
-dojo.require('moviedb.ui._AwardView.AwardViewView');
-dojo.require('moviedb.ui._AwardView.AwardGroupManager');
+dojo.require('moviedb.ui._AwardView.Controller');
+dojo.require('moviedb.ui._AwardView.View');
+dojo.require('moviedb.ui._AwardView.GroupManager');
 
 //### TODO extract
 aiki.Delegator = function(/*Object*/target /*, String ... */) {
@@ -22,7 +22,7 @@ aiki.Delegator = function(/*Object*/target /*, String ... */) {
 };
 
 dojo.declare('moviedb.ui.AwardView',
-  [dijit._Widget, dijit._Templated, moviedb.ui._AwardView.AwardViewView,
+  [dijit._Widget, dijit._Templated, moviedb.ui._AwardView.View,
    aiki.Delegator('controller', 'getFeatures', 'getTitle', 'openTopGroup', 'showAwarding')], {
 
   showAwardName: false,
@@ -38,8 +38,7 @@ dojo.declare('moviedb.ui.AwardView',
   },
 
   _buildController: function(view) {
-    this.controller = new moviedb.ui._AwardView.AwardViewController(this.store, this.object, view);
-
+    this.controller = new moviedb.ui._AwardView.Controller(this.store, this.object, view);
 
     return this.controller;
   }
