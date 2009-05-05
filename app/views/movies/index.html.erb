@@ -49,24 +49,17 @@
       // Award(ding)s event handlers
 
       dojo.subscribe('award.selected', function(award, hints) {
-        var options = {
-          onReady: function(widget) { widget.openTopGroup(); }
-        };
+        var options = {};
         if (hints && hints.awardGroup) {
           options.showAwardName = true;
           options.yearGranularity = 1;
         }
-        editors.editObject(award, awardsStore, 'moviedb.ui.AwardView', options);
+        var whenReady = editors.editObject(award, awardsStore, 'moviedb.ui.AwardView', options);
+        whenReady.addCallback(function(editor) { editor.widget.openTopGroup(); });
       });
 
       dojo.subscribe('awarding.selected', function(awarding, hints) {
-        var options = {
-          onReady: function(widget) {
-            //### FIXME should have been lazy loaded
-            widget.showAwarding({id: awarding.$ref, __id: awarding.$ref});
-          }
-        };
-
+        var options = {};
         var award = awardsStore.getValue(awarding, 'award');
 
         //### FIXME award should have been lazy loaded
@@ -79,7 +72,11 @@
                options.yearGranularity = 1;
              }
           }
-          editors.editObject(award, awardsStore, 'moviedb.ui.AwardView', options);
+          var whenReady = editors.editObject(award, awardsStore, 'moviedb.ui.AwardView', options);
+          whenReady.addCallback(function(editor) {
+              //### FIXME should have been lazy loaded
+              editor.widget.showAwarding({id: awarding.$ref, __id: awarding.$ref});
+            });
         }
 
         awardsStore.fetchItemByIdentity({
