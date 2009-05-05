@@ -11,8 +11,8 @@ dojo.declare('moviedb.ui._generic.EditorController', null, {
 
   relay: function(dest) {
     aiki.relay(this.view.formNode, dest,
-      'onCreated', 'onSaved', 'onError', 'onChange', 'onModified', 'onReverted');
-    dojo.connect(this.view.formNode, 'onPopulated', dest, 'onReady');
+      'onCreated', 'onSaved', 'onError', 'onChange',
+      'onModified', 'onReverted', ['onPopulated', 'onReady']);
   },
 
   getTitle: function() {
