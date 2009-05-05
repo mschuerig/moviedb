@@ -1,46 +1,40 @@
 dojo.provide('moviedb.ui.MovieEditor');
 dojo.require('dojo.i18n');
-dojo.require('dijit._Templated');
 dojo.require('dijit._Widget');
-dojo.require('dijit.form.DateTextBox');
-dojo.require('dijit.form.Textarea');
-dojo.require('dijit.form.ValidationTextBox');
-dojo.require('dojox.form.BusyButton');
-dojo.require('aiki.Form');
-dojo.requireLocalization("dijit", "loading");
+dojo.require('aiki.Delegator');
+dojo.require('moviedb.ui._MovieEditor.Controller');
+dojo.require('moviedb.ui._MovieEditor.View');
 
-dojo.declare('moviedb.ui.MovieEditor', [dijit._Widget, dijit._Templated], {
+dojo.declare('moviedb.ui.MovieEditor',
+  [dijit._Widget, dijit._Templated, moviedb.ui._MovieEditor.View,
+   aiki.Delegator('controller', 'getTitle', 'isModified')], {
+
   store: null,
   object: null,
 
-  baseClass: 'moviedbMovieEditor',
-  iconClass: 'smallIcon movieIcon',
-  templatePath: dojo.moduleUrl('moviedb', 'ui/_MovieEditor/MovieEditor.html'),
-  widgetsInTemplate: true,
-
   getFeatures: function() {
     return {
-      "aiki.Form.api.View": true,
+      "aiki.api.View": true,
       "aiki.api.Edit": true
 	};
   },
-  postMixInProperties: function(){
-    this.inherited(arguments);
-	if(!this.loadingLabel){
-      this.loadingLabel = dojo.i18n.getLocalization("dijit", "loading", this.lang).loadingState;
-	}
-  },
+
   postCreate: function() {
-    this.formNode.populate(this.store, this.object);
-    dojo.connect(this.formNode, 'onChange', this, 'onChange');
+    this.controller = this._makeController();
+    this.controller.relay(this);
   },
-  getTitle: function() {
-    return this.titleNode ? this.titleNode.attr('value') : this.loadingLabel;
+
+  _makeController: function() {
+    return new moviedb.ui._MovieEditor.Controller(this.store, this.object, this);
   },
-  isModified: function() {
-    return this.formNode.isModified();
-  },
+
   onChange: function() {
-    console.log('*** MOVIE ON CHANGE'); //### REMOVE
+    console.debug('*** MovieEditor onChange');
+  },
+  onModified: function() {
+    console.debug('*** MovieEditor onModified');
+  },
+  onReverted: function() {
+    console.debug('*** MovieEditor onReverted');
   }
 });
