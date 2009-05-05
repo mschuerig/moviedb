@@ -4,22 +4,7 @@ dojo.require('dijit._Widget');
 dojo.require('moviedb.ui._AwardView.Controller');
 dojo.require('moviedb.ui._AwardView.View');
 dojo.require('moviedb.ui._AwardView.GroupManager');
-
-//### TODO extract
-aiki.Delegator = function(/*Object*/target /*, String ... */) {
-  var proto = {};
-  for (var i = 1, l = arguments.length; i < l; i++) {
-    (function(method) {
-       proto[method] = function() {
-         var t = this[target];
-         return t[method].apply(t, arguments);
-       };
-     })(arguments[i]);
-  }
-  function TMP() {}
-  TMP.prototype = proto;
-  return TMP;
-};
+dojo.require('aiki.Delegator');
 
 dojo.declare('moviedb.ui.AwardView',
   [dijit._Widget, dijit._Templated, moviedb.ui._AwardView.View,
