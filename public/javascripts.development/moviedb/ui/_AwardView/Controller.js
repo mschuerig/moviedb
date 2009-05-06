@@ -10,6 +10,7 @@ dojo.declare('moviedb.ui._AwardView.Controller', null, {
     this.object = object;
     this.view = view;
 
+    this._whenReady = new dojo.Deferred();
     this._yearGranularity = parseInt(view.yearGranularity) || 10;
     this._showAwardingYear = this.yearGranularity > 1;
     this._showAwardName = view.showAwardName;
@@ -18,10 +19,10 @@ dojo.declare('moviedb.ui._AwardView.Controller', null, {
       dojo.hitch(this, '_awardingDomID'));
 
     dojo.connect(view, 'onGroupAdded', this._groupManager, 'add');
+    dojo.connect(view, 'onClick', this, '_publishSelect');
   },
 
   load: function() {
-    var loaded = new dojo.Deferred();
 
     //### TODO cleanup
     this.store.loadItem({
@@ -32,13 +33,19 @@ dojo.declare('moviedb.ui._AwardView.Controller', null, {
         this.store.loadItem({
           item: awardings,
           onItem: dojo.hitch(this, function(loadedAwardings) {
-            dojo.connect(this, 'onClick', this, '_publishSelect');
-            loaded.callback(this._groupAwardings(loadedAwardings));
+            this.view._renderView(this._groupAwardings(loadedAwardings));
+            this._whenReady.callback(this.view);
           })
         });
       })
     });
-    return loaded;
+  },
+
+  whenReady: function(/* Function? */callback) {
+    if (callback) {
+      this._whenReady.addCallback(callback);
+    }
+    return this._whenReady;
   },
 
   getTitle: function() {

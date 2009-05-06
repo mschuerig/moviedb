@@ -7,7 +7,7 @@ dojo.require('aiki.Delegator');
 
 dojo.declare('moviedb.ui.AwardView',
   [dijit._Widget, dijit._Templated, moviedb.ui._AwardView.View,
-   aiki.Delegator('controller', 'getTitle', 'openTopGroup', 'showAwarding')], {
+   aiki.Delegator('controller', 'whenReady', 'getTitle', 'openTopGroup', 'showAwarding')], {
 
   _groupListWidget: 'moviedb.ui._AwardView.AwardingsList',
 
@@ -29,11 +29,9 @@ dojo.declare('moviedb.ui.AwardView',
   },
 
   postCreate: function() {
-    this.inherited(arguments);
     this.controller = this._makeController();
-    var whenLoaded = this.controller.load();
-    whenLoaded.addCallback(this, '_renderView');
-    whenLoaded.addCallback(this, 'onReady');
+    this.inherited(arguments);
+    this.controller.load();
   },
 
   _makeController: function() {
@@ -42,8 +40,5 @@ dojo.declare('moviedb.ui.AwardView',
 
   _makeGroupListWidget: function(awardings, node) {
     return this.controller._makeGroupListWidget(this._groupListWidget, awardings, node);
-  },
-
-  onReady: function() {
   }
 });

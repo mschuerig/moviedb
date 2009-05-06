@@ -56,11 +56,10 @@ Dojo
 * undo/back button
 * offline?
 * movie form
-     - new movie
      - drag & drop for
          - people
          - awards
-* defore editing an object, check for updates
+* before editing an object, check for updates
      - -> store mixin?
 * Form
      - submit button

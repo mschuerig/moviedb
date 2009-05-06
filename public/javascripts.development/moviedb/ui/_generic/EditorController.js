@@ -5,14 +5,25 @@ dojo.declare('moviedb.ui._generic.EditorController', null, {
     this.store = store;
     this.object = object;
     this.view = view;
+    var whenReady = this._whenReady = new dojo.Deferred();
+
+    dojo.connect(this.view.formNode, 'onPopulated', function() {
+      whenReady.callback(view);
+    });
 
     this.view.formNode.populate(this.store, this.object);
   },
 
   relay: function(dest) {
     aiki.relay(this.view.formNode, dest,
-      'onCreated', 'onSaved', 'onError', 'onChange',
-      'onModified', 'onReverted', ['onPopulated', 'onReady']);
+      'onCreated', 'onSaved', 'onError', 'onChange', 'onModified', 'onReverted');
+  },
+
+  whenReady: function(/* Function? */callback) {
+    if (callback) {
+      this._whenReady.addCallback(callback);
+    }
+    return this._whenReady;
   },
 
   getTitle: function() {
