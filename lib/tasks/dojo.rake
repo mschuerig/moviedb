@@ -1,6 +1,6 @@
 
 namespace :dojo do
-  
+
   desc 'Update Dojo git repository.'
   task :update => :environment do
     DOJO_ROOT = File.join(RAILS_ROOT, 'vendor', 'dojo')
@@ -8,7 +8,7 @@ namespace :dojo do
       sh %{cd "#{dir}" && git svn rebase && git gc}
     end
   end
-  
+
   namespace :use do
     desc 'Use individual development script files.'
     task :debug => :environment do
@@ -19,10 +19,10 @@ namespace :dojo do
       sh %{ln -nfs javascripts.production "#{RAILS_ROOT}/public/javascripts"}
     end
   end
-  
+
   desc 'Build a dojo profile. Default is production, specify with PROFILE=<profile name>'
   task :optimize => "dojo:optimize:all"
-  
+
   namespace :optimize do
     task :setup => :environment do
       DOJO_ROOT = File.join(RAILS_ROOT, 'vendor', 'dojo')
@@ -35,9 +35,9 @@ namespace :dojo do
         exit
       end
     end
-  
+
     task :all => [:scripts, :stylesheets]
-    
+
     desc 'Build a dojo profile. Default is production, specify with PROFILE=<profile name>'
     task :scripts => :setup do
       profile_file = File.join(DOJO_PROFILES, "#{DOJO_PROFILE}.js")

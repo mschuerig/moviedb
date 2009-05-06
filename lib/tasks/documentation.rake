@@ -18,7 +18,7 @@ namespace :doc do
   desc "Generate documentation for the Rails framework"
   Rake::RDocTask.new("rails") { |rdoc|
     require 'sdoc'
-    
+
     rdoc.rdoc_dir = 'doc/api'
     rdoc.template = "#{ENV['template']}.rb" if ENV['template']
     rdoc.title    = "Rails Framework Documentation"

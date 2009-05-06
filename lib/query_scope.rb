@@ -3,12 +3,12 @@ module QueryScope
   def self.included(base)
     base.extend(ClassMethods)
   end
-  
+
   module ClassMethods
     def query_scope(options = {}, &config_block)
       model_class = extract_resource!(options)
       builder = QueryScopeBuilder.new(config_block)
-      
+
       around_filter(options) do |controller, action|
         req = builder.build_request_conditioner(controller.request)
         controller.instance_variable_set(:@offset_limit, req.offset_limit)
@@ -21,7 +21,7 @@ module QueryScope
         end
       end
     end
-    
+
     def extract_resource!(options)
       resource = options.delete(:resource) || self.controller_name
       resource.to_s.singularize.camelize.constantize
@@ -51,7 +51,7 @@ module QueryScope
       @order_mappings.merge!(mapping)
     end
     def build_request_conditioner(request)
-      RequestConditioner.new(request.headers, request.parameters, { 
+      RequestConditioner.new(request.headers, request.parameters, {
         :allowed    => @allowed_attributes.empty? ? nil : @allowed_attributes,
         :rename     => @renames,
         :conditions => @condition_mappings,

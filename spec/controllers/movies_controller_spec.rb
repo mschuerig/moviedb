@@ -14,7 +14,7 @@ describe MoviesController do
     MovieItem.should_receive(:find).with(:all, options).and_return([])
     MovieItem.should_receive(:count).and_return(0)
   end
-  
+
   describe "GET index" do
     it "returns the static movies page" do
       get :index
@@ -29,7 +29,7 @@ describe MoviesController do
           :limit => nil
         }
       end
-      
+
       it "exposes the requested movies" do
         expect_movie_retrievals(@find_all_options)
         get :index, :format => 'json'
@@ -42,18 +42,18 @@ describe MoviesController do
         get :index, :format => 'json'
         response.should render_template('movies/index.json.rb')
       end
-      
+
       describe "and Range header" do
         before do
           request.env['Range'] = 'items=10-60'
         end
-        
+
         it "retrieves only the requested range of movies" do
           expect_movie_retrievals(@find_all_options.merge(:offset => 10, :limit => 51))
           get :index, :format => 'json'
         end
       end
-      
+
       describe "and order params" do
         it "orders by title ascending for /title" do
           pending do ### TODO pending a scope expectation
@@ -71,7 +71,7 @@ describe MoviesController do
       end
     end
   end
-  
+
   describe "GET show" do
     describe "with mime type of json" do
 
@@ -87,7 +87,7 @@ describe MoviesController do
   describe "POST create" do
 
     describe "with valid params" do
-      
+
       it "exposes a newly created movie as @movie" do
         Movie.should_receive(:new).with({'these' => 'params'}).and_return(mock_movie(:save => true))
         post :create, :attributes => {:these => 'params'}
@@ -101,7 +101,7 @@ describe MoviesController do
         response.headers['location'].should == '/movies/42'
       end
     end
-    
+
 =begin
     describe "with invalid params" do
 
@@ -117,8 +117,8 @@ describe MoviesController do
         response.should render_template('new')
       end
     end
-=end      
-    
+=end
+
   end
 
 =begin
@@ -145,7 +145,7 @@ describe MoviesController do
       end
 
     end
-    
+
     describe "with invalid params" do
 
       it "updates the requested movie" do
@@ -177,7 +177,7 @@ describe MoviesController do
       mock_movie.should_receive(:destroy)
       delete :destroy, :id => "37"
     end
-  
+
     it "redirects to the movies list" do
       Movie.stub!(:find).and_return(mock_movie(:destroy => true))
       delete :destroy, :id => "1"

@@ -10,9 +10,9 @@ class AwardingsController < ApplicationController
       end
     end
   end
-  
+
   private
-    
+
   def load_scope
     @scope = Awarding
     if award_id = params[:award_id]

@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe "/movies/index.json.rb" do
   include MoviesHelper
-  
+
   def stub_award(id, name, awardable = true)
     award = stub_model(Award, :id => id, :name => name)
     award.should_receive(:awardable?).any_number_of_times.and_return(awardable)
@@ -13,7 +13,7 @@ describe "/movies/index.json.rb" do
     award = stub_award(award[:id], award[:name]) if award.kind_of?(Hash)
     stub_model(Awarding, :id => id, :name => name, :award => award)
   end
-  
+
   before do
     assigns[:movies] = [
       stub_model(Movie, :id => 1, :title => 'The first movie', :release_date => '2001-01-01') { |m|

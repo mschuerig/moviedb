@@ -7,22 +7,22 @@ namespace :db do
       ENV['FIXTURE_PATH'] || File.join(RAILS_ROOT, 'db', 'ref_data'),
       ENV['FIXTURES'])
   end
-  
+
   desc "Populate the database with sample data"
   task :populate => :environment do
     require 'machinist'
     require 'spec/blueprints'
     require 'index_lifter'
     require 'movie_db/populator'
-        
+
     people_count = (ENV['PEOPLE'] || 200).to_i
     movies_count = (ENV['MOVIES'] || 10).to_i
-    
+
     retained_indexes = [
       ### FIXME AR botches column order; name is OK, schema.rb has wrong order
       'index_people_on_lastname_and_firstname_and_serial_number'
     ]
-    
+
     load_fixtures(File.join(RAILS_ROOT, 'spec', 'fixtures'))
     ActiveRecord::Base.transaction do
       IndexLifter.without_indexes(:except => retained_indexes) do
@@ -37,7 +37,7 @@ namespace :db do
       ActiveRecord::Base.connection.execute "VACUUM FULL ANALYZE"
     end
   end
-  
+
   def load_fixtures(fixture_path, fixtures = nil)
     require 'active_record/fixtures'
     ActiveRecord::Base.establish_connection(RAILS_ENV.to_sym)
@@ -46,5 +46,5 @@ namespace :db do
       Fixtures.create_fixtures(fixture_path, File.basename(file, '.*'))
     end
   end
-  
+
 end

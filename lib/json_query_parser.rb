@@ -6,11 +6,11 @@ require 'rack/utils'
 class JSONQueryParser
   QUERY_PARAMETERS = 'action_controller.request.query_parameters'.freeze
   COMPARATORS = ['=', '<', '=<', '>=', '>'].join('|').freeze
-  
+
   def initialize(app)
     @app = app
   end
-  
+
   def call(env)
     unless env.has_key?(QUERY_PARAMETERS)
       query = Rack::Utils.unescape(env['QUERY_STRING'].to_s)
@@ -34,13 +34,13 @@ class JSONQueryParser
     end
     @app.call(env)
   end
-  
+
   private
-  
+
   def build_condition(attribute, compare, target)
     { :attribute => Rack::Utils.unescape(attribute.underscore), :op => Rack::Utils.unescape(compare), :target => Rack::Utils.unescape(target) }
   end
-  
+
   def build_order(attribute, direction = nil)
     order = { :attribute => Rack::Utils.unescape(attribute.underscore) }
     order[:dir] = direction if direction

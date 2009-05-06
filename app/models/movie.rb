@@ -1,9 +1,9 @@
 class Movie < ActiveRecord::Base
   attr_protected :release_year
-  
+
   acts_as_xapian :texts => [ :title, :summary ],
     :values => [ [ :release_year, 1, 'year', :number ] ]
-  
+
   validates_presence_of :title
 
   has_many :roles, :include => :role_type, :dependent => :destroy
@@ -23,18 +23,18 @@ class Movie < ActiveRecord::Base
       END
     end
   end
-  
+
   has_many :participants, :through => :roles, :source => :person, :extend => ParticipantTypeExtensions
 
   has_and_belongs_to_many :awardings, :after_remove => lambda { |_, awarding| awarding.destroy }
-  
+
   default_scope :order => 'title, release_date'
-  
+
   def self.in_year_condition(year)
     ["movies.release_year = ?",year]
   end
 
-  named_scope :in_year, 
+  named_scope :in_year,
     lambda { |year| { :conditions => in_year_condition(year) } }
 
   def self.by_year
@@ -59,7 +59,7 @@ class Movie < ActiveRecord::Base
       super(*args)
     end
   end
-  
+
   def before_save
     self.release_year = release_date.blank? ? nil : release_date.year
   end

@@ -16,14 +16,14 @@ describe RequestParameterWrapper do
   def set_params(env, params)
     env[CamelCaseToUnderscoreMapper::REQUEST_PARAMETERS] = params
   end
-  
+
   it "does not set request parameters if there aren't any already" do
     env_for("/resource/", :headers => @headers) do |env|
       request_parameters = RequestParameterWrapper.new(@app).call(env).last
       request_parameters.should be_nil
     end
   end
-  
+
   it "does not add junk to request parameters" do
     env_for("/resource/", :headers => @headers) do |env|
       set_params(env, {})
@@ -31,7 +31,7 @@ describe RequestParameterWrapper do
       request_parameters.should == {}
     end
   end
-  
+
   it "does not wrap id parameter" do
     env_for("/resource/", :headers => @headers) do |env|
       set_params(env, 'id' => 1)
@@ -39,7 +39,7 @@ describe RequestParameterWrapper do
       request_parameters.should == { 'id' => 1 }
     end
   end
-  
+
   it "wraps parameters below top-level :attributes" do
     env_for("/resource/", :headers => @headers) do |env|
       set_params(env, 'id' => 1, 'name' => 'me')

@@ -3,7 +3,7 @@ class AwardRequirement < ActiveRecord::Base
   validates_numericality_of :count
   belongs_to :award
   belongs_to :role_type
-  
+
   def validate_awarding(awarding)
     awardees = awarding.send(association)
     if role_type

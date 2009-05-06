@@ -2,17 +2,17 @@ class Person < ActiveRecord::Base
   class HasRoleError < StandardError; end
 
   attr_readonly :serial_number
-  
+
   validates_presence_of :firstname, :lastname
 
   has_many :roles, :include => :role_type
-  
+
   has_many :movies, :through => :roles, :extend => RoleTypeAssociationExtensions, :order => 'release_date'
-  
+
   has_and_belongs_to_many :awardings, :after_remove => lambda { |_, awarding| awarding.destroy }
 
   default_scope :order => 'lastname, firstname, serial_number'
-  
+
   RoleType.each_name do |name|
     named_scope name.pluralize, lambda { |*args|
       options = args.first || {}
@@ -27,14 +27,14 @@ class Person < ActiveRecord::Base
       }
     }
   end
-  
+
   named_scope :participating_in_movie, lambda { |movie|
     {
       :joins => 'INNER JOIN roles ON roles.person_id = people.id',
       :conditions => { :roles => { :movie_id => movie }}
     }
   }
-  
+
   named_scope :with_movie_in_year, lambda { |year|
     {
       :joins => ['INNER JOIN roles ON roles.person_id = people.id',
@@ -42,7 +42,7 @@ class Person < ActiveRecord::Base
       :conditions => Movie.in_year_condition(year)
     }
   }
-  
+
   def name
     if has_dupes?
       "#{firstname} #{lastname} (#{serial_number})" ### TODO use roman numeral
@@ -50,11 +50,11 @@ class Person < ActiveRecord::Base
       "#{firstname} #{lastname}"
     end
   end
-  
+
   def credits_name
     "#{firstname} #{lastname}"
   end
-  
+
   def coworkers(options = {})
     if movie = options[:movie]
       Person.scoped(
@@ -95,13 +95,13 @@ class Person < ActiveRecord::Base
     self[:duplicate_count] ||= 0
     self[:duplicate_count] += 1
   end
-  
+
   def before_destroy
     raise HasRoleError unless roles.empty?
   end
-  
+
   private
-  
+
   def create_or_update
     Person.transaction(:requires_new => true) do
       # The nested transaction is required as otherwise the failing
@@ -112,15 +112,15 @@ class Person < ActiveRecord::Base
     self.serial_number = next_unused_serial_number
     retry
   end
-  
+
   def has_dupes?
     self[:duplicate_count].to_i > 1
   end
-  
+
   def next_unused_serial_number
     self.class.next_unused_serial_number(self)
   end
-  
+
   def self.next_unused_serial_number(person)
     max = self.maximum(:serial_number,
       :conditions => { :lastname => person.lastname, :firstname => person.firstname })

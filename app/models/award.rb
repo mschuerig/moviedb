@@ -7,13 +7,13 @@ class Award < ActiveRecord::Base
   has_many :awardings, :order => 'awardings.year DESC'
 
   default_scope :include => :parent, :order => 'name'
-  
+
   named_scope :top_level, :conditions => { :parent_id => nil }
-  
+
   def self.awardize(a)
     a.kind_of?(Award) ? a : Award.find(a)
   end
-  
+
   def fullname
     if parent
       "#{parent.name}: #{name}"
@@ -21,7 +21,7 @@ class Award < ActiveRecord::Base
       name
     end
   end
-  
+
   def for_year(year)
     Awarding.find_by_year_and_award_id(year, self.id)
   end

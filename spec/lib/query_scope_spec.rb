@@ -18,9 +18,9 @@ end
 describe QueryScope do
 
   it "sets the scope"
-  
+
   it "uses an explicitly given resource"
-  
+
   it "derives the resources from the controller name"
 
 end

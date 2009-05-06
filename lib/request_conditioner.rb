@@ -1,7 +1,7 @@
 
 class RequestConditioner
   extend ActiveSupport::Memoizable
-  
+
   def initialize(headers, parameters, options = {})
     @headers, @params = headers, parameters
     @renames = flatten_renames(options[:rename] || {})
@@ -19,19 +19,19 @@ class RequestConditioner
     end
   end
   memoize :find_options
-  
+
   def count_options
     returning opts = {} do
       opts[:conditions] = conditions if conditions
     end
   end
   memoize :count_options
-  
+
   def conditions
     coerce_to_nil(condition_clause)
   end
   memoize :conditions
- 
+
   def offset_limit
     parse_range_header
   end
@@ -39,11 +39,11 @@ class RequestConditioner
   def offset
     parse_range_header[0]
   end
-  
+
   def limit
     parse_range_header[1]
   end
-  
+
   def first_item
     parse_range_header[2]
   end
@@ -51,14 +51,14 @@ class RequestConditioner
   def last_item
     parse_range_header[3]
   end
-  
+
   def order
     coerce_to_nil(order_clause)
   end
   memoize :order
-  
+
   protected
-  
+
   def parse_range_header
     range = @headers['Range']
     if range && range =~ /items=(.*)-(.*)/i
@@ -71,7 +71,7 @@ class RequestConditioner
     end
   end
   memoize :parse_range_header
-  
+
   def order_clause
     cleaned_param(:order).map { |item|
       item[:dir] ||= 'ASC'
@@ -79,7 +79,7 @@ class RequestConditioner
       replace_named_bind_variables(template, item)
     }.join(', ')
   end
-  
+
   def condition_clause
     query = cleaned_param(:query)
     templates = []
@@ -102,12 +102,12 @@ class RequestConditioner
     template = @condition_mappings[comparison[:attribute]] || ":attribute :op ?"
     replace_named_bind_variables(template, comparison)
   end
-  
+
   def cleaned_param(param)
     renamed_hashes = rename_attributes(Array(@params[param]))
     select_allowed_attributes(@allowed_attributes, renamed_hashes)
   end
-  
+
   def select_allowed_attributes(allowed, attribute_hashes)
     if allowed
       attribute_hashes.select { |h| allowed.include?(h[:attribute]) }
@@ -115,7 +115,7 @@ class RequestConditioner
       attribute_hashes
     end
   end
-  
+
   def rename_attributes(attribute_hashes)
     attribute_hashes.inject([]) do |renamed, hash|
       hash[:attribute] = @renames[hash[:attribute]] || hash[:attribute]
@@ -126,7 +126,7 @@ class RequestConditioner
   def coerce_to_nil(a)
     a.blank? ? nil : a
   end
-  
+
   def flatten_renames(mappings)
     mappings.inject({}) do |flattened, (from_keys, to_key)|
       Array(from_keys).each do |from_key|
@@ -135,7 +135,7 @@ class RequestConditioner
       flattened
     end
   end
-  
+
   # based on ActiveRecord::Base#replace_named_bind_variables
   def replace_named_bind_variables(statement, bind_vars) #:nodoc:
     statement.gsub(/(:?):([a-zA-Z]\w*)/) do

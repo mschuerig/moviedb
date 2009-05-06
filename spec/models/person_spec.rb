@@ -12,16 +12,16 @@ describe "A Person" do
   it "is valid given valid attributes" do
     @person.should be_valid
   end
-  
+
   it "can be deleted" do
     @person.destroy
     Person.should have(:no).records
   end
-  
+
   it "has a serial number" do
     @person.serial_number.should == 1
   end
-  
+
   it "creates a unique serial number" do
     Person.should_receive(:next_unused_serial_number).twice.and_return(1, 2)
     dupe = Person.create!(@valid_attributes)
@@ -58,19 +58,19 @@ describe "An actor" do
   end
 
   describe "with only an actor role in a single 2004 movie" do
-    
+
     it "acts in the movie" do
       @actor.movies.as_actor.should include(@movie)
     end
-    
+
     it "does not direct the movie" do
       @actor.movies.as_director.should == []
     end
-    
+
     it "cannot be deleted" do
       lambda { @actor.destroy }.should raise_error(Person::HasRoleError)
     end
-    
+
     it "is found as an actor" do
       Person.actors.should include(@actor)
     end
@@ -95,7 +95,7 @@ describe "An actor" do
       @director = Person.create(:firstname => 'Zeno', :lastname => 'Direct')
       @movie.participants.add_director(@director)
       @movie.save!
-      
+
       @movie2 = Movie.create!(:title => 'Bad and Ugly, the sequel', :release_date => '2005-12-09')
       @movie2.participants.add_actor(@actor)
       @coactor2 = Person.create(:firstname => 'Duane', :lastname => 'Act')
@@ -109,7 +109,7 @@ describe "An actor" do
       unrelated_movie.participants.add_director(actor_director)
       unrelated_movie.save!
     end
-    
+
     it "knows their coworkers from all movies" do
       coworkers = @actor.coworkers
       coworkers.size.should == 3

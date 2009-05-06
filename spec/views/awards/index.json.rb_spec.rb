@@ -2,20 +2,20 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe "/awards/index.json.rb" do
   include AwardsHelper
-  
+
   def stub_award(id, name, awardable = true)
     award = stub_model(Award, :id => id, :name => name)
     award.should_receive(:awardable?).any_number_of_times.and_return(awardable)
     award
   end
-  
+
   def stub_top_level_award(id, name, awardable = false)
     award = stub_award(id, name, awardable)
     children = block_given? ? yield(award) : []
     award.should_receive(:children).any_number_of_times.and_return(children)
     award
   end
-  
+
   before do
     assigns[:award_groups] = [
       stub_top_level_award(1, 'Oscar') { |aw|

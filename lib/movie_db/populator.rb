@@ -5,16 +5,16 @@ module MovieDb
       @people_count, @movies_count = people_count, movies_count
       @max_actors_per_movie = [(@people_count * 20)/@movies_count, 30, @people_count].min
     end
-    
+
     def populate
       create_people(@people_count)
       create_movies(@movies_count)
       add_participants_to_movies(@max_actors_per_movie)
       give_awards
     end
-    
+
     private
-    
+
     module ArraySample
       def sample(n = 1)
         n = [size, n].min
@@ -27,14 +27,14 @@ module MovieDb
         rands.to_a
       end
     end
-    
+
     def extend_with_sample(ary)
       unless ary.respond_to?(:sample)
         ary.extend(ArraySample)
       end
       ary
     end
-    
+
     def random_people(n, movies = nil, role_type = nil)
       if movies && !movies.empty?
         candidates = movies.map { |m| m.participants.as(role_type) }.flatten
@@ -49,14 +49,14 @@ module MovieDb
         end
       end
     end
-    
+
     def random_person
       random_people(1)[0]
     end
 
     def random_movies(year, n)
       if @movies_count > 10000
-        Movie.find(:all, 
+        Movie.find(:all,
           :conditions => { :release_year => year },
           :order => 'random()', :limit => n)
       else
@@ -82,14 +82,14 @@ module MovieDb
         Person.make
       end
     end
-    
+
     def create_movies(count)
       puts "Creating movies..."
       count.times do
         Movie.make
       end
     end
-    
+
     def add_participants_to_movies(max_actors_count)
       puts "Adding people to movies..."
       Movie.find_each do |m|
@@ -100,7 +100,7 @@ module MovieDb
         m.save!
       end
     end
-    
+
     def give_awards
       puts "Giving them awards..."
       movie_years.each do |year|

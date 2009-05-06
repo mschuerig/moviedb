@@ -3,22 +3,22 @@ require 'active_support/inflector'
 
 # Map camelCase request parameter names to under_score.
 class CamelCaseToUnderscoreMapper
-  
+
   REQUEST_PARAMETERS = 'action_controller.request.request_parameters'.freeze
-  
+
   def initialize(app)
     @app = app
   end
-  
+
   def call(env)
     if env.has_key?(REQUEST_PARAMETERS)
       env[REQUEST_PARAMETERS] = map_keys(env[REQUEST_PARAMETERS])
     end
     @app.call(env)
   end
-  
+
   private
-  
+
   def map_keys(value)
     case value
     when Hash

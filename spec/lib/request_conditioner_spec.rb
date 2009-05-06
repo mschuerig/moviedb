@@ -8,11 +8,11 @@ describe RequestConditioner do
     before do
       @rc = RequestConditioner.new({'Range' => 'items=10-100'}, {})
     end
-    
+
     it "extracts offset" do
       @rc.offset.should == 10
     end
-    
+
     it "extracts limit" do
       @rc.limit.should == 91
     end
@@ -21,11 +21,11 @@ describe RequestConditioner do
       before do
         @rc = RequestConditioner.new({'Range' => 'items=10-'}, {})
       end
-    
+
       it "extracts offset" do
         @rc.offset.should == 10
       end
-      
+
       it "extracts no limit" do
         @rc.limit.should be_nil
       end
@@ -42,24 +42,24 @@ describe RequestConditioner do
           :conditions => { :mapped => 'mapped1 :op ?' } }
       )
     end
-    
+
     it "builds a condition array" do
       @rc.conditions.should == ["normal = ? AND mapped1 < ?", "usual", "connected"]
     end
   end
-  
+
   describe "with a wildcard condition target" do
     before do
       @rc = RequestConditioner.new({},
         { :query => [{:attribute => 'name', :op => '=', :target => 'mys*'}] }
       )
     end
-    
+
     it "converts the operation to a LIKE comparison" do
       @rc.conditions.should == ["name LIKE ?", "mys%"]
     end
   end
-  
+
   describe "with two attribute target occurrences in template" do
     before do
       @rc = RequestConditioner.new({},
@@ -67,7 +67,7 @@ describe RequestConditioner do
         { :conditions => { :mapped => '(mapped1 :op ?) OR (mapped2 :op ?)' } }
       )
     end
-    
+
     it "adds target values twice" do
       @rc.conditions.should == ["(mapped1 = ?) OR (mapped2 = ?)", '10', '10']
     end
@@ -83,12 +83,12 @@ describe RequestConditioner do
           :order => { :mapped => 'mapped1 :dir, mapped2 :dir' } }
       )
     end
-    
+
     it "puts everything in order" do
       @rc.order.should == "normal DESC, mapped1 ASC, mapped2 ASC"
     end
   end
-  
+
   describe "with simple rename and multiple rename mappings" do
     before do
       @renames = {

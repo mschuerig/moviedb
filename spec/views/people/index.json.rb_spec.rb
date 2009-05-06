@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe "/people/index.json.rb" do
   include PeopleHelper
-  
+
   before do
     person = stub_model(Person, :id => 1,
       :firstname => 'Clint', :lastname => 'Easterbunny', :date_of_birth => '2008-03-23')

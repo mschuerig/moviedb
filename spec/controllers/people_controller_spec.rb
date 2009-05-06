@@ -21,7 +21,7 @@ describe PeopleController do
           :limit => nil
         }
       end
-      
+
       it "exposes the requested people" do
         expect_person_retrievals(@find_all_options)
         get :index, :format => 'json'
@@ -34,18 +34,18 @@ describe PeopleController do
         get :index, :format => 'json'
         response.should render_template('people/index.json.rb')
       end
-      
+
       describe "and Range header" do
         before do
           request.env['Range'] = 'items=10-60'
         end
-        
+
         it "retrieves only the requested range of people" do
           expect_person_retrievals(@find_all_options.merge(:offset => 10, :limit => 51))
           get :index, :format => 'json'
         end
       end
-      
+
       describe "and order params" do
         it "orders by title ascending for /title" do
           pending do
@@ -80,7 +80,7 @@ describe PeopleController do
   describe "POST create" do
 
     describe "with valid params" do
-      
+
       it "exposes a newly created person as @person" do
         Person.should_receive(:new).with({'these' => 'params'}).and_return(mock_person(:save => true))
         post :create, :person => {:these => 'params'}
@@ -92,9 +92,9 @@ describe PeopleController do
         post :create, :person => {}
         response.should redirect_to(person_url(mock_person))
       end
-      
+
     end
-    
+
     describe "with invalid params" do
 
       it "exposes a newly created but unsaved person as @person" do
@@ -108,9 +108,9 @@ describe PeopleController do
         post :create, :person => {}
         response.should render_template('new')
       end
-      
+
     end
-    
+
   end
 
   describe "PUT udpate" do
@@ -136,7 +136,7 @@ describe PeopleController do
       end
 
     end
-    
+
     describe "with invalid params" do
 
       it "updates the requested person" do
@@ -168,7 +168,7 @@ describe PeopleController do
       mock_person.should_receive(:destroy)
       delete :destroy, :id => "37"
     end
-  
+
     it "redirects to the people list" do
       Person.stub!(:find).and_return(mock_person(:destroy => true))
       delete :destroy, :id => "1"
