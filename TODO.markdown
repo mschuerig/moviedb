@@ -32,18 +32,14 @@ Rails
      - declarative authorization
 * business logic
      - state machine for state dependent behavior
-* controller subclass/mixin for JSON server
 
 Dojo
 ----
 
 * adapt to Dojo coding style
 * error handling
-* aiki.Store
-     - replace with JRS + service
 * tests
      - DOH
-     - Selenium
 * data stores
      - correct partial and lazy loading
      - error handling

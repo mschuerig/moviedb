@@ -1,7 +1,7 @@
 class MoviesController < ApplicationController
   include LazyJason
   include QueryScope
-  before_filter :load_scope, :except => :index
+  before_filter :load_scope
   
   query_scope :resource => :movie_item, :only => :index do
     allow     :title, :release_year, :release_date, :award_count
@@ -10,18 +10,6 @@ class MoviesController < ApplicationController
     rename    [:awards, :award_count, 'award-count'] => :award_count
   end
   
-  def index
-    respond_to do |format|
-      format.html { render :layout => false }
-      format.json do
-        @movies = MovieItem.all(:include => { :awardings => :award },
-          :offset => @offset_limit[0], :limit => @offset_limit[1])
-        @count = MovieItem.count
-        render
-      end
-    end
-  end
-
   def summary
     @movie = scope.find(params[:id])
     respond_to do |format|

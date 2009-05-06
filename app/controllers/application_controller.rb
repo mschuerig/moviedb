@@ -6,7 +6,11 @@ class ApplicationController < ActionController::Base
   protect_from_forgery # See ActionController::RequestForgeryProtection for details
 
   protected
-  
+
+  def set_content_range(total, from_item = 0, to_item = total - 1)
+    response.headers['Content-Range'] = "items #{from_item}-#{to_item}/#{total}"
+  end
+
   # Scrub sensitive parameters from your log
   # filter_parameter_logging :password
 end
