@@ -4,10 +4,11 @@ dojo.require('dijit._Widget');
 dojo.require('moviedb.ui._AwardView.Controller');
 dojo.require('moviedb.ui._AwardView.View');
 dojo.require('aiki.Delegator');
+dojo.require('aiki.api.View');
 
 dojo.declare('moviedb.ui.AwardView',
   [dijit._Widget, dijit._Templated, moviedb.ui._AwardView.View,
-   aiki.Delegator('controller', 'whenReady', 'getTitle', 'openTopGroup', 'showAwarding')], {
+   aiki.Delegator('controller', aiki.api.View, 'openTopGroup', 'showAwarding')], {
 
   _groupListWidget: 'moviedb.ui._AwardView.AwardingsList',
 

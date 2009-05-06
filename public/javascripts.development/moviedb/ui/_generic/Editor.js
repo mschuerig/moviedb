@@ -2,11 +2,12 @@ dojo.provide('moviedb.ui._generic.Editor');
 dojo.require('dijit._Widget');
 dojo.require('dijit._Templated');
 dojo.require('aiki.Delegator');
+dojo.require('aiki.api.Edit');
 dojo.require('moviedb.ui._generic.EditorController');
 
 dojo.declare('moviedb.ui._generic.Editor',
   [dijit._Widget, dijit._Templated,
-   aiki.Delegator('controller', 'whenReady', 'getTitle', 'isModified')], {
+   aiki.Delegator('controller', aiki.api.Edit)], {
 
   store: null,
   object: null,
