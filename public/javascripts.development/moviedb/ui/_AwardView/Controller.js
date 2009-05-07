@@ -10,35 +10,66 @@ dojo.declare('moviedb.ui._AwardView.Controller', null, {
     this.object = object;
     this.view = view;
 
-    this._whenReady = new dojo.Deferred();
-    this._yearGranularity = parseInt(view.yearGranularity) || 10;
-    this._showAwardingYear = this.yearGranularity > 1;
-    this._showAwardName = view.showAwardName;
+    this._whenReady        = new dojo.Deferred();
+    this._startYear        = parseInt(view.startYear);
+    this._endYear          = (new Date()).getYear() + 1900;
+    this._yearGranularity  = parseInt(view.yearGranularity) || 10;
+    this._showAwardingYear = this._yearGranularity > 1;
+    this._showAwardName    = view.showAwardName;
+
+    this._grouper = this._makeGrouper(this._yearGranularity);
 
     this._groupManager = new moviedb.ui._AwardView.GroupManager(
       dojo.hitch(this, '_awardingDomID'));
 
     dojo.connect(view, 'onGroupAdded', this._groupManager, 'add');
+    dojo.connect(view, 'onShowGroup', this, 'loadGroup');
     dojo.connect(view, 'onClick', this, '_publishSelect');
   },
 
-  load: function() {
+  loadGroup: function(titlePane, group) {
+    //### TODO push into AwardingsList
+    if (group.awardings) {
+      return;
+    }
+    //### TODO don't break the abstraction, let store handle queried loading somehow
+    this._withLoadedObject(function(object) {
+      var query = dojo.string.substitute("?[?year>=${firstYear}][?year<=${lastYear}]", {
+        firstYear: group.firstYear, lastYear: group.lastYear
+      });
+      var ref = object.awardings.$ref.replace(/^\/awards\//, ''); //###
+      this.store.fetch({
+        queryStr: ref + query,
+        onComplete: dojo.hitch(this, function(items) {
+          group.awardings = items;
+          this.view._renderGroup(titlePane, group);
+        }),
+        onError: function(err) {
+          console.error('AwardView.Controller.loadGroup ', err); //###
+        }
+      });
+    });
+  },
 
-    //### TODO cleanup
+  _withLoadedObject: function(callback) {
     this.store.loadItem({
       item: this.object,
       onItem: dojo.hitch(this, function(loadedObject) {
         this.object = loadedObject;
-        var awardings = this.store.getValue(this.object, 'awardings');
-        this.store.loadItem({
-          item: awardings,
-          onItem: dojo.hitch(this, function(loadedAwardings) {
-            this.view._renderView(this._groupAwardings(loadedAwardings));
-            this._whenReady.callback(this.view);
-          })
-        });
+        callback.call(this, this.object);
       })
     });
+  },
+
+  render: function() {
+    var gran = this._yearGranularity;
+    var endYear = this._endYear;
+    var groups = [];
+    for (var y = this._startYear; y <= endYear; y += gran) {
+      groups.push({ name: y.toString(), firstYear: y, lastYear: (y + gran - 1) });
+    }
+    this.view._renderView(groups);
+    this._whenReady.callback(this.view);
   },
 
   whenReady: function(/* Function? */callback) {
@@ -61,7 +92,7 @@ dojo.declare('moviedb.ui._AwardView.Controller', null, {
   },
 
   _groupAwardings: function(awardings) {
-    var groups = aiki.groupBy(awardings, this._makeGrouper(this._yearGranularity));
+    var groups = aiki.groupBy(awardings, this._grouper);
     var keys = groups.keys.sort(function(a, b) { return b - a; });
     var groupedAwardings = [];
     for (var i = 0, l = keys.length; i < l; i++) {

@@ -13,6 +13,7 @@ dojo.declare('moviedb.ui.AwardView',
   _groupListWidget: 'moviedb.ui._AwardView.AwardingsList',
 
   showAwardName: false,
+  startYear: 1970,
   yearGranularity: 10,
 
   store: null,
@@ -32,7 +33,8 @@ dojo.declare('moviedb.ui.AwardView',
   postCreate: function() {
     this.controller = this._makeController();
     this.inherited(arguments);
-    this.controller.load();
+//### REMOVE    this.controller.load();
+    this.controller.render();
   },
 
   _makeController: function() {

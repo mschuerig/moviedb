@@ -1,6 +1,11 @@
 class AwardingsController < ApplicationController
+  include QueryScope
   before_filter :load_scope
 
+  query_scope do
+    allow :year
+  end
+  
   def index
     respond_to do |format|
       format.json do

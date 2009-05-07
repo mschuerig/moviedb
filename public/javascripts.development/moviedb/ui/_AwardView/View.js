@@ -14,33 +14,30 @@ dojo.declare('moviedb.ui._AwardView.View', null, {
     this.inherited(arguments);
   },
 
-  onGroupAdded: function(titlePane, awardings) {
+  onGroupAdded: function(titlePane, group) {
+  },
+  onShowGroup: function(titlePane, group) {
   },
 
-  _renderView: function(awardings) {
+  _renderView: function(groups) {
     dojo.empty(this.listNode);
-    for (var i = 0, l = awardings.length; i < l; i++) {
-      var group = awardings[i];
+    dojo.forEach(groups, dojo.hitch(this, function(group) {
       var groupItem = dojo.create('li');
-      var titlePane = this._renderGroup(i, group.name, group.awardings);
+      var titlePane = new dijit.TitlePane({
+        title: dojo.string.substitute(this.groupTitle, {group: group.name}),
+        open: false
+      });
       titlePane.placeAt(groupItem);
       dojo.place(groupItem, this.listNode);
 
-      this.onGroupAdded(titlePane, group.awardings);
-    }
+      dojo.connect(titlePane, 'onShow', dojo.hitch(this, 'onShowGroup', titlePane, group));
+      this.onGroupAdded(titlePane, group);
+    }));
   },
 
-  _renderGroup: function(num, name, awardings) {
-    var contentNode = dojo.create('div');
-
-    var groupTitle = new dijit.TitlePane({
-      title: dojo.string.substitute(this.groupTitle, {group: name}),
-      open: false,
-      content: contentNode
-    });
-
-    this._makeGroupListWidget(awardings, contentNode);
-
-    return groupTitle;
+  _renderGroup: function(titlePane, group) {
+    var listNode = dojo.create('div');
+    titlePane.attr('content', listNode);
+    this._makeGroupListWidget(group.awardings, listNode);
   }
 });
