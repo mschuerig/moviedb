@@ -16,13 +16,6 @@ function hilite(node, duration) {
   }).play();
 }
 
-function awardingsListContains(awardings, theAwarding) {
-  if (!theAwarding) {
-    return false;
-  }
-  return dojo.some(awardings, function(it) { return it.id == theAwarding.id; });
-}
-
 dojo.declare('moviedb.ui._AwardView.GroupManager', null, {
   hiliteDuration: 2000,
 
@@ -45,11 +38,15 @@ dojo.declare('moviedb.ui._AwardView.GroupManager', null, {
 
   showAwarding: function(awarding) {
     console.debug('*** SHOW AWARDING: ', awarding); //###
-    var itsGroup = aiki.find(this._groups,
-      function(group) { return awardingsListContains(group.awardings, awarding); });
+    var year = awarding.year;
+    var itsGroup = aiki.find(this._groups, function(group) {
+      return group.firstYear <= year && year <= group.lastYear;
+    });
+    console.debug('** group: ', itsGroup); //###
     if (itsGroup) {
       this._openGroup(itsGroup);
       var awardingNode = dojo.byId(this._domId(awarding));
+      console.debug('** node: ', this._domId(awarding), awardingNode); //###
       dijit.scrollIntoView(awardingNode);
       hilite(awardingNode, this.hiliteDuration);
     }

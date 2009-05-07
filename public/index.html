@@ -74,9 +74,9 @@
           }
           var whenReady = editors.editObject(award, awardsStore, 'moviedb.ui.AwardView', options);
           whenReady.addCallback(function(editor) {
-              //### FIXME should have been lazy loaded
-              editor.widget.showAwarding({id: awarding.$ref, __id: awarding.$ref});
-            });
+            //### FIXME should have been lazy loaded
+            editor.widget.showAwarding({id: awarding.$ref, __id: awarding.$ref, year: awarding.year});
+          });
         }
 
         awardsStore.fetchItemByIdentity({
