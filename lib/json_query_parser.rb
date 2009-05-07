@@ -5,7 +5,7 @@ require 'rack/utils'
 # see http://www.sitepen.com/blog/2008/07/16/jsonquery-data-querying-beyond-jsonpath/
 class JSONQueryParser
   QUERY_PARAMETERS = 'action_controller.request.query_parameters'.freeze
-  COMPARATORS = ['=', '<', '=<', '>=', '>'].join('|').freeze
+  COMPARATORS = ['=', '<', '<=', '>=', '>'].join('|').freeze
 
   def initialize(app)
     @app = app

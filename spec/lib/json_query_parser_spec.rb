@@ -46,4 +46,14 @@ describe JSONQueryParser do
     end
   end
 
+  it "extracts multiple conditions on the same attribute" do
+    env_for("/resource/?[?age%3E=30][?age%3C=35]", :headers => @headers) do |env|
+      parsed_query = JSONQueryParser.new(@app).call(env).last
+      parsed_query.should == [
+        { :attribute => 'age', :op => '>=', :target => '30' },
+        { :attribute => 'age', :op => '<=', :target => '35' }
+      ]
+    end
+  end
+
 end
