@@ -14,9 +14,9 @@ dojo.declare('moviedb.ui._AwardView.View', null, {
     this.inherited(arguments);
   },
 
-  onGroupAdded: function(group, titlePane) {
+  onGroupAdded: function(group) {
   },
-  onShowGroup: function(group, groupNode) {
+  onShowGroup: function(group) {
   },
 
   _renderView: function(groups) {
@@ -32,12 +32,14 @@ dojo.declare('moviedb.ui._AwardView.View', null, {
       titlePane.placeAt(groupItem);
       dojo.place(groupItem, this.listNode);
 
-      dojo.connect(titlePane, 'onShow', dojo.hitch(this, 'onShowGroup', group, groupContentNode));
-      this.onGroupAdded(group, titlePane);
+      group.titlePane = titlePane;
+      group.node = groupContentNode;
+      dojo.connect(titlePane, 'onShow', dojo.hitch(this, 'onShowGroup', group));
+      this.onGroupAdded(group);
     }));
   },
 
-  _renderGroup: function(group, groupNode) {
-    this._makeGroupListWidget(group.awardings, groupNode);
+  _renderGroup: function(group) {
+    this._makeGroupListWidget(group.awardings, group.node);
   }
 });

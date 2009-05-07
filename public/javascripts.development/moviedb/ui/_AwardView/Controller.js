@@ -26,13 +26,13 @@ dojo.declare('moviedb.ui._AwardView.Controller', null, {
     dojo.connect(view, 'onClick', this, '_publishSelect');
   },
 
-  loadGroup: function(group, groupNode) {
+  loadGroup: function(group) {
     console.debug('**** SHOW GROUP ', group); //### REMOVE
     //### TODO push into AwardingsList
     if (group.awardings) {
       return;
     }
-    var standby = new aiki.Standby(groupNode.parentNode);
+    var standby = new aiki.Standby(group.node.parentNode);
 
     //### TODO don't break the abstraction, let store handle queried loading somehow
     this._withLoadedObject(function(object) {
@@ -44,7 +44,7 @@ dojo.declare('moviedb.ui._AwardView.Controller', null, {
         queryStr: ref + '?' + query + '[\\year]', //###
         onComplete: dojo.hitch(this, function(items) {
           group.awardings = items;
-          this.view._renderGroup(group, groupNode);
+          this.view._renderGroup(group);
           standby.stop();
         }),
         onError: function(err) {

@@ -31,8 +31,8 @@ dojo.declare('moviedb.ui._AwardView.GroupManager', null, {
     this._groups = [];
   },
 
-  add: function(group, titlePane) {
-    this._groups.push({ titlePane: titlePane, awardings: group }); //###
+  add: function(group) {
+    this._groups.push(group);
   },
 
   openTopGroup: function() {
@@ -44,6 +44,7 @@ dojo.declare('moviedb.ui._AwardView.GroupManager', null, {
   },
 
   showAwarding: function(awarding) {
+    console.debug('*** SHOW AWARDING: ', awarding); //###
     var itsGroup = aiki.find(this._groups,
       function(group) { return awardingsListContains(group.awardings, awarding); });
     if (itsGroup) {
