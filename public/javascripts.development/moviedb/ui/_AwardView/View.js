@@ -14,30 +14,30 @@ dojo.declare('moviedb.ui._AwardView.View', null, {
     this.inherited(arguments);
   },
 
-  onGroupAdded: function(titlePane, group) {
+  onGroupAdded: function(group, titlePane) {
   },
-  onShowGroup: function(titlePane, group) {
+  onShowGroup: function(group, groupNode) {
   },
 
   _renderView: function(groups) {
     dojo.empty(this.listNode);
     dojo.forEach(groups, dojo.hitch(this, function(group) {
+      var groupContentNode = dojo.create('div');
       var groupItem = dojo.create('li');
       var titlePane = new dijit.TitlePane({
         title: dojo.string.substitute(this.groupTitle, {group: group.name}),
+        content: groupContentNode,
         open: false
       });
       titlePane.placeAt(groupItem);
       dojo.place(groupItem, this.listNode);
 
-      dojo.connect(titlePane, 'onShow', dojo.hitch(this, 'onShowGroup', titlePane, group));
-      this.onGroupAdded(titlePane, group);
+      dojo.connect(titlePane, 'onShow', dojo.hitch(this, 'onShowGroup', group, groupContentNode));
+      this.onGroupAdded(group, titlePane);
     }));
   },
 
-  _renderGroup: function(titlePane, group) {
-    var listNode = dojo.create('div');
-    titlePane.attr('content', listNode);
-    this._makeGroupListWidget(group.awardings, listNode);
+  _renderGroup: function(group, groupNode) {
+    this._makeGroupListWidget(group.awardings, groupNode);
   }
 });

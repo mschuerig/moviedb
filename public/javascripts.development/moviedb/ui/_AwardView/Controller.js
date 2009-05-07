@@ -1,6 +1,7 @@
 dojo.provide('moviedb.ui._AwardView.Controller');
 dojo.require('plugd.ancestor');
 dojo.require('aiki._base');
+dojo.require('aiki.Standby');
 dojo.require('moviedb.ui._AwardView.GroupManager');
 
 dojo.declare('moviedb.ui._AwardView.Controller', null, {
@@ -11,13 +12,11 @@ dojo.declare('moviedb.ui._AwardView.Controller', null, {
     this.view = view;
 
     this._whenReady        = new dojo.Deferred();
-    this._startYear        = parseInt(view.startYear);
-    this._endYear          = (new Date()).getYear() + 1900;
     this._yearGranularity  = parseInt(view.yearGranularity) || 10;
+    this._startYearGroup   = this._yearGroup(parseInt(view.startYear));
+    this._endYearGroup     = this._yearGroup((new Date()).getYear() + 1900);
     this._showAwardingYear = this._yearGranularity > 1;
     this._showAwardName    = view.showAwardName;
-
-    this._grouper = this._makeGrouper(this._yearGranularity);
 
     this._groupManager = new moviedb.ui._AwardView.GroupManager(
       dojo.hitch(this, '_awardingDomID'));
@@ -27,22 +26,26 @@ dojo.declare('moviedb.ui._AwardView.Controller', null, {
     dojo.connect(view, 'onClick', this, '_publishSelect');
   },
 
-  loadGroup: function(titlePane, group) {
+  loadGroup: function(group, groupNode) {
+    console.debug('**** SHOW GROUP ', group); //### REMOVE
     //### TODO push into AwardingsList
     if (group.awardings) {
       return;
     }
+    var standby = new aiki.Standby(groupNode.parentNode);
+
     //### TODO don't break the abstraction, let store handle queried loading somehow
     this._withLoadedObject(function(object) {
-      var query = dojo.string.substitute("?[?year>=${firstYear}][?year<=${lastYear}]", {
+      var query = dojo.string.substitute("[?year>=${firstYear}][?year<=${lastYear}]", {
         firstYear: group.firstYear, lastYear: group.lastYear
       });
       var ref = object.awardings.$ref.replace(/^\/awards\//, ''); //###
       this.store.fetch({
-        queryStr: ref + query,
+        queryStr: ref + '?' + query + '[\\year]', //###
         onComplete: dojo.hitch(this, function(items) {
           group.awardings = items;
-          this.view._renderGroup(titlePane, group);
+          this.view._renderGroup(group, groupNode);
+          standby.stop();
         }),
         onError: function(err) {
           console.error('AwardView.Controller.loadGroup ', err); //###
@@ -63,9 +66,8 @@ dojo.declare('moviedb.ui._AwardView.Controller', null, {
 
   render: function() {
     var gran = this._yearGranularity;
-    var endYear = this._endYear;
     var groups = [];
-    for (var y = this._startYear; y <= endYear; y += gran) {
+    for (var y = this._endYearGroup; y >= this._startYearGroup; y -= gran) {
       groups.push({ name: y.toString(), firstYear: y, lastYear: (y + gran - 1) });
     }
     this.view._renderView(groups);
@@ -89,18 +91,6 @@ dojo.declare('moviedb.ui._AwardView.Controller', null, {
 
   showAwarding: function(awarding) {
     this._groupManager.showAwarding(awarding);
-  },
-
-  _groupAwardings: function(awardings) {
-    var groups = aiki.groupBy(awardings, this._grouper);
-    var keys = groups.keys.sort(function(a, b) { return b - a; });
-    var groupedAwardings = [];
-    for (var i = 0, l = keys.length; i < l; i++) {
-      var sortedAwardings = groups.groups[keys[i]].sort(
-        function(a, b) { return b.year - a.year; });
-      groupedAwardings.push({ name: keys[i], awardings: sortedAwardings });
-    }
-    return groupedAwardings;
   },
 
   _makeGroupListWidget: function(widgetType, awardings, node) {
@@ -129,8 +119,8 @@ dojo.declare('moviedb.ui._AwardView.Controller', null, {
     return false;
   },
 
-  _makeGrouper: function(granularity) {
-    return function(item) { return Math.floor(item.year / granularity) * granularity; };
+  _yearGroup: function(year) {
+    return Math.floor(year / this._yearGranularity) * this._yearGranularity;
   },
 
   _awardingDomID: function(awarding) {

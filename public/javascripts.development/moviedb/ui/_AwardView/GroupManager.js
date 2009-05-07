@@ -31,8 +31,8 @@ dojo.declare('moviedb.ui._AwardView.GroupManager', null, {
     this._groups = [];
   },
 
-  add: function(titlePane, awardings) {
-    this._groups.push({ titlePane: titlePane, awardings: awardings });
+  add: function(group, titlePane) {
+    this._groups.push({ titlePane: titlePane, awardings: group }); //###
   },
 
   openTopGroup: function() {
