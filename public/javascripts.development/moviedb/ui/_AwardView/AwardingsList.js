@@ -8,5 +8,7 @@ dojo.declare('moviedb.ui._AwardView.AwardingsList', [dijit._Widget, dojox.dtl._D
   store: null,
   items: null,
   baseId: null,
+  showAwardName: true,
+  showAwardingYear: true,
   templatePath: dojo.moduleUrl("moviedb", "ui/_AwardView/AwardingsList.html")
 });
