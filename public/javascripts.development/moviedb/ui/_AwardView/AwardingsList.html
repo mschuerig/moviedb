@@ -13,7 +13,7 @@
     <div class="people">People:
       <ul class="list">
         {% for person in awarding.people %}
-        <li><a href="{{ person.getIdentity }}">{{ person.name }}</a></li>
+        <li><a href="{{ person.getIdentity }}">{{ person.firstname }} {{ person.lastname }}</a></li>
         {% endfor %}
       </ul>
     </div>

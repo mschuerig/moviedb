@@ -15,8 +15,8 @@ dojo.declare('moviedb.ui._MovieEditor.View', null, {
 
   postMixInProperties: function(){
     this.inherited(arguments);
-	if(!this.loadingLabel){
+	  if(!this.loadingLabel){
       this.loadingLabel = dojo.i18n.getLocalization("dijit", "loading", this.lang).loadingState;
-	}
+	  }
   }
 });

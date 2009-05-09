@@ -9,7 +9,7 @@ dojo.declare('moviedb.Movie', null, {
 
 dojo.declare('moviedb.Person', null, {
   getName: function() {
-    return this.firstname ? dojo.string.substitute('${firstname} ${lastname}', this) : this.name;
+    return dojo.string.substitute('${firstname} ${lastname}', this);
   }
 });
 

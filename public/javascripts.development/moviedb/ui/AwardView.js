@@ -10,6 +10,8 @@ dojo.require('aiki.api.View');
 dojo.declare('moviedb.ui.AwardView',
   [dijit._Widget, dijit._Templated, moviedb.ui._AwardView.View], {
 
+  _isReady: false,
+
   showAwardName: false,
   startYear: 1970,
   endYear: (new Date().getYear() + 1900),
@@ -48,6 +50,8 @@ dojo.declare('moviedb.ui.AwardView',
     var groups = this._groups = this._makeGroups(this.presenter);
 
     this.render(groups);
+    
+    this._isReady = true;
     this._whenReady.callback(this);
   },
 
@@ -97,6 +101,10 @@ dojo.declare('moviedb.ui.AwardView',
       this._whenReady.addCallback(callback);
     }
     return this._whenReady;
+  },
+
+  isReady: function() {
+    return this._isReady;
   },
 
   getTitle: function() {

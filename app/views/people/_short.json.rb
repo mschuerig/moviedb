@@ -2,5 +2,6 @@ path = person_path(person)
 {
   :id    => path,
   '$ref' => path,
-  :name  => person.name
+  :firstname => person.firstname,
+  :lastname  => person.lastname
 }

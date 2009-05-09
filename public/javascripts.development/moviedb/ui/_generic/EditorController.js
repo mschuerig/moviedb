@@ -1,15 +1,18 @@
 dojo.provide('moviedb.ui._generic.EditorController');
 
 dojo.declare('moviedb.ui._generic.EditorController', null, {
+  _isReady: false,
+  
   constructor: function(store, object, view) {
     this.store = store;
     this.object = object;
     this.view = view;
     var whenReady = this._whenReady = new dojo.Deferred();
 
-    dojo.connect(this.view.formNode, 'onPopulated', function() {
+    dojo.connect(this.view.formNode, 'onPopulated', dojo.hitch(this, function() {
+      this._isReady = true;
       whenReady.callback(view);
-    });
+    }));
 
     this.view.formNode.populate(this.store, this.object);
   },
@@ -26,8 +29,12 @@ dojo.declare('moviedb.ui._generic.EditorController', null, {
     return this._whenReady;
   },
 
+  isReady: function() {
+    return this._isReady;
+  },
+
   getTitle: function() {
-    return this.view.titleNode ? this.view.titleNode.attr('value') : this.view.loadingLabel;
+    return this.view.titleNode.attr('value');
   },
 
   isModified: function() {
