@@ -1,6 +1,5 @@
 dojo.provide('moviedb.ui._generic.Editor');
 dojo.require('dijit._Widget');
-dojo.require('dijit._Templated');
 dojo.require('aiki.Delegator');
 dojo.require('aiki.api.Edit');
 dojo.require('moviedb.ui._generic.EditorController');
@@ -16,7 +15,7 @@ dojo.declare('moviedb.ui._generic.Editor',
     return {
       "aiki.api.View": true,
       "aiki.api.Edit": true
-	};
+	  };
   },
 
   postCreate: function() {

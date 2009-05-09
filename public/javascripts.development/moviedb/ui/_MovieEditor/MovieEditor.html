@@ -23,12 +23,28 @@
       </li>
       <li class="director">
         <h3>Director</h3>
+        <div xdojoType="aiki.SortedList"
+             itemWidget="moviedb.ui.PersonItem"
+             sortBy="lastname,firstname"
+             dojoAttachPoint="directorsNode"
+             ></div>
       </li>
       <li class="actors">
         <h3>Actors</h3>
+        <div dojoType="aiki.SortedList"
+             itemWidget="moviedb.ui.PersonItem"
+             xitems="actors"
+             sortBy="lastname,firstname"
+             dojoAttachPoint="actorsNode"
+             ></div>
       </li>
       <li class="awards">
         <h3>Awards</h3>
+        <div xdojoType="aiki.SortedList"
+             itemWidget="moviedb.ui.AwardItem"
+             sortBy="\\year,/title"
+             dojoAttachPoint="awardsNode"
+             ></div>
       </li>
       <li>
         <div dojoType="dojox.form.BusyButton" type="submit"

@@ -14,10 +14,10 @@ dojo.declare('moviedb.ui._AwardView.View', null, {
   },
 
   render: function(groups) {
-    dojo.forEach(groups, dojo.hitch(this, function(group) {
+    dojo.forEach(groups, function(group) {
       var groupItem = dojo.create('li');
       dojo.place(groupItem, this.listNode);
       group.renderAt(groupItem);
-    }));
+    }, this);
   }
 });
