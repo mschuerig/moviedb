@@ -11,20 +11,14 @@ describe MoviesController do
   end
 
   def expect_movie_retrievals(options = {})
-    MovieItem.should_receive(:find).with(:all, options).and_return([])
+    MovieItem.should_receive(:all).with(options).and_return([])
     MovieItem.should_receive(:count).and_return(0)
   end
 
   describe "GET index" do
-    it "returns the static movies page" do
-      get :index
-      response.should render_template('movies/index.html.erb')
-    end
-
     describe "with mime type of json" do
       before do
         @find_all_options = {
-          :include => { :awardings => :award },
           :offset => nil,
           :limit => nil
         }
@@ -35,6 +29,12 @@ describe MoviesController do
         get :index, :format => 'json'
         assigns[:movies].should == []
         assigns[:count].should == 0
+      end
+
+      it "sets the Content-Range header" do
+        pending do ### TODO the header is set, but apparently on another response object
+          response.headers['Content-Range'].should == 'items 0-0/0'
+        end
       end
 
       it "renders the movies/index.json.rb template" do
@@ -57,8 +57,8 @@ describe MoviesController do
       describe "and order params" do
         it "orders by title ascending for /title" do
           pending do ### TODO pending a scope expectation
-            expect_movie_retrievals(@find_all_options.merge(:order => 'title'))
-            get :index, '/title' => nil, :format => 'json'
+            expect_movie_retrievals(@find_all_options)
+            get :index, :order => [{:attribute => 'title' }], :format => 'json'
           end
         end
 
