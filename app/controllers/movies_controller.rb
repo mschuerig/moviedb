@@ -23,7 +23,7 @@ class MoviesController < ApplicationController
   private
 
   def scope
-    @scope
+    @scope.scoped(:include => { :awardings => :award })
   end
 
   def set_object(value)
