@@ -41,7 +41,6 @@ class Movie < ActiveRecord::Base
     find(:all).group_by(&:release_year).sort_by(&:first)
   end
 
-
   def self.find(*args)
     options = args.extract_options!
     if options[:order] =~ /\bawards\b/i
@@ -59,6 +58,24 @@ class Movie < ActiveRecord::Base
       super(*args)
     end
   end
+
+  def actors
+    participants.as_actor
+  end
+
+  def actors=(actors)
+    debugger
+    ### TODO extract; see association_collection#replace
+    actor_ids = actors.map { |a| a['$ref'].sub('/people/', '') }.reject { |aid| aid.blank? }
+    new_actors = Person.find(actor_ids)
+    
+    transaction do
+      current = participants.as_actor
+      participants.as_actor.delete(current.select { |a| !new_actors.include?(a) })
+      participants.as_actor.concat(new_actors.select { |a| !current.include?(v) })
+    end
+  end
+  
 
   def before_save
     self.release_year = release_date.blank? ? nil : release_date.year

@@ -7,11 +7,4 @@ dojo.require('aiki.SortedList');
 
 dojo.declare('moviedb.ui.MovieEditor',
   [moviedb.ui._generic.Editor, moviedb.ui._MovieEditor.View, dijit._Container], {
-  
-  postCreate: function() {
-    this.inherited(arguments);
-    if (this.object) { //### TODO use some kind of Null Object instead
-      this.actorsNode.attr('items', this.store.getValues(this.object, 'actors'));
-    }
-  }
 });

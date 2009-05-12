@@ -16,8 +16,15 @@ module QueryScope
 
         total = controller.instance_variable_get(:@count)
         if total
-          last_item = [req.last_item, total - 1].min
-          controller.response.headers['Content-Range'] = "items #{req.first_item}-#{last_item}/#{total}"
+          if total == 0
+            first_item = last_item = 0
+          else
+            first_item = req.first_item || 0
+            last_item  = total - 1
+            last_item = [req.last_item, last_item].min if req.last_item
+          end
+          range = "items #{first_item}-#{last_item}/#{total}"
+          controller.response.headers['Content-Range'] = range
         end
       end
     end

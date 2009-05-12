@@ -38,7 +38,6 @@ module LazyJason
   def update
     object = scope.find(params[:id])
     set_object(object)
-
     respond_to do |format|
       if object.update_attributes(params[:attributes])
         format.json { render :action => :show }
