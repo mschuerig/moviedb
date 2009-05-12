@@ -10,15 +10,18 @@ class Movie < ActiveRecord::Base
 
   module ParticipantTypeExtensions
     include RoleTypeAssociationExtensions
+    ### TODO how to ensure that the new participant is seen before saving?
+    def add(role_name, person, options = {})
+      proxy_owner.roles.build(
+        :person => person,
+        :role_type => RoleType[role_name],
+        :credited_as => options[:as]
+      )
+    end
     RoleType.each_name do |name|
-      ### TODO how to ensure that the new participant is seen before saving?
       class_eval <<-END
         def add_#{name}(person, options = {})
-          proxy_owner.roles.build(
-            :person => person,
-            :role_type => RoleType[:#{name}],
-            :credited_as => options[:as]
-          )
+          add(:#{name}, person, options)
         end
       END
     end
