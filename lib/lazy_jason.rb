@@ -26,8 +26,12 @@ module LazyJason
     object = scope.new(params[:attributes])
     set_object(object)
 
+    saved = scope.transaction {
+      object.save
+    }
+
     respond_to do |format|
-      if object.save
+      if saved
         format.json { render :action => :show, :location => polymorphic_path(object) }
       else
         ### TODO
@@ -38,8 +42,13 @@ module LazyJason
   def update
     object = scope.find(params[:id])
     set_object(object)
+
+    updated = scope.transaction {
+      object.update_attributes(params[:attributes])
+    }
+
     respond_to do |format|
-      if object.update_attributes(params[:attributes])
+      if updated
         format.json { render :action => :show }
       else
         ### TODO error response
