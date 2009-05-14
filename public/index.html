@@ -12,10 +12,7 @@
           djConfig="parseOnLoad:true, isDebug:true, debugAtAllCosts:false"></script>
 
   <script type="text/javascript">
-    var moviesStore, moviesGrid;
-    var peopleStore, peopleGrid;
-    var awardsStore, awardsTree;
-    var editors;
+    var moviesStore, peopleStore, awardsStore, editors;
 
     dojo.registerModulePath('aiki', "/javascripts/aiki");
     dojo.registerModulePath('moviedb', "/javascripts/moviedb");
@@ -27,10 +24,13 @@
     awardsStore    = new aiki.Store({ target: "/awards",    schema: moviedb.schema.award });
 
     dojo.addOnLoad(function() {
+
+      editors = new aiki.EditorManager({ container: 'editors' });
+
       function showEditor(widgetType, store, object, options) {
         editors.editObject(object, store, widgetType, options);
       }
-    
+
       // Movie event handlers
 
       dojo.subscribe('movie.selected',  dojo.partial(showEditor, 'moviedb.ui.MovieEditor',  moviesStore));
@@ -46,7 +46,9 @@
       dojo.subscribe('person.new', function() {
         editors.newObject(peopleStore, 'moviedb.ui.PersonEditor');
       });
-
+      
+      dijit.byId('peopleList').actions = editors.actions;
+      
       // Award(ding)s event handlers
 
       dojo.subscribe('award.selected', function(award, hints) {
@@ -85,8 +87,6 @@
           onItem: lazyLoadingWorkaround
         });
       });
-
-      editors = new aiki.EditorManager({ container: 'editors' });
     });
   </script>
 

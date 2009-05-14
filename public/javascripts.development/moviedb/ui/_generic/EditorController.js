@@ -39,5 +39,9 @@ dojo.declare('moviedb.ui._generic.EditorController', null, {
 
   isModified: function() {
     return this.view.formNode.isModified();
+  },
+  
+  getActions: function() {
+    return [];
   }
 });

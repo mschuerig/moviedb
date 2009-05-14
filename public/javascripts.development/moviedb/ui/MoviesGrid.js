@@ -5,7 +5,7 @@ dojo.require('dijit.form.TextBox');
 dojo.require('dijit.layout.BorderContainer');
 dojo.require('dijit.layout.ContentPane');
 dojo.require('dijit.Tooltip');
-//dojo.require('dojo.i18n');
+dojo.require('dojo.i18n');
 dojo.require('dojox.form.BusyButton');
 dojo.require('dojox.grid.DataGrid');
 dojo.require('aiki.BusyForm');
@@ -67,10 +67,10 @@ dojo.declare('moviedb.ui.MoviesGrid',
           }));
         });
 
-        awardingsMenu.startup();
         dojo.connect(awardingsMenu, 'onClose', function() {
-          awardingsMenu.uninitialize();
+          awardingsMenu.destroyRecursive();
         });
+        awardingsMenu.startup();
         awardingsMenu._openMyself(e);
       }
     }

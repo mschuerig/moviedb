@@ -1,12 +1,13 @@
 dojo.provide('moviedb.ui._generic.Editor');
 dojo.require('dijit._Widget');
 dojo.require('aiki.Delegator');
+dojo.require('aiki.api.Actions');
 dojo.require('aiki.api.Edit');
 dojo.require('moviedb.ui._generic.EditorController');
 
 dojo.declare('moviedb.ui._generic.Editor',
   [dijit._Widget, dijit._Templated,
-   aiki.Delegator('controller', aiki.api.Edit)], {
+   aiki.Delegator('controller', aiki.api.Edit, aiki.api.Actions)], {
 
   store: null,
   object: null,
@@ -14,7 +15,8 @@ dojo.declare('moviedb.ui._generic.Editor',
   getFeatures: function() {
     return {
       "aiki.api.View": true,
-      "aiki.api.Edit": true
+      "aiki.api.Edit": true,
+      "aiki.api.Actions": true
 	  };
   },
 

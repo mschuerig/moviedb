@@ -18,10 +18,23 @@ class Movie < ActiveRecord::Base
         :credited_as => options[:as]
       )
     end
+    def remove(role_name, person)
+      role = Role.find(:first,
+        :joins => :role_type,
+        :conditions => {
+          :person_id => person,
+          :movie_id  => proxy_owner,
+          :role_types => { :name => role_name.to_s }
+        })
+      proxy_owner.roles.delete(role)
+    end
     RoleType.each_name do |name|
       class_eval <<-END
         def add_#{name}(person, options = {})
           add(:#{name}, person, options)
+        end
+        def remove_#{name}(person)
+          remove(:#{name}, person)
         end
       END
     end
@@ -62,20 +75,21 @@ class Movie < ActiveRecord::Base
     end
   end
 
+
   def actors
     participants.as_actor
   end
 
-  def actors=(actors)
-    debugger
-    ### TODO extract; see association_collection#replace
-    actor_ids = actors.map { |a| a['$ref'].sub('/people/', '') }.reject { |aid| aid.blank? }
-    new_actors = Person.find(actor_ids)
-    
+  def actors=(others)
     transaction do
-      current = participants.as_actor
-      participants.as_actor.delete(current.select { |a| !new_actors.include?(a) })
-      participants.as_actor.concat(new_actors.select { |a| !current.include?(v) })
+      other_actors   = Person.find(others.map { |a| a['$ref'].sub('/people/', '') })
+      current_actors = participants.as_actor
+
+      obsolete_actors = current_actors.select { |a| !other_actors.include?(a) }
+      new_actors      = other_actors.select   { |a| !current_actors.include?(a) }
+  
+      obsolete_actors.each { |a| participants.remove_actor(a) }
+      new_actors.each { |a| participants.add_actor(a) }
     end
   end
   

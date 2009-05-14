@@ -1,10 +1,17 @@
 dojo.provide('moviedb.ui.MovieEditor');
 dojo.require('dijit._Container');
 dojo.require('moviedb.ui._generic.Editor');
+dojo.require('moviedb.ui._MovieEditor.Controller');
 dojo.require('moviedb.ui._MovieEditor.View');
 dojo.require('moviedb.ui.PersonItem');
 dojo.require('aiki.SortedList');
 
 dojo.declare('moviedb.ui.MovieEditor',
-  [moviedb.ui._generic.Editor, moviedb.ui._MovieEditor.View, dijit._Container], {
+  [moviedb.ui._generic.Editor, dijit._Container, 
+   moviedb.ui._MovieEditor.View], {
+
+  _makeController: function() {
+    return new moviedb.ui._MovieEditor.Controller(this.store, this.object, this);
+  }
+
 });
