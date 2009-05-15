@@ -12,7 +12,7 @@ class AwardRequirement < ActiveRecord::Base
       }
       awardees = awardees.select { |a| roles.include?(a) }
     end
-    actual_count = awardees.size
+
     if awardees.size < count
       what = role_type ? role_type.title : association
       if count > 1
