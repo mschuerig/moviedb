@@ -1,4 +1,12 @@
 class YamlAwardRequirements < ActiveRecord::Migration
+  
+  class AwardRequirement < ActiveRecord::Base
+    belongs_to :role_type
+  end
+  class Award < ActiveRecord::Base
+    has_many :requirements, :class_name => 'YamlAwardRequirements::AwardRequirement'
+  end
+  
   def self.up
     add_column :awards, :requirements, :text
     
