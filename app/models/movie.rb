@@ -10,6 +10,7 @@ class Movie < ActiveRecord::Base
 
   module ParticipantTypeExtensions
     include RoleTypeAssociationExtensions
+
     ### TODO how to ensure that the new participant is seen before saving?
     def add(role_name, person, options = {})
       proxy_owner.roles.build(
@@ -18,6 +19,7 @@ class Movie < ActiveRecord::Base
         :credited_as => options[:as]
       )
     end
+
     def remove(role_name, person)
       role = Role.find(:first,
         :joins => :role_type,
@@ -28,6 +30,21 @@ class Movie < ActiveRecord::Base
         })
       proxy_owner.roles.delete(role)
     end
+
+    def replace(role, others)
+      transaction do
+        ### TODO merge credited_as
+        others  = Person.find(others.map { |a| normalize_person_ref(a) })
+        current = proxy_owner.participants.as_actor
+
+        obsolete = current.select { |o| !others.include?(o) }
+        fresh    = others.select  { |o| !current.include?(o) }
+
+        obsolete.each { |o| self.remove(role, o) }
+        fresh.each    { |o| self.add(role, o) }
+      end
+    end
+
     RoleType.each_name do |name|
       class_eval <<-END
         def add_#{name}(person, options = {})
@@ -36,7 +53,23 @@ class Movie < ActiveRecord::Base
         def remove_#{name}(person)
           remove(:#{name}, person)
         end
+        def replace_#{name.pluralize}(others)
+          replace(:#{name}, others)
+        end
       END
+    end
+
+    private
+
+    def normalize_person_ref(ref)
+      case ref
+      when Hash
+        normalize_person_ref(ref['$ref'])
+      when String
+        ref.sub('/people/', '')
+      else
+        ref
+      end
     end
   end
 
@@ -81,18 +114,9 @@ class Movie < ActiveRecord::Base
   end
 
   def actors=(others)
-    transaction do
-      other_actors   = Person.find(others.map { |a| a['$ref'].sub('/people/', '') })
-      current_actors = participants.as_actor
-
-      obsolete_actors = current_actors.select { |a| !other_actors.include?(a) }
-      new_actors      = other_actors.select   { |a| !current_actors.include?(a) }
-  
-      obsolete_actors.each { |a| participants.remove_actor(a) }
-      new_actors.each { |a| participants.add_actor(a) }
-    end
+    participants.replace_actors(others)
   end
-  
+
 
   def before_save
     self.release_year = release_date.blank? ? nil : release_date.year

@@ -1,23 +1,23 @@
 
 class AwardingValidator
-  
+
   def initialize(requirements)
     @requirements = Array(requirements).map { |req|
       Requirement.new(req[:association], req[:count], req[:role])
     }
   end
-  
+
   def validate_awarding(awarding)
     @requirements.each { |req| req.check(awarding) }
   end
-  
+
   private
-  
+
   class Requirement
     def initialize(association, count, role = nil)
       @association, @count, @role = association, count, role
     end
-    
+
     def check(awarding)
       awardees = awarding.send(@association)
       if @role
@@ -26,7 +26,7 @@ class AwardingValidator
         }
         awardees = awardees.select { |a| roles.include?(a) }
       end
-  
+
       if awardees.size < @count
         what = @role || @association
         if @count > 1

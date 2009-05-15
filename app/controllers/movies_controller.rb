@@ -11,15 +11,6 @@ class MoviesController < ApplicationController
     rename    [:awardings, :awards, :award_count, 'award-count'] => :award_count
   end
 
-  def summary
-    @movie = scope.find(params[:id])
-    respond_to do |format|
-      format.json do
-        render :template => 'movies/summary'
-      end
-    end
-  end
-
   private
 
   def scope

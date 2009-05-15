@@ -21,7 +21,7 @@ ActionController::Routing::Routes.draw do |map|
   # This explicit mapping has to come first. It shadows the
   # /movies/:movie_id/participants/:id mapping!
   map.connect '/movies/:movie_id/participants/:kind', :controller => 'people'
-  map.resources :movies, :member => { :summary => :get } do |movies|
+  map.resources :movies do |movies|
     movies.resources :awardings
     movies.resources :people, :as => :participants
   end
@@ -50,6 +50,6 @@ ActionController::Routing::Routes.draw do |map|
   # Install the default routes as the lowest priority.
   # Note: These default routes make all actions in every controller accessible via GET requests. You should
   # consider removing the them or commenting them out if you're using named routes and resources.
-#  map.connect ':controller/:action/:id'
-#  map.connect ':controller/:action/:id.:format'
+  map.connect ':controller/:action/:id'
+  map.connect ':controller/:action/:id.:format'
 end

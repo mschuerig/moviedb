@@ -5,7 +5,7 @@ class AwardingsController < ApplicationController
   query_scope do
     allow :year
   end
-  
+
   def index
     respond_to do |format|
       format.json do

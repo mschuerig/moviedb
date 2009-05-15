@@ -53,4 +53,31 @@ describe "Movie (2002)" do
       @actor.roles.should be_empty
     end
   end
+
+  describe "with two actors" do
+    before do
+      @actor = Person.create!(:firstname => 'Clint', :lastname => 'Eastwood')
+      @movie.participants.add_actor(@actor)
+      @actor2 = Person.create!(:firstname => 'Bruno', :lastname => 'Rathaby')
+      @movie.participants.add_actor(@actor2)
+      @movie.save!
+      @cand_actor = Person.create!(:firstname => 'Notyet', :lastname => 'Wai-Ting')
+    end
+
+    it "can have actors replaced" do
+      others = [@actor.to_param, @cand_actor.to_param]
+      @movie.participants.replace_actors(others)
+#      pending do
+#        movie_should_have_new_actors
+#      end
+      @movie.save!
+      movie_should_have_new_actors
+    end
+
+    def movie_should_have_new_actors
+      @movie.participants.as_actor.size.should == 2
+      @movie.participants.as_actor.should include(@actor)
+      @movie.participants.as_actor.should include(@cand_actor)
+    end
+  end
 end
