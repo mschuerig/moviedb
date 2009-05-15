@@ -18,8 +18,8 @@ module Spec #:nodoc:
 
       def failure_message
         actual = @target ? pretty(@target) : @raw_target
-        "expected\n#{actual}\nto be JSON code equivalent to\n#{@raw_expected}\n" +
-        "Difference:\n#{pretty(@expected.diff(@target))}"
+        "expected\n#{actual}\nto be JSON code equivalent to\n#{@raw_expected}\n" ###+
+###        "Difference:\n#{pretty(@expected.diff(@target))}"
       end
 
       def negative_failure_message

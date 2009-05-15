@@ -14,13 +14,10 @@ describe "/people/index.json.rb" do
     template.template_format = :json
     render
     response.body.should be_json_eql <<-END
-      {
-        "identifier": "id",
-        "totalCount": 1,
-        "items": [
-          { "name": "Clint Easterbunny", "dob": "2008-03-23", "id": "/people/1", "$ref": "/people/1" }
-        ]
-      }
+      [
+        { "lastname": "Easterbunny", "firstname": "Clint", 
+          "dob": "2008-03-23", "id": "/people/1", "$ref": "/people/1" }
+      ]
     END
   end
 end
