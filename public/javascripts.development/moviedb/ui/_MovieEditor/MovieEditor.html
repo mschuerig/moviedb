@@ -25,6 +25,7 @@
         <h3>Director</h3>
         <div xdojoType="aiki.SortedList"
              name="directors"
+             dojoAttachPoint="directorsNode"
              itemWidget="moviedb.ui.PersonItem"
              sortBy="lastname,firstname"
              ></div>
@@ -32,6 +33,7 @@
       <li class="actors">
         <h3>Actors</h3>
         <div dojoType="aiki.SortedList"
+             dojoAttachPoint="actorsNode"
              name="actors"
              itemWidget="moviedb.ui.PersonItem"
              sortBy="lastname,firstname"
@@ -40,6 +42,7 @@
       <li class="awards">
         <h3>Awards</h3>
         <div xdojoType="aiki.SortedList"
+             dojoAttachPoint="awardsNode"
              name="awards"
              itemWidget="moviedb.ui.AwardItem"
              sortBy="\\year,/title"

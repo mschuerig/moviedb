@@ -56,21 +56,8 @@ dojo.declare('moviedb.ui._AwardView.Group', null, {
     if (this._hilitedAwarding) {
       var awardingNode = dojo.byId(this.presenter.domId(this._hilitedAwarding));
       dijit.scrollIntoView(awardingNode);
-      this._hilite(awardingNode, this.presenter.hiliteDuration);
+      aiki.hilite(awardingNode, this.presenter.hiliteDuration);
       this._hilitedAwarding = null;
     }
-  },
-
-  _hilite: function(node, duration) {
-    dojo.animateProperty({
-      node: node,
-      duration: duration || 2000,
-      properties: {
-        backgroundColor: {
-          start: '#FFFF00',
-          end:   '#FFFFFF'
-        }
-      }
-    }).play();
   }
 });
