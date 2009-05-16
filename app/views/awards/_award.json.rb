@@ -1,5 +1,5 @@
 view = {
-  :id        => award_path(award),
+  :id        => award.to_param,
   :name      => award.name,
   :awardings => { '$ref' => award_awardings_path(award) }
 }

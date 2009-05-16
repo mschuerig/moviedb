@@ -1,5 +1,5 @@
 {
-  :id     => awarding_path(awarding),
+  :id     => awarding.to_param,
   :title  => awarding.name,
   :year   => awarding.year,
   :movies => awarding.movies.map { |m| render :partial => 'movies/short', :locals => { :movie  => m } },
