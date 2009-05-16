@@ -75,7 +75,7 @@ dojo.declare('moviedb.ui.PeopleGrid',
       });
       
       dojo.connect(menu, 'onClose', function() {
-        menu.destroyRecursive();
+//### FIXME        menu.destroyRecursive();
       });
       menu.startup();
       menu._openMyself(e);

@@ -68,7 +68,7 @@ dojo.declare('moviedb.ui.MoviesGrid',
         });
 
         dojo.connect(awardingsMenu, 'onClose', function() {
-          awardingsMenu.destroyRecursive();
+//### FIXME          awardingsMenu.destroyRecursive();
         });
         awardingsMenu.startup();
         awardingsMenu._openMyself(e);
