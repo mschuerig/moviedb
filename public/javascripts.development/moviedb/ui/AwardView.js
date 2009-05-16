@@ -58,8 +58,8 @@ dojo.declare('moviedb.ui.AwardView',
 
   postCreate: function() {
     this._dispatcher = new moviedb.Dispatcher(this.domNode, 
-      { event: 'click', path: '.awarding .people .list a', topic: 'person.selected' },
-      { event: 'click', path: '.awarding .movies .list a', topic: 'movie.selected' }
+      { event: 'click', path: '.person a', topic: 'person.selected' },
+      { event: 'click', path: '.movie a',  topic: 'movie.selected' }
     );
   },
 

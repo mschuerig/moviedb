@@ -10,6 +10,14 @@ dojo.declare('moviedb.ui.MovieEditor',
   [moviedb.ui._generic.Editor, dijit._Container, 
    moviedb.ui._MovieEditor.View], {
 
+  postCreate: function() {
+    this.inherited(arguments);
+
+    this._dispatcher = new moviedb.Dispatcher(this.domNode,
+      { event: 'click', path: '.person a', topic: 'person.selected' }
+    );
+  },
+
   _makeController: function() {
     return new moviedb.ui._MovieEditor.Controller(this.store, this.object, this);
   }
