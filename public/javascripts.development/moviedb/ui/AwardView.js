@@ -2,6 +2,7 @@ dojo.provide('moviedb.ui.AwardView');
 dojo.require('dijit._Templated');
 dojo.require('dijit._Widget');
 dojo.require('plugd.ancestor');
+dojo.require('moviedb.Dispatcher');
 dojo.require('moviedb.ui._AwardView.AwardingsList');
 dojo.require('moviedb.ui._AwardView.Group');
 dojo.require('moviedb.ui._AwardView.View');
@@ -56,9 +57,11 @@ dojo.declare('moviedb.ui.AwardView',
   },
 
   postCreate: function() {
-    dojo.connect(this, 'onClick', this, '_publishSelect');
+    this._dispatcher = new moviedb.Dispatcher(this.domNode, 
+      { event: 'click', path: '.awarding .people .list a', topic: 'person.selected' },
+      { event: 'click', path: '.awarding .movies .list a', topic: 'movie.selected' }
+    );
   },
-
 
   _makeGroups: function(presenter) {
     var gran = this.yearGranularity;
@@ -144,19 +147,4 @@ dojo.declare('moviedb.ui.AwardView',
     return store.getIdentity(object).toString().replace(/\W+/g, '_');
   },
 
-  _publishSelect: function(event) {
-    if (this._tryPublish(event, 'people', 'person.selected') ||
-        this._tryPublish(event, 'movies', 'movie.selected')) {
-      dojo.stopEvent(event);
-    }
-  },
-
-  _tryPublish: function(event, kind, topic) {
-    var link = dojo.ancestor(event.target, '.awarding .' + kind +  ' .list a', this.domNode);
-    if (link && link.pathname) {
-      dojo.publish(topic || (kind + '.selected'), [link.pathname + link.search]);
-      return true;
-    }
-    return false;
-  }
 });

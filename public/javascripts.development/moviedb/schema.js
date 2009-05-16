@@ -1,5 +1,6 @@
 dojo.provide('moviedb.schema');
 dojo.provide('moviedb.Movie');
+dojo.provide('moviedb.Person');
 
 dojo.declare('moviedb.Movie', null, {
   displayTitle: function() {
