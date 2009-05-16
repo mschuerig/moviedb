@@ -5,8 +5,11 @@
   :summary     => @movie.summary,
   :actors      => @movie.participants.as_actor.map { |actor|
     render :partial => 'people/item', :locals => { :person => actor }
-  },
+  }
+=begin
+  ,
   :awardings   => @movie.awardings.map { |awarding|
     render :partial => 'awardings/short', :locals => { :awarding => awarding }
   }
+=end
 }

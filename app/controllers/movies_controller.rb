@@ -3,6 +3,7 @@ class MoviesController < ApplicationController
   include QueryScope
   before_filter :load_list_scope, :only => :index
   before_filter :load_scope, :except => :index
+  normalize_references :actors, :directors, :awardings
 
   query_scope :resource => :movie_item, :only => :index do
     allow     :title, :release_year, :release_date, :award_count
@@ -36,4 +37,5 @@ class MoviesController < ApplicationController
   def load_list_scope
     @scope = MovieItem
   end
+
 end

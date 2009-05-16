@@ -31,17 +31,19 @@ class Movie < ActiveRecord::Base
       proxy_owner.roles.delete(role)
     end
 
-    def replace(role, others)
+    def replace(role, refs_with_options)
       transaction do
-        ### TODO merge credited_as
-        others  = Person.find(others.map { |a| normalize_person_ref(a) })
+        options = refs_with_options.map { |o| o.kind_of?(Hash) ? o.dup.delete(:id) : {} }
+        others  = refs_with_options.map { |o| o.kind_of?(Hash) ? o[:id] : o }
+
+        others  = Person.find(others)
         current = proxy_owner.participants.as_actor
 
         obsolete = current.select { |o| !others.include?(o) }
-        fresh    = others.select  { |o| !current.include?(o) }
+        fresh    = others.zip(options).select { |o, opts| !current.include?(o) }
 
-        obsolete.each { |o| self.remove(role, o) }
-        fresh.each    { |o| self.add(role, o) }
+        obsolete.each { |o|       self.remove(role, o) }
+        fresh.each    { |o, opts| self.add(role, o, opts) }
       end
     end
 
@@ -57,19 +59,6 @@ class Movie < ActiveRecord::Base
           replace(:#{name}, others)
         end
       END
-    end
-
-    private
-
-    def normalize_person_ref(ref)
-      case ref
-      when Hash
-        normalize_person_ref(ref['$ref'])
-      when String
-        ref.sub('/people/', '')
-      else
-        ref
-      end
     end
   end
 
