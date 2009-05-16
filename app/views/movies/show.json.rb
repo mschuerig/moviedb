@@ -5,6 +5,9 @@
   :summary     => @movie.summary,
   :actors      => @movie.participants.as_actor.map { |actor|
     render :partial => 'people/item', :locals => { :person => actor }
+  },
+  :directors   => @movie.participants.as_director.map { |director|
+    render :partial => 'people/item', :locals => { :person => director }
   }
 =begin
   ,

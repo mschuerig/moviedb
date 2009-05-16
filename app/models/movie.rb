@@ -37,7 +37,7 @@ class Movie < ActiveRecord::Base
         others  = refs_with_options.map { |o| o.kind_of?(Hash) ? o[:id] : o }
 
         others  = Person.find(others)
-        current = proxy_owner.participants.as_actor
+        current = proxy_owner.participants.as(role)
 
         obsolete = current.select { |o| !others.include?(o) }
         fresh    = others.zip(options).select { |o, opts| !current.include?(o) }
@@ -98,14 +98,15 @@ class Movie < ActiveRecord::Base
   end
 
 
-  def actors
-    participants.as_actor
-  end
+  RoleType.each_name do |role_name|
+    define_method(role_name.pluralize) do
+      participants.as(role_name)
+    end
 
-  def actors=(others)
-    participants.replace_actors(others)
+    define_method("#{role_name.pluralize}=") do |others|
+      participants.replace(role_name, others)
+    end
   end
-
 
   def before_save
     self.release_year = release_date.blank? ? nil : release_date.year
