@@ -5,10 +5,11 @@ dojo.declare('moviedb.ui._MovieEditor.Controller',
   [moviedb.ui._generic.EditorController], {
 
   constructor: function() {
-    var hilite = function(obj, item) {
-      setTimeout(function() { aiki.hilite(item) }, 100); // apparently the DOM or dojo needs some time
+    this._role2listNode = {
+      'actor':    this.view.actorsNode,
+      'director': this.view.directorsNode
     };
-    dojo.connect(this.view.actorsNode, 'onObjectAdded', hilite);
+    this._connectHiliting();
   },
 
   getActions: function(context) {
@@ -37,10 +38,18 @@ dojo.declare('moviedb.ui._MovieEditor.Controller',
   },
 
   _doForRole: function(role, func) {
-    var node;
-    if (role === 'actor') {
-      node = this.view.actorsNode;
-    }
+    var node = this._role2listNode[role];
     return node ? func(node) : null;
+  },
+
+  _connectHiliting: function() {
+    var hilite = function(obj, item) {
+      // apparently the DOM or dojo needs some time
+      setTimeout(function() { aiki.hilite(item) }, 100);
+    };
+    
+    for (var role in this._role2listNode) {
+      dojo.connect(this._role2listNode[role], 'onObjectAdded', hilite);
+    }
   }
 });
