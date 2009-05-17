@@ -23,13 +23,12 @@ module LazyJason
   end
 
   def create
-    object = scope.new(params[:attributes])
-    set_object(object)
-
-    saved = scope.transaction {
-      object.save
-    }
-
+    object = saved = nil
+    scope.transaction do
+      object = scope.new(params[:attributes])
+      set_object(object)
+      saved = object.save
+    end
     respond_to do |format|
       if saved
         format.json { render :action => :show, :location => polymorphic_path(object) }
