@@ -1,6 +1,31 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
+shared_examples_for "Any Movie" do
+  before do
+    @actor = Person.new(:firstname => 'Clint', :lastname => 'Eastwood')
+  end
+
+  it "should be valid given valid attributes" do
+###    debugger
+    @movie.should be_valid
+  end
+
+  it "can be saved without an exception" do
+    @movie.save!
+  end
+
+  it "knows about participants even before saving" do
+    @movie.participants.add_actor(@actor)
+    pending do
+      @movie.participants.should include(@actor)
+    end
+  end
+end
+
+
 describe "Movie (2002)" do
+  it_should_behave_like "Any Movie"
+
   before do
     @valid_attributes = {
       :title => 'Running Down the Rails',
@@ -9,11 +34,7 @@ describe "Movie (2002)" do
     @movie = Movie.create(@valid_attributes)
   end
 
-  it "should be valid given valid attributes" do
-    @movie.should be_valid
-  end
-
-  it "should compute its release year" do
+  it "computes its release year" do
     @movie.release_year.should == 2002
   end
 
@@ -25,17 +46,9 @@ describe "Movie (2002)" do
     Movie.in_year(2003).should_not include(@movie)
   end
 
-  it "knows about participants even before saving" do
-    actor = Person.create!(:firstname => 'Clint', :lastname => 'Eastwood')
-    role = @movie.participants.add_actor(actor)
-    pending do
-      @movie.participants.should include(actor)
-    end
-  end
-
   describe "with only an actor" do
     before do
-      @actor = Person.create!(:firstname => 'Clint', :lastname => 'Eastwood')
+      @actor.save!
       @movie.participants.add_actor(@actor)
       @movie.save!
     end
@@ -56,7 +69,7 @@ describe "Movie (2002)" do
 
   describe "with two actors" do
     before do
-      @actor = Person.create!(:firstname => 'Clint', :lastname => 'Eastwood')
+      @actor.save!
       @movie.participants.add_actor(@actor)
       @actor2 = Person.create!(:firstname => 'Bruno', :lastname => 'Rathaby')
       @movie.participants.add_actor(@actor2)
@@ -80,4 +93,34 @@ describe "Movie (2002)" do
       @movie.participants.as_actor.should include(@cand_actor)
     end
   end
+end
+
+describe "Unsaved Movie" do
+  it_should_behave_like "Any Movie"
+
+  before do
+    @valid_attributes = {
+      :title => 'Running Down the Rails',
+      :release_date => '2002-11-29'
+    }
+    @movie = Movie.new(@valid_attributes)
+  end
+
+  describe "with an existing actor" do
+    it_should_behave_like "Any Movie"
+
+    before do
+      @actor.save!
+      @movie.participants.add_actor(@actor)
+    end
+  end
+
+  describe "with a new actor" do
+    it_should_behave_like "Any Movie"
+
+    before do
+      @movie.participants.add_actor(@actor)
+    end
+  end
+
 end
