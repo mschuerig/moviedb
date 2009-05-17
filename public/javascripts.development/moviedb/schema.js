@@ -3,6 +3,15 @@ dojo.provide('moviedb.Movie');
 dojo.provide('moviedb.Person');
 
 dojo.declare('moviedb.Movie', null, {
+  constructor: function() {
+    //### TODO extract into base class of schema-backed classes
+    var props = moviedb.schema.movie.properties;
+    for (var name in props) {
+      if (props[name].type === 'array') {
+        this[name] = [];
+      }
+    }
+  },
   displayTitle: function() {
     return this.title + ' (' + this.releaseYear + ')';
   }
@@ -57,6 +66,16 @@ dojo.setObject('moviedb.schema', {
       title: { type: 'string' },
       releaseDate: { type: 'date', format: 'date-time' },
       summary: { type: 'string' },
+      directors: {
+        type: 'array',
+        optional: true,
+        items: { '$ref': 'person' }
+      },
+      actors: {
+        type: 'array',
+        optional: true,
+        items: { '$ref': 'person' }
+      },
       awardings: {
         type: 'array',
         optional: true,
