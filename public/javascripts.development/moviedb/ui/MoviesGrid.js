@@ -4,10 +4,10 @@ dojo.require('dijit.form.Form');
 dojo.require('dijit.form.TextBox');
 dojo.require('dijit.layout.BorderContainer');
 dojo.require('dijit.layout.ContentPane');
-dojo.require('dijit.Tooltip');
 dojo.require('dojo.i18n');
 dojo.require('dojox.form.BusyButton');
 dojo.require('dojox.grid.DataGrid');
+dojo.require('aiki.Action');
 dojo.require('aiki.BusyForm');
 dojo.require('aiki._QueriedListMixin');
 
@@ -38,6 +38,8 @@ dojo.declare('moviedb.ui.MoviesGrid',
   allowedQueryAttributes: ['title', 'year', 'awards'],
   defaultQueryAttribute: 'title',
 
+  _contextItemName: 'movie',
+
   postCreate: function() {
     this.inherited(arguments);
 
@@ -53,32 +55,11 @@ dojo.declare('moviedb.ui.MoviesGrid',
     this._connectQuerying(grid, this.queryNode, this.queryFieldNode,
     this.allowedQueryAttributes, this.defaultQueryAttribute);
 
-    dojo.connect(grid, 'onCellContextMenu', dojo.hitch(this, '_gridCellContextMenu'));
-  },
-
-//### TODO extract
-  _gridCellContextMenu: function(e) {
-    if (e.cell.field == "awardings") {
-      var movie = e.grid.getItem(e.rowIndex);
-      var awardings = this.store.getValue(movie, 'awardings');
-      if (awardings) {
-        var awardingsMenu = new dijit.Menu({targetNodeIds: e.cellNode});
-
-        var self = this;
-        dojo.forEach(awardings, function(awarding) {
-          awardingsMenu.addChild(new dijit.MenuItem({
-            label: self.store.getValue(awarding, 'title'),
-            onClick: dojo.hitch(self, '_awardingSelected', awarding)
-          }));
-        });
-
-        dojo.connect(awardingsMenu, 'onClose', function() {
-//### FIXME          awardingsMenu.destroyRecursive();
-        });
-        awardingsMenu.startup();
-        awardingsMenu._openMyself(e);
-      }
-    }
+    this._addTopAction('Show Movie', function(context) { //### i18n
+      dojo.publish('movie.selected', [context.movie]);
+    });
+    this._addTopAction('-');
+    this._gridContextMenu(grid);
   },
 
   _awardingSelected: function(awarding) {
@@ -86,5 +67,24 @@ dojo.declare('moviedb.ui.MoviesGrid',
       context: 'awardGroup'
     };
     dojo.publish('awarding.selected', [awarding, hints]);
+  },
+
+  _getActions: function(context, event) {
+    var actions = this.inherited(arguments);
+    
+    if (event.cell.field == 'awardings') {
+      var awardings = this.store.getValue(context.movie, 'awardings');
+      if (awardings && awardings.length > 0) {
+        actions.push('Awards'); //### i18n
+        for (var i = 0; i < awardings.length; i++) {
+          var awarding = awardings[i];
+          actions.push(new aiki.Action(
+            this.store.getValue(awarding, 'title'),
+            dojo.hitch(this, '_awardingSelected', awarding)
+          ));
+        }
+      }
+    }
+    return actions;
   }
 });

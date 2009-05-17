@@ -47,7 +47,7 @@
         editors.newObject(peopleStore, 'moviedb.ui.PersonEditor');
       });
       
-      dijit.byId('peopleList').actions = editors.actions;
+      dijit.byId('peopleList').attr('actions', editors.actions);
       
       // Award(ding)s event handlers
 
