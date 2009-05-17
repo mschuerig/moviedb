@@ -8,8 +8,7 @@ dojo.declare('moviedb.ui._AwardView.View', null, {
   templatePath: dojo.moduleUrl('moviedb', 'ui/_AwardView/AwardView.html'),
 
   postMixInProperties: function() {
-    var _nlsResources = dojo.i18n.getLocalization('moviedb', 'awards');
-    dojo.mixin(this, _nlsResources);
+    this._nls = dojo.i18n.getLocalization('moviedb', 'awards');
     this.inherited(arguments);
   },
 

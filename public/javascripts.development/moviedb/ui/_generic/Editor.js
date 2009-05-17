@@ -11,6 +11,7 @@ dojo.declare('moviedb.ui._generic.Editor',
 
   store: null,
   object: null,
+  objectClass: null,
 
   getFeatures: function() {
     return {
@@ -20,6 +21,15 @@ dojo.declare('moviedb.ui._generic.Editor',
 	  };
   },
 
+  _setObjectAttr: function(object) {
+    this.object = object ? object : this._createNewObject();
+  },
+
+  _setObjectClassAttr: function(objectClass) {
+    this.objectClass = objectClass; 
+    this._setObjectAttr(this.object);
+  },
+
   postCreate: function() {
     this.controller = this._makeController();
     this.controller.relay(this);
@@ -27,6 +37,10 @@ dojo.declare('moviedb.ui._generic.Editor',
 
   _makeController: function() {
     return new moviedb.ui._generic.EditorController(this.store, this.object, this);
+  },
+  
+  _createNewObject: function() {
+    return this.objectClass ? new this.objectClass() : {};
   },
 
   onCreated: function() {

@@ -4,7 +4,7 @@ dojo.require('aiki.Action');
 dojo.declare('moviedb.ui._MovieEditor.Controller',
   [moviedb.ui._generic.EditorController], {
 
-  constructor: function() {
+  constructor: function(store, object, view) {
     this._role2listNode = {
       'actor':    this.view.actorsNode,
       'director': this.view.directorsNode

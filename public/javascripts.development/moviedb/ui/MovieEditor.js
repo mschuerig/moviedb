@@ -4,11 +4,14 @@ dojo.require('moviedb.ui._generic.Editor');
 dojo.require('moviedb.ui._MovieEditor.Controller');
 dojo.require('moviedb.ui._MovieEditor.View');
 dojo.require('moviedb.ui.PersonItem');
+dojo.require('moviedb.schema');
 dojo.require('aiki.SortedList');
 
 dojo.declare('moviedb.ui.MovieEditor',
   [moviedb.ui._generic.Editor, dijit._Container, 
    moviedb.ui._MovieEditor.View], {
+
+  objectClass: moviedb.Movie,
 
   postCreate: function() {
     this.inherited(arguments);

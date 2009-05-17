@@ -34,12 +34,3 @@ dojo.require('moviedb.ui.MoviesGrid');
 dojo.require('moviedb.ui.PeopleGrid');
 dojo.require('moviedb.ui.PersonEditor');
 
-dojo.setObject('moviedb.installTooltips', function(grid, showTooltip) {
-  var hideTooltip = function(e) {
-    dijit.hideTooltip(e.cellNode);
-    dijit._masterTT._onDeck=null;
-  };
-  dojo.connect(grid, "onCellMouseOver", showTooltip);
-  dojo.connect(grid, "onCellMouseOut", hideTooltip);
-});
-

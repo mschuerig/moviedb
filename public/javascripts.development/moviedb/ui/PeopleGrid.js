@@ -4,11 +4,13 @@ dojo.require('dijit.form.Form');
 dojo.require('dijit.form.TextBox');
 dojo.require('dijit.layout.BorderContainer');
 dojo.require('dijit.layout.ContentPane');
+dojo.require('dojo.date.locale');
 dojo.require('dojo.i18n');
 dojo.require('dojox.form.BusyButton');
 dojo.require('dojox.grid.DataGrid');
 dojo.require('aiki.BusyForm');
 dojo.require('aiki._QueriedListMixin');
+dojo.requireLocalization('moviedb', 'people');
 
 dojo.declare('moviedb.ui.PeopleGrid',
     [dijit.layout.BorderContainer, dijit._Templated, aiki._QueriedListMixin], {
@@ -32,34 +34,38 @@ dojo.declare('moviedb.ui.PeopleGrid',
   allowedQueryAttributes: ['name', 'firstname', 'lastname', 'birthday', 'dob'],
       defaultQueryAttribute: 'name',
 
+  postMixInProperties: function() {
+    this._nls = dojo.i18n.getLocalization('moviedb', 'people');
+    this.inherited(arguments);
+  },
+
   postCreate: function() {
     this.inherited(arguments);
 
     var grid = this.gridNode;
     this._initGrid(grid, this);
 
-    this._connectEvents(grid, this.newPersonNode, 'person');
+    this._connectGridTopics('person', grid);
+    this._connectButtonTopics('person', {
+      'new':    this.newPersonNode,
+      'delete': this.deletePersonNode 
+    });
 
     this._connectQuerying(grid, this.queryNode, this.queryFieldNode,
-      this.allowedQueryAttributes, this.defaultQueryAttribute);
-
-    dojo.connect(grid, 'onRowDblClick', function(event) {
-      dojo.publish('person.selected', [grid.getItem(event.rowIndex)]);
-    });
+    this.allowedQueryAttributes, this.defaultQueryAttribute);
 
     dojo.connect(grid, 'onCellContextMenu', dojo.hitch(this, '_gridCellContextMenu'));
 
-/* ### TODO make sure tooltips are removed again
-      moviedb.installTooltips(grid, function(e) {
-        var person = e.grid.getItem(e.rowIndex);
-        if (person && person.dob) {
-          var msg = 'born ' + person.dob; //### TODO i18n
-          dijit.showTooltip(msg, e.cellNode);
-        }
-      });
-*/
+    var dobTemplate = this._nls.dob;
+    this._gridTooltips(grid, function(person) {
+      if (person.dob) {
+        var dob = dojo.date.locale.format(person.dob, {selector: 'date'});
+        return dojo.string.substitute(dobTemplate, {dob: dob});
+      }
+    });
   },
-
+  
+//### TODO extract
   _gridCellContextMenu: function(e) {
     var context = { person: e.grid.getItem(e.rowIndex) };
     var actions = this._getActions(context);

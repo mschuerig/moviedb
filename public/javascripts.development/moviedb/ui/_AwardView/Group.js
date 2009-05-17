@@ -13,7 +13,7 @@ dojo.declare('moviedb.ui._AwardView.Group', null, {
   renderAt: function(node) {
     var listNode = this.listNode = dojo.create('div');
     var titlePane = this.titlePane = new dijit.TitlePane({
-      title: this.title, //### dojo.string.substitute(this.groupTitle, {group: this.name}),
+      title: this.title, //### dojo.string.substitute(this._nls.groupTitle, {group: this.name}),
       content: listNode,
       open: false
     });

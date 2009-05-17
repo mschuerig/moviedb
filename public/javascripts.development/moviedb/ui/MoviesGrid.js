@@ -44,14 +44,19 @@ dojo.declare('moviedb.ui.MoviesGrid',
     var grid = this.gridNode;
     this._initGrid(grid, this);
 
-    this._connectEvents(grid, this.newMovieNode, 'movie');
+    this._connectGridTopics('movie', grid);
+    this._connectButtonTopics('movie', {
+      'new':    this.newMovieNode,
+      'delete': this.deleteMovieNode 
+    });
 
     this._connectQuerying(grid, this.queryNode, this.queryFieldNode,
-      this.allowedQueryAttributes, this.defaultQueryAttribute);
+    this.allowedQueryAttributes, this.defaultQueryAttribute);
 
     dojo.connect(grid, 'onCellContextMenu', dojo.hitch(this, '_gridCellContextMenu'));
   },
 
+//### TODO extract
   _gridCellContextMenu: function(e) {
     if (e.cell.field == "awardings") {
       var movie = e.grid.getItem(e.rowIndex);
