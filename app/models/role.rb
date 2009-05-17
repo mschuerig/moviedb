@@ -1,6 +1,4 @@
 class Role < ActiveRecord::Base
-  validates_presence_of :person, :role_type, :movie, :credited_as
-
   belongs_to :person
   belongs_to :role_type
   belongs_to :movie
@@ -14,7 +12,7 @@ class Role < ActiveRecord::Base
   end
 
   def before_validation
-    if self.credited_as.blank?
+    if self.credited_as.blank? && person
       self.credited_as = person.credits_name
     end
   end
