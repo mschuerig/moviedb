@@ -65,26 +65,17 @@
         var options = {};
         var award = awardsStore.getValue(awarding, 'award');
 
-        //### FIXME award should have been lazy loaded
-        function lazyLoadingWorkaround(award) {
-          if (hints && hints.context == 'awardGroup') {
-             var group = awardsStore.getValue(award, 'group');
-             if (group) {
-               award = group;
-               options.showAwardName = true;
-               options.yearGranularity = 1;
-             }
-          }
-          var whenReady = editors.editObject(award, awardsStore, 'moviedb.ui.AwardView', options);
-          whenReady.addCallback(function(editor) {
-            //### FIXME should have been lazy loaded
-            editor.widget.showAwarding({id: awarding.$ref, __id: awarding.$ref, year: awarding.year});
-          });
+        if (hints && hints.context == 'awardGroup') {
+           var group = awardsStore.getValue(award, 'group');
+           if (group) {
+             award = group;
+             options.showAwardName = true;
+             options.yearGranularity = 1;
+           }
         }
-
-        awardsStore.fetchItemByIdentity({
-          identity: award.$ref || award.__id,
-          onItem: lazyLoadingWorkaround
+        var whenReady = editors.editObject(award, awardsStore, 'moviedb.ui.AwardView', options);
+        whenReady.addCallback(function(editor) {
+          editor.widget.showAwarding(awarding);
         });
       });
     });
