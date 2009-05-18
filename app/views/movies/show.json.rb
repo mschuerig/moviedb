@@ -3,8 +3,10 @@
   :title       => @movie.title,
   :releaseDate => @movie.release_date,
   :summary     => @movie.summary,
-  :actors      => @movie.participants.as_actor.map { |actor|
-    render :partial => 'people/item', :locals => { :person => actor }
+  :actors      => @movie.roles.as_actor.map { |role|
+    render :partial => 'people/actor', :locals => {
+      :person => role.person, :credited_as => role.credited_as
+    }
   },
   :directors   => @movie.participants.as_director.map { |director|
     render :partial => 'people/item', :locals => { :person => director }

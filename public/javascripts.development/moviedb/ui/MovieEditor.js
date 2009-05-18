@@ -3,6 +3,7 @@ dojo.require('dijit._Container');
 dojo.require('moviedb.ui._generic.Editor');
 dojo.require('moviedb.ui._MovieEditor.Controller');
 dojo.require('moviedb.ui._MovieEditor.View');
+dojo.require('moviedb.ui.ActorItem');
 dojo.require('moviedb.ui.PersonItem');
 dojo.require('moviedb.schema');
 dojo.require('aiki.SortedList');
