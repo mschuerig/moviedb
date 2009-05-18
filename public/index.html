@@ -18,10 +18,10 @@
     dojo.registerModulePath('moviedb', "/javascripts/moviedb");
     dojo.require('moviedb.movies');
 
-    moviesStore    = new aiki.Store({ target: "/movies",    schema: moviedb.schema.movie });
-    peopleStore    = new aiki.Store({ target: "/people",    schema: moviedb.schema.person });
-    awardingsStore = new aiki.Store({ target: "/awardings", schema: moviedb.schema.awarding });
-    awardsStore    = new aiki.Store({ target: "/awards",    schema: moviedb.schema.award });
+    moviesStore    = new aiki.Store({ target: "/movies/",    schema: moviedb.schema.movie });
+    peopleStore    = new aiki.Store({ target: "/people/",    schema: moviedb.schema.person });
+    awardingsStore = new aiki.Store({ target: "/awardings/", schema: moviedb.schema.awarding });
+    awardsStore    = new aiki.Store({ target: "/awards/",    schema: moviedb.schema.award });
 
     dojo.addOnLoad(function() {
 
