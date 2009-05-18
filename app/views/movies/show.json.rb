@@ -4,7 +4,7 @@
   :releaseDate => @movie.release_date,
   :summary     => @movie.summary,
   :actors      => @movie.roles.as_actor.map { |role|
-    render :partial => 'people/actor', :locals => {
+    render :partial => 'roles/actor', :locals => {
       :person => role.person, :credited_as => role.credited_as
     }
   },
