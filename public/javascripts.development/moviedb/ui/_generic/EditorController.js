@@ -13,8 +13,22 @@ dojo.declare('moviedb.ui._generic.EditorController', null, {
       this._isReady = true;
       whenReady.callback(view);
     }));
+  },
 
+  populate: function() {
+    this._setStoreOnDescendants();
     this.view.formNode.populate(this.store, this.object);
+  },
+
+  _setStoreOnDescendants: function() {
+    if (this.store) {
+      //### TODO this code is rather rough
+      dojo.forEach(this.view.formNode.getDescendants(), function(widget) {
+        if ('store' in widget) {
+          widget.attr('store', this.store);
+        }
+      }, this);
+    }
   },
 
   relay: function(dest) {

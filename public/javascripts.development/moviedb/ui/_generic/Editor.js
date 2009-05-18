@@ -33,6 +33,7 @@ dojo.declare('moviedb.ui._generic.Editor',
   postCreate: function() {
     this.controller = this._makeController();
     this.controller.relay(this);
+    this.controller.populate();
   },
 
   _makeController: function() {
