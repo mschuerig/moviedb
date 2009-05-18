@@ -12,6 +12,10 @@ dojo.declare('moviedb.ui._MovieEditor.Controller',
     this._connectHiliting();
   },
 
+  populate: function() {
+    this.inherited(arguments);
+  },
+
   getActions: function(context) {
     var person = context.person;
 

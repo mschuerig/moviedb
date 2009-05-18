@@ -20,15 +20,17 @@ class ApplicationController < ActionController::Base
 
   def self.normalize_param_references(associations, params)
     associations.each do |assoc|
-      Array(params[:attributes][assoc]).each do |ref|
-        case ref
-        when Hash
-          ref['id'] = normalize_id(ref.delete('$ref'))
-          ref
-        when String
-          normalize_id(ref)
-        else
-          ref
+      if attributes = params[:attributes]
+        Array(attributes[assoc]).each do |ref|
+          case ref
+          when Hash
+            ref['id'] = normalize_id(ref.delete('$ref'))
+            ref
+          when String
+            normalize_id(ref)
+          else
+            ref
+          end
         end
       end
     end

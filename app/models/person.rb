@@ -5,7 +5,7 @@ class Person < ActiveRecord::Base
 
   validates_presence_of :firstname, :lastname
 
-  has_many :roles, :include => :role_type
+  has_many :roles, :extend => RoleTypeAssociationExtensions
 
   has_many :movies, :through => :roles, :extend => RoleTypeAssociationExtensions, :order => 'release_date'
 

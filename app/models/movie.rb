@@ -6,7 +6,7 @@ class Movie < ActiveRecord::Base
 
   validates_presence_of :title
 
-  has_many :roles, :include => :role_type, :dependent => :destroy
+  has_many :roles, :dependent => :destroy, :extend => RoleTypeAssociationExtensions
 
   module ParticipantTypeExtensions
     include RoleTypeAssociationExtensions
