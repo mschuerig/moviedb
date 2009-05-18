@@ -2,7 +2,7 @@
 namespace :dojo do
 
   desc 'Update Dojo git repository.'
-  task :update => :environment do
+  task :update do
     DOJO_ROOT = File.join(RAILS_ROOT, 'vendor', 'dojo')
     Dir[File.join(DOJO_ROOT, '*')].each do |dir|
       sh %{cd "#{dir}" && git svn rebase && git gc}
@@ -11,11 +11,11 @@ namespace :dojo do
 
   namespace :use do
     desc 'Use individual development script files.'
-    task :debug => :environment do
+    task :debug do
       sh %{ln -nfs javascripts.development "#{RAILS_ROOT}/public/javascripts"}
     end
     desc 'Use optimized script files.'
-    task :optimized => :environment do
+    task :optimized do
       sh %{ln -nfs javascripts.production "#{RAILS_ROOT}/public/javascripts"}
     end
   end
@@ -24,7 +24,7 @@ namespace :dojo do
   task :optimize => "dojo:optimize:all"
 
   namespace :optimize do
-    task :setup => :environment do
+    task :setup do
       DOJO_ROOT = File.join(RAILS_ROOT, 'vendor', 'dojo')
       DOJO_BUILD = File.join(DOJO_ROOT, 'util', 'buildscripts')
       DOJO_PROFILES = File.join(RAILS_ROOT, 'config', 'dojo_profiles')
@@ -53,11 +53,11 @@ namespace :dojo do
     end
 
 ### TODO does the buildLayers option help?
-#    task :stylesheets => :setup do
+    task :stylesheets => :setup do
 #      profile_file = File.join(DOJO_PROFILES, "stylesheets.js")
 #      release_dir = File.join(DOJO_RELEASES, "stylesheets.#{DOJO_PROFILE}", '/')
 #      release_name = ''
 #      sh %{cd "#{DOJO_BUILD}" && ./build.sh action=release profileFile="#{profile_file}" releaseDir="#{release_dir}" releaseName="#{release_name}" layerOptimize=shrinksafe.keepLines cssOptimize=comments.keepLines}
-#    end
+    end
   end
 end

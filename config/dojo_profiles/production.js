@@ -29,7 +29,7 @@ dependencies = {
   layerOptimize:"shrinksafe.keepLines",
   cssOptimize: "comments.keepLines",
   stripConsole:"normal",
-  action:"clean,release",
+  action:"release",
 
   layers: [
     {
@@ -40,12 +40,12 @@ dependencies = {
       ]
     }
   ],
-  prefixes: [
+  prefixes: [ //### TODO these relative paths break when symlinks are involved, as they are 
     //### TODO add copyright file
     ["moviedb", "../../../public/javascripts.development/moviedb"],
     ["dijit", "../dijit"],
     ["dojox", "../dojox"],
-	["plugd", "../plugd"],
+    ["plugd", "../plugd"],
     ["aiki", "../../../public/javascripts.development/aiki"]
   ]
 }
