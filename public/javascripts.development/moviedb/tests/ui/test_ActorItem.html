@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<title>Actor Item Test</title>
+
+		<style type="text/css">
+			@import "../../../dojo/resources/dojo.css";
+		</style>
+		
+		<!-- required: a default dijit theme: -->
+		<link id="themeStyles" rel="stylesheet" href="../../../dijit/themes/tundra/tundra.css">
+		
+		<!-- required: dojo.js -->
+		<script type="text/javascript" src="../../../dojo/dojo.js"
+			djConfig="parseOnLoad: true, isDebug: true"></script>
+		
+		<script type="text/javascript">
+      dojo.registerModulePath('aiki', "../aiki");
+      dojo.registerModulePath('moviedb', "../moviedb");
+      dojo.require('dojo.data.ItemFileReadStore');
+      dojo.require("dijit.dijit"); // optimize: load dijit layer
+      dojo.require("dojo.parser");
+      dojo.require("moviedb.ui.ActorItem");
+
+      var store = new dojo.data.ItemFileReadStore({ data:
+        { identifier: 'id', 
+          items: [
+            {
+              id: 1,
+              character: 'Captain Krak',
+              actor: {
+                id: 2,
+                firstname: 'William',
+                lastname:  'Shatter'
+              },
+              creditedAs: 'Will Shatter'
+            }
+        ]}
+      });
+      var actor, actorItem;
+      
+      dojo.addOnLoad(function() {
+        store.fetchItemByIdentity({ identity: 1, onItem: function(item) {
+          actor = item;
+          actorItem = new moviedb.ui.ActorItem({store: store, item: item}, 'actor');
+        }});
+      });
+		</script>
+	</head>
+	<body class="tundra">
+
+		<h1 class="testTitle">Moviedb PersonItem Test</h1>
+    
+		<hr style="width:100%;">
+
+    <div id="actor"></div>
+    
+	</body>
+</html>
