@@ -28,7 +28,7 @@ class Person < ActiveRecord::Base
     }
   end
 
-  named_scope :participating_in_movie, lambda { |movie|
+  named_scope :in_movie, lambda { |movie|
     {
       :joins => 'INNER JOIN roles ON roles.person_id = people.id',
       :conditions => { :roles => { :movie_id => movie }}
@@ -55,7 +55,8 @@ class Person < ActiveRecord::Base
     "#{firstname} #{lastname}"
   end
 
-  def coworkers(options = {})
+  def coworkers() ###options = {})
+=begin
     if movie = options[:movie]
       Person.scoped(
         :conditions => [
@@ -65,6 +66,7 @@ class Person < ActiveRecord::Base
         ]
       )
     else
+=end
       Person.scoped(
         :conditions => [
         "people.id <> ? AND people.id IN" +
@@ -72,7 +74,7 @@ class Person < ActiveRecord::Base
         " (SELECT roles.movie_id from roles WHERE roles.person_id = ?))",
         id, id]
       )
-    end
+#    end
   end
 
   def self.find(*args)
