@@ -1,5 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
+require 'spec/mocks/scope_expectation'
+
 describe MoviesController do
 
   def mock_movie_item(stubs={})
@@ -10,8 +12,9 @@ describe MoviesController do
     @mock_movie ||= mock_model(Movie, stubs)
   end
 
-  def expect_movie_retrievals(options = {})
-    MovieItem.should_receive(:all).with(options).and_return([])
+  def expect_movie_retrievals(options = {}, find_scope = nil)
+    scopes = find_scope ? { :find => find_scope } : {}
+    MovieItem.should_receive(:all).with(options).within_scope(MovieItem, scopes).and_return([])
     MovieItem.should_receive(:count).and_return(0)
   end
 
@@ -56,17 +59,15 @@ describe MoviesController do
 
       describe "and order params" do
         it "orders by title ascending for /title" do
-          pending do ### TODO pending a scope expectation
-            expect_movie_retrievals(@find_all_options)
-            get :index, :order => [{:attribute => 'title' }], :format => 'json'
-          end
+          expect_movie_retrievals(@find_all_options,
+            :order => 'title ASC', :include => { :awardings => :award })
+          get :index, :order => [{:attribute => 'title' }], :format => 'json'
         end
 
         it "orders by title descending for \\title" do
-          pending do ### TODO pending a scope expectation
-            expect_movie_retrievals(@find_all_options.merge(:order => 'title DESC'))
-            get :index, :order => [{:attribute => 'title', :dir => 'DESC' }], :format => 'json'
-          end
+          expect_movie_retrievals(@find_all_options,
+            :order => 'title DESC', :include => { :awardings => :award })
+          get :index, :order => [{:attribute => 'title', :dir => 'DESC' }], :format => 'json'
         end
       end
     end
