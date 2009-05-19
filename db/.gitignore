@@ -2,4 +2,5 @@
 schema.rb
 dump*.sql
 development-*dump-*.sql
+development-*dump-*.sql.*
 xapian
