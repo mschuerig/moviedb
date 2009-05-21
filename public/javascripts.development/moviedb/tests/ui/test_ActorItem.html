@@ -6,6 +6,7 @@
 
 		<style type="text/css">
 			@import "../../../dojo/resources/dojo.css";
+      @import "../../../moviedb/ui/_ActorItem/ActorItem.css";
 		</style>
 		
 		<!-- required: a default dijit theme: -->
@@ -28,7 +29,11 @@
           items: [
             {
               id: 1,
-              character: 'Captain Krak',
+              character: {
+                id: 3,
+                name: 'Captain Krak',
+                '$ref': '/characters/3'
+              },
               actor: {
                 id: 2,
                 firstname: 'William',

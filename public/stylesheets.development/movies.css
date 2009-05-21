@@ -5,6 +5,7 @@
 @import "../javascripts/dojox/widget/Toaster/Toaster.css";
 @import "../javascripts/dojox/form/resources/BusyButton.css";
 @import "../javascripts/aiki/_SortedList/SortedList.css";
+@import "../javascripts/moviedb/ui/_ActorItem/ActorItem.css";
 
 html, body, #container {
   width: 100%;
