@@ -21,6 +21,10 @@ Sham.define do
   shaky_date_of_birth(:unique => false) { rand < 0.2 ? nil : date_of_birth }
 end
 
+Character.blueprint do
+  name { "#{Faker::Name.first_name} #{Faker::Name.first_name}" }
+end
+
 Person.blueprint do
   firstname
   lastname

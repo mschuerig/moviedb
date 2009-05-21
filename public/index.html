@@ -27,6 +27,13 @@
 
       editors = new aiki.EditorManager({ container: 'editors' });
 
+      dojo.subscribe('not-implemented', function() {
+        dojo.publish('toast', [{
+          message: 'We are sorry. This feature is not yet implemented.',
+          type: 'warning'
+        }]);
+      });
+
       function showEditor(widgetType, store, object, options) {
         editors.editObject(object, store, widgetType, options);
       }
@@ -39,6 +46,10 @@
         editors.newObject(moviesStore, 'moviedb.ui.MovieEditor');
       });
 
+      dojo.subscribe('movie.delete', function() {
+        dojo.publish('not-implemented');
+      });
+
       // Person event handlers
 
       dojo.subscribe('person.selected', dojo.partial(showEditor, 'moviedb.ui.PersonEditor', peopleStore));
@@ -48,6 +59,12 @@
       });
       
       dijit.byId('peopleList').attr('actions', editors.actions);
+
+      // Character event handlers
+
+      dojo.subscribe('character.selected', function() {
+        dojo.publish('not-implemented');
+      });
       
       // Award(ding)s event handlers
 
@@ -113,6 +130,6 @@
     <div dojoType="dijit.layout.TabContainer" id="editors" region="center"></div>
   </div>
   
-  <div dojoType="dojox.widget.Toaster" positionDirection="tr-down" messageTopic="toast"></div>
+  <div dojoType="dojox.widget.Toaster" positionDirection="tl-down" messageTopic="toast"></div>
 </body>
 </html>
