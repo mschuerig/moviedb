@@ -1,4 +1,10 @@
-<span class="person actor">
-  <a href="${item.actor.getIdentity}"><span>${item.actor.firstname}</span> <span>${item.actor.lastname}</span></a>
-  as <span dojoType="dijit.InlineEditBox">${item.creditedAs}</span>
-</span>
+<div class="moviedbActorItem">
+  <dl class="role">
+    <dt class="character">
+      <a href="${item.character.getIdentity}">${item.character.name}</a>
+    </dt>
+    <dd class="person actor creditedAs">
+      <a href="${item.actor.getIdentity}">${item.creditedAs}</a>
+    </dd>
+  </dl>
+</div>

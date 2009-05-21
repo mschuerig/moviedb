@@ -58,8 +58,20 @@ dojo.setObject('moviedb.schema', {
     },
     award: { '$ref': 'award' }
   },
+  character: {
+    id: 'character',
+    type: 'object',
+    properties: {
+      id: { type: 'integer' },
+      name: { type: 'string' },
+      appearances: {
+        type: 'array',
+        items: { '$ref': 'movie' }
+      }
+    }
+  },
   movie: {
-    id :'movie',
+    id : 'movie',
     type: 'object',
     properties: {
       id: { type: 'integer' },

@@ -1,15 +1,15 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
-#require 'spec/mocks/scope_expectation'
+require 'spec/mocks/scope_expectation'
 
 describe PeopleController do
   def mock_person(stubs={})
     @mock_person ||= mock_model(Person, stubs)
   end
 
-  def expect_person_retrievals(options = {})
-    Person.should_receive(:find).with(:all, options).and_return([])
-### TODO      within_scope(:find => { :order => 'title'}).
+  def expect_person_retrievals(options = {}, find_scope = nil)
+    scopes = find_scope ? { :find => find_scope } : {}
+    Person.should_receive(:all).with(options).within_scope(Person, scopes).and_return([])
     Person.should_receive(:count).and_return(0)
   end
 
@@ -47,18 +47,16 @@ describe PeopleController do
       end
 
       describe "and order params" do
-        it "orders by title ascending for /title" do
-          pending do
-            expect_person_retrievals(@find_all_options, :order => 'title')
-            get :index, '/name' => nil, :format => 'json'
-          end
+        it "orders by lastname, firstname, serial_number ascending for /name" do
+          expect_person_retrievals(@find_all_options,
+            :order => 'lastname ASC, firstname ASC, serial_number ASC')
+          get :index, :order => [{ :attribute => 'name' }], :format => 'json'
         end
 
-        it "orders by name descending for \\title" do
-          pending do
-            expect_person_retrievals(@find_all_options.merge(:order => 'title DESC'))
-            get :index, '\name' => nil, :format => 'json'
-          end
+        it "orders by lastename, firstname, serial_number descending for \\name" do
+          expect_person_retrievals(@find_all_options,
+            :order => 'lastname DESC, firstname DESC, serial_number DESC')
+          get :index, :order => [{ :attribute => 'name', :dir => 'DESC' }], :format => 'json'
         end
       end
     end

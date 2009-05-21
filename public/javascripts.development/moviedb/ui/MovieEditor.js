@@ -18,7 +18,8 @@ dojo.declare('moviedb.ui.MovieEditor',
     this.inherited(arguments);
 
     this._dispatcher = new moviedb.Dispatcher(this.domNode,
-      { event: 'click', path: '.person a', topic: 'person.selected' }
+      { event: 'click', path: '.person a',    topic: 'person.selected' },
+      { event: 'click', path: '.character a', topic: 'character.selected' }
     );
   },
 

@@ -1,0 +1,16 @@
+
+.moviedbActorItem {
+  display: -moz-inline-box;
+  display: inline-block;
+}
+
+.moviedbActorItem .role .character {
+  display: -moz-inline-box;
+  display: inline-block;
+  font-weight: bold;
+}
+
+.moviedbActorItem .role .creditedAs {
+  display: -moz-inline-box;
+  display: inline-block;
+}

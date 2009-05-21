@@ -2,6 +2,7 @@ class Role < ActiveRecord::Base
   belongs_to :person
   belongs_to :role_type
   belongs_to :movie
+  has_and_belongs_to_many :characters ### TODO only valid for role_type 'actor' -- subclass?
 
   attr_readonly :person, :role_type, :movie
 
