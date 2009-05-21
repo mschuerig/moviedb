@@ -16,9 +16,8 @@ describe "/people/index.json.rb" do
     response.body.should be_json_eql <<-END
       [
         { "lastname": "Easterbunny", "firstname": "Clint",
-          "dob": "2008-03-23", "id": "/people/1", "$ref": "/people/1" }
+          "dob": "2008-03-23", "$ref": "/people/1" }
       ]
     END
   end
 end
-

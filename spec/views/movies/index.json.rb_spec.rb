@@ -34,17 +34,16 @@ describe "/movies/index.json.rb" do
     render
     response.body.should be_json_eql <<-END
       [
-        {"releaseDate": '2001-01-01', "title": "The first movie", "id": "/movies/1", "$ref": "/movies/1",
+        {"releaseDate": '2001-01-01', "title": "The first movie", "$ref": "/movies/1",
           "awardings": []
         },
-        {"releaseDate": '2002-02-02', "title": "The second movie", "id": "/movies/2", "$ref": "/movies/2",
+        {"releaseDate": '2002-02-02', "title": "The second movie", "$ref": "/movies/2",
           "awardings": [
-            { "title": "Best Actor",   "year": 2002, "id": "/awardings/3", "$ref": "/awardings/3", "award": { "$ref": "/awards/5" } },
-            { "title": "Best Schmock", "year": 2002, "id": "/awardings/4", "$ref": "/awardings/4", "award": { "$ref": "/awards/6" } }
+            { "title": "Best Actor",   "year": 2002, "$ref": "/awardings/3", "award": { "$ref": "/awards/5" } },
+            { "title": "Best Schmock", "year": 2002, "$ref": "/awardings/4", "award": { "$ref": "/awards/6" } }
            ]
         }
       ]
     END
   end
 end
-
