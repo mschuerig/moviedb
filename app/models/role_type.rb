@@ -7,25 +7,7 @@ class RoleType < ActiveRecord::Base
     e.value :name => 'director', :title => 'Director'
   end
 
-  class << self
-
-    def ensure_valid!(name, options = { })
-      name = ActiveSupport::Inflector.singularize(name) if options[:singularize]
-      ok =
-        if options[:clean]
-          name = clean_name(name)
-          names.include?(name)
-        else
-          names.include?(name)
-        end
-      raise ArgumentError, "Not a valid name for a RoleType: #{name.inspect}" unless ok
-      name
-    end
-
-    private
-
-    def clean_name(name)
-      ActiveSupport::Inflector.transliterate(name).gsub(' ', '_').gsub(/[^[:alnum:]_]/, '').underscore.to_s
-    end
+  def self.its_name(role)
+    role.kind_of?(self) ? role.name : valid_name!(role)
   end
 end
