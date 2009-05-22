@@ -69,7 +69,7 @@ class Movie < ActiveRecord::Base
   default_scope :order => 'title, release_date'
 
   def self.in_year_condition(year)
-    ["movies.release_year = ?",year]
+    { :movies => { :release_year => year } }
   end
 
   named_scope :in_year,

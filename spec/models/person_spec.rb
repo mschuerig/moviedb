@@ -119,7 +119,7 @@ describe "An actor" do
     end
 
     it "knows their coworkers from a specific movie" do
-      coworkers = @actor.coworkers(:movie => @movie)
+      coworkers = @actor.coworkers.in_movie(@movie)
       coworkers.size.should == 2
       coworkers.should include(@coactor1)
       coworkers.should include(@director)
@@ -133,7 +133,7 @@ describe "An actor" do
     end
 
     it "knows their co-actors from a specific movie" do
-      coactors = @actor.coworkers(:movie => @movie).actors
+      coactors = @actor.coworkers.in_movie(@movie).actors
       coactors.should == [@coactor1]
     end
 

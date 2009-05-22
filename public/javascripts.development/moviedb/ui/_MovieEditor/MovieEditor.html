@@ -26,25 +26,31 @@
         <div dojoType="aiki.SortedList"
              name="directors"
              dojoAttachPoint="directorsNode"
-             itemWidget="moviedb.ui.PersonItem"
+             contentWidget="moviedb.ui.PersonItem"
              sortBy="lastname,firstname"
              ></div>
       </li>
       <li class="actors">
         <h3>Actors</h3>
-        <div dojoType="aiki.SortedList"
+        <table dojoType="aiki.SortedTable"
              dojoAttachPoint="actorsNode"
              name="actors"
-             itemWidget="moviedb.ui.ActorItem"
-             sortBy="creditedAs"
-             ></div>
+             contentWidget="moviedb.ui.ActorItem"
+             sortBy="creditedAs">
+          <thead>
+            <tr>
+              <th>Character</th>
+              <th>Actor</th>
+            </tr>
+          </thead>
+        </table>
       </li>
       <li class="awards">
         <h3>Awards</h3>
         <div xdojoType="aiki.SortedList"
              dojoAttachPoint="awardsNode"
              name="awards"
-             itemWidget="moviedb.ui.AwardItem"
+             contentWidget="moviedb.ui.AwardItem"
              sortBy="\\year,/title"
              ></div>
       </li>

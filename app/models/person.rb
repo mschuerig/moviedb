@@ -83,9 +83,9 @@ class Person < ActiveRecord::Base
     if options[:order] =~ /\bname\b( (?:ASC|DESC))?/i
       options[:order] = "lastname#{$1},firstname#{$1},serial_number#{$1}"
     end
-    unless options[:group] || options[:select]
-      options[:select] = 'people.*, (SELECT COUNT(*) FROM people AS dupe WHERE dupe.lastname = people.lastname AND dupe.firstname = people.firstname) as duplicate_count'
-    end
+#    unless options[:group] || options[:select]
+#      options[:select] = 'people.*, (SELECT COUNT(*) FROM people AS dupe WHERE dupe.lastname = people.lastname AND dupe.firstname = people.firstname) as duplicate_count'
+#    end
     args << options
     super(*args)
   end

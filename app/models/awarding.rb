@@ -3,9 +3,9 @@ class Awarding < ActiveRecord::Base
   belongs_to :award
 
   module PeopleExtensions
-    define_method("as") do |role_name|
+    define_method("as") do |role|
       return self if role_name.blank?
-      role_name = role_name.kind_of?(RoleType) ? role_name.name : role_name.to_s
+      role_name = RoleType.its_name(role)
       self.scoped(
         # PostgreSQL doesn't allow forward references to joined tables.
         # Unfortunately, ActiveRecord merges the many scoped joins

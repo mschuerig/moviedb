@@ -8,11 +8,8 @@
   },
   :directors   => @movie.participants.as_director.map { |director|
     render :partial => 'people/item', :locals => { :person => director }
-  }
-=begin
-  ,
+  },
   :awardings   => @movie.awardings.map { |awarding|
     render :partial => 'awardings/short', :locals => { :awarding => awarding }
   }
-=end
 }

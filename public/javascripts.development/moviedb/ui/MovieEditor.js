@@ -7,6 +7,7 @@ dojo.require('moviedb.ui.ActorItem');
 dojo.require('moviedb.ui.PersonItem');
 dojo.require('moviedb.schema');
 dojo.require('aiki.SortedList');
+dojo.require('aiki.SortedTable');
 
 dojo.declare('moviedb.ui.MovieEditor',
   [moviedb.ui._generic.Editor, dijit._Container, 

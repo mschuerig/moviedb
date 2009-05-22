@@ -5,6 +5,7 @@
 @import "../javascripts/dojox/widget/Toaster/Toaster.css";
 @import "../javascripts/dojox/form/resources/BusyButton.css";
 @import "../javascripts/aiki/_SortedList/SortedList.css";
+@import "../javascripts/aiki/_SortedTable/SortedTable.css";
 @import "../javascripts/moviedb/ui/_ActorItem/ActorItem.css";
 
 html, body, #container {
@@ -13,6 +14,15 @@ html, body, #container {
   padding: 0 !important;
   margin: 0;
   overflow: hidden;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+a:hover {
+  text-decoration: underline;
 }
 
 .headerWrapper {
@@ -109,6 +119,22 @@ h1 {
 
 .moviedbEditor .awards h3 {
   background-image: url(/images/medium/oscar.png);
+}
+
+
+.moviedbEditor .aikiSortedTable thead th {
+  border-bottom: #ccc solid 1px;
+}
+
+.moviedbEditor .aikiSortedTable td,
+.moviedbEditor .aikiSortedTable th
+{
+  padding: 0 1em;
+  text-align: left;
+}
+
+.moviedbEditor .aikiSortedTable .actor {
+  color: #333;
 }
 
 .moviedbAwardView .groupList,
