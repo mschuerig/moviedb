@@ -27,7 +27,7 @@
              name="directors"
              dojoAttachPoint="directorsNode"
              contentWidget="moviedb.ui.PersonItem"
-             sortBy="lastname,firstname"
+             sortBy="[{attribute:'lastname'},{attribute:'firstname'}]"
              ></div>
       </li>
       <li class="actors">
@@ -36,7 +36,7 @@
              dojoAttachPoint="actorsNode"
              name="actors"
              contentWidget="moviedb.ui.ActorItem"
-             sortBy="creditedAs">
+             sortBy="moviedb.ui.MovieEditor.characterCompare">
           <thead>
             <tr>
               <th>Character</th>

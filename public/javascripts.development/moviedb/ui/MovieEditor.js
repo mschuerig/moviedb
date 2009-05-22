@@ -29,3 +29,15 @@ dojo.declare('moviedb.ui.MovieEditor',
   }
 
 });
+
+(function() {
+  function invertName(n) {
+    var m = /(?:(.*)\s+)?(.+)$/.exec(n)
+    return m[2] + '|' + m[1];
+  }
+
+  moviedb.ui.MovieEditor.characterCompare = function(a, b) {
+    return invertName(a.character.name).localeCompare(invertName(b.character.name));
+  };
+})();
+
