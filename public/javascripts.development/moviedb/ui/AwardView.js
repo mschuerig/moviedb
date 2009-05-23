@@ -140,7 +140,7 @@ dojo.declare('moviedb.ui.AwardView',
 
   _awardingDomID: function(awarding) {
     var baseId = this._baseDomId = (this._baseDomId || ('award_' + this._cleanId(this.store, this.object)));
-    return awarding ? (baseId + '_' + this._cleanId(this.store, awarding)) : baseId;
+    return awarding ? (baseId + this._cleanId(this.store, awarding)) : baseId;
   },
 
   _cleanId: function(store, object) {
