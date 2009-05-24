@@ -1,5 +1,5 @@
 class Person < ActiveRecord::Base
-  concerned_with :awards, :name, :roles, :social
+  concerned_with :awards, :marriages, :name, :roles, :social
   
   default_scope :order => 'lastname, firstname, serial_number'
 
