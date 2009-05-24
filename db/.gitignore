@@ -1,5 +1,6 @@
 *.sqlite3
 schema.rb
+db/*_structure.sql
 dump*.sql
 development-*dump-*.sql
 development-*dump-*.sql.*
