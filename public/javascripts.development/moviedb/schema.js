@@ -19,7 +19,11 @@ dojo.declare('moviedb.Movie', null, {
 
 dojo.declare('moviedb.Person', null, {
   getName: function() {
-    return dojo.string.substitute('${firstname} ${lastname}', this);
+    if (this.serial_number) {
+      return dojo.string.substitute('${firstname} ${lastname} (${serial_number})', this);
+    } else {
+      return dojo.string.substitute('${firstname} ${lastname}', this);
+    }
   }
 });
 
