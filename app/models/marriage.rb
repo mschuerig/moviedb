@@ -20,8 +20,4 @@ class Marriage < ActiveRecord::Base
       errors.add(:spouse_id, "Is already married") 
     end
   end
-  
-  def before_create
-    self.person_id 
-  end
 end

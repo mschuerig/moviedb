@@ -1,6 +1,13 @@
 
 class Person
-  has_many :marriages, :finder_sql => %q{SELECT marriages.* FROM marriages WHERE #{id} IN (person_id, spouse_id)} do
+  has_many :marriages do
+    def at(date)
+      self.first(:conditions => [
+        "(start_date <= :date) AND (:date <= COALESCE(end_date, NOW()))",
+        { :date => date }
+      ])
+    end
+    
     def status(date = Date.today)
       case
       when self.empty?
@@ -12,8 +19,17 @@ class Person
       end
     end
   end
-  
-  def spouse
-    
+
+=begin
+  # see https://rails.lighthouseapp.com/projects/8994-ruby-on-rails/tickets/2186
+  module SpouseAt
+    def at(date)
+      proxy_owner.marriages.at(date).try(:spouse)
+    end
   end
+=end
+
+  has_one :spouse, :through => :marriages,
+    :conditions => 'marriages.end_date IS NULL' #,
+#    :extend => SpouseAt
 end

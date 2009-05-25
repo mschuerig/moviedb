@@ -78,8 +78,34 @@ describe Marriage do
     end
     
     it "is known to the second partner" do
-#      @unmarried2.should have(1).marriages
+      @unmarried2.should have(1).marriages
       @unmarried2.spouse.should == @unmarried1
+    end
+  end
+  
+  describe ", divorced" do
+    it "is no longer current" do
+      @divorced1.marriages.at(Date.today).should be_nil
+      @divorced2.marriages.at(Date.today).should be_nil
+    end
+    
+    it "is remembered by the divorced couple" do
+      @divorced1.marriages.at(2.year.ago).should == @divorced_marriage
+      @divorced2.marriages.at(2.year.ago).should == @divorced_marriage
+    end
+  end
+  
+  describe "affects people's marriage status" do
+    it "marks them as unmarried" do
+      @unmarried1.marriages.status.should == :unmarried
+    end
+
+    it "marks them as married" do
+      @married1.marriages.status.should == :married
+    end
+
+    it "marks them as divorced" do
+      @divorced1.marriages.status.should == :divorced
     end
   end
 end
