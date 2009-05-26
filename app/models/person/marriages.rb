@@ -1,13 +1,16 @@
 
 class Person
-  has_many :marriages do
+  has_many :marriages, :order => 'marriages.start_date' do
     def at(date)
       self.first(:conditions => [
         "(start_date <= :date) AND (:date <= COALESCE(end_date, NOW()))",
         { :date => date }
       ])
     end
-    
+    def current
+      at(Date.today)
+    end
+
     def status(date = Date.today)
       case
       when self.empty?
@@ -19,6 +22,23 @@ class Person
       end
     end
   end
+
+  named_scope :unmarried, lambda { |*args|
+    options = args.first || {}
+    dates = {
+      :from_date  => options[:from]  || options[:at] || Date.today,
+      :until_date => options[:until] || options[:at] || Date.today
+    }
+    overlap = SqlHelper.overlaps(:from_date, :until_date, 'start_date', 'COALESCE(end_date, NOW())')
+    {
+      :conditions => [
+        "id NOT IN (SELECT person_id FROM marriages WHERE #{overlap})",
+        dates
+      ]
+    }
+  }
+  
+  named_scope :married ### TODO
 
 =begin
   # see https://rails.lighthouseapp.com/projects/8994-ruby-on-rails/tickets/2186
