@@ -21,17 +21,7 @@ class ApplicationController < ActionController::Base
   def self.normalize_param_references(associations, params)
     associations.each do |assoc|
       if attributes = params[:attributes]
-        Array(attributes[assoc]).each do |ref|
-          case ref
-          when Hash
-            ref['id'] = normalize_id(ref.delete('$ref'))
-            ref
-          when String
-            normalize_id(ref)
-          else
-            ref
-          end
-        end
+        Array(attributes[assoc]).map! { |value| ParameterNormalizer.normalize(value) }
       end
     end
   end
@@ -39,9 +29,4 @@ class ApplicationController < ActionController::Base
   # Scrub sensitive parameters from your log
   # filter_parameter_logging :password
 
-  private
-
-  def self.normalize_id(id_param)
-    id_param.sub(%r{^.*/}, '')
-  end
 end
