@@ -26,19 +26,21 @@ class Movie
       proxy_owner.roles.delete(role)
     end
 
-    def replace(role, refs_with_options)
+    def replace(role_type, refs_with_options)
       transaction do
-        options = refs_with_options.map { |o| o.kind_of?(Hash) ? o.dup.delete(:id) : {} }
-        others  = refs_with_options.map { |o| o.kind_of?(Hash) ? o[:id] : o }
+        id_attr = RoleType.its_name(role_type) + '_id'
+
+        options = refs_with_options.map { |o| o.kind_of?(Hash) ? o.dup.delete(id_attr) : {} }
+        others  = refs_with_options.map { |o| o.kind_of?(Hash) ? o[id_attr] : o }
 
         others  = Person.find(others)
-        current = proxy_owner.participants.as(role)
+        current = proxy_owner.participants.as(role_type)
 
         obsolete = current.select { |o| !others.include?(o) }
         fresh    = others.zip(options).select { |o, opts| !current.include?(o) }
 
-        obsolete.each { |o|       self.remove(role, o) }
-        fresh.each    { |o, opts| self.add(role, o, opts) }
+        obsolete.each { |o|       self.remove(role_type, o) }
+        fresh.each    { |o, opts| self.add(role_type, o, opts) }
       end
     end
 
