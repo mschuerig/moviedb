@@ -3,7 +3,7 @@ require 'migration_helpers'
 
 class CreateMarriages < ActiveRecord::Migration
   extend MigrationHelpers
-  
+
   def self.up
     create_table :marriages_internal do |t|
       t.belongs_to :person1, :null => false
@@ -29,7 +29,7 @@ class CreateMarriages < ActiveRecord::Migration
       v.column :end_date
       v.column :lock_version
     end
-    
+
     execute <<-SQL
 CREATE RULE marriages_insert AS ON INSERT TO marriages DO INSTEAD
 INSERT INTO marriages_internal (person1_id, person2_id, start_date, end_date, lock_version)
@@ -46,19 +46,21 @@ UPDATE marriages_internal
 SET start_date   = NEW.start_date,
     end_date     = NEW.end_date,
     lock_version = NEW.lock_version
-WHERE (LEAST(NEW.person_id, NEW.spouse_id),
-       GREATEST(NEW.person_id, NEW.spouse_id)) =
-      (OLD.person_id, OLD.spouse_id);
+WHERE (id = OLD.id) AND (lock_version = OLD.lock_version);
 
 CREATE RULE marriages_delete AS ON DELETE TO marriages DO INSTEAD
 DELETE FROM marriages_internal
-WHERE ((LEAST(person1_id, person2_id), GREATEST(person1_id, person2_id)) =
-       (OLD.person_id, OLD.spouse_id)) AND
-      (lock_version = OLD.lock_version);
+WHERE (id = OLD.id) AND (lock_version = OLD.lock_version);
     SQL
   end
 
   def self.down
+    execute <<-SQL
+DROP RULE marriages_insert ON marriages;
+DROP RULE marriages_update ON marriages;
+DROP RULE marriages_delete ON marriages;
+    SQL
+
     drop_view  :marriages
     drop_table :marriages_internal
   end
