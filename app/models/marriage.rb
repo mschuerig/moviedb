@@ -1,9 +1,9 @@
 
 class Marriage < ActiveRecord::Base
-  belongs_to :person
-  belongs_to :spouse, :class_name => 'Person'
+  belongs_to :person, :touch => true
+  belongs_to :spouse, :class_name => 'Person', :touch => true
   attr_readonly :person_id, :spouse_id
-  validates_presence_of :person_id, :spouse_id
+  validates_presence_of :person_id, :spouse_id, :start_date
   
   def before_validation
     self.start_date ||= Date.today
@@ -14,10 +14,23 @@ class Marriage < ActiveRecord::Base
       errors.add_to_base("A person cannot marry themselves.")
     end
     if person.spouse
-      errors.add(:person_id, "Is already married") 
+      errors.add(:person_id, "Is already married.")
     end
     if spouse.spouse
-      errors.add(:spouse_id, "Is already married") 
+      errors.add(:spouse_id, "Is already married.")
+    end
+    if end_date && end_date < start_date
+      errors.add(:end_date, "The end date cannot be before the start date.")
+    end
+  end
+
+  private
+  
+  def update(*args)
+    # This scoping ensures that UPDATE only reports changing one row (at the most)
+    # and thus a spurious clash with optimistic locking is avoided.
+    self.class.send(:with_scope, :find => { :conditions => "person_id < spouse_id" }) do
+      super
     end
   end
 end
