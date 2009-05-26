@@ -36,7 +36,7 @@ class Person
     overlap = SqlHelper.overlaps(:from_date, :until_date, 'start_date', 'COALESCE(end_date, NOW())')
     {
       :conditions => [
-        "id NOT IN (SELECT person_id FROM marriages WHERE #{overlap})",
+        "people.id NOT IN (SELECT person_id FROM marriages WHERE #{overlap})",
         dates
       ]
     }
