@@ -5,6 +5,8 @@ dojo.require('dijit.form.Textarea');
 dojo.require('dijit.form.ValidationTextBox');
 dojo.require('dojox.form.BusyButton');
 dojo.require('aiki.Form');
+dojo.require('moviedb.ui.ActorItem');
+dojo.require('moviedb.ui.DirectorItem');
 dojo.requireLocalization("dijit", "loading");
 
 dojo.declare('moviedb.ui._MovieEditor.View', null, {

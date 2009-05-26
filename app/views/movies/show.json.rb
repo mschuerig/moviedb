@@ -6,8 +6,8 @@
   :actors      => @movie.roles.as_actor.map { |role|
     render :partial => 'roles/actor', :locals => { :role => role }
   },
-  :directors   => @movie.participants.as_director.map { |director|
-    render :partial => 'people/item', :locals => { :person => director }
+  :directors   => @movie.roles.as_director.map { |role|
+    render :partial => 'roles/director', :locals => { :role => role }
   },
   :awardings   => @movie.awardings.map { |awarding|
     render :partial => 'awardings/short', :locals => { :awarding => awarding }

@@ -26,8 +26,8 @@
         <div dojoType="aiki.SortedList"
              name="directors"
              dojoAttachPoint="directorsNode"
-             contentWidget="moviedb.ui.PersonItem"
-             sortBy="[{attribute:'lastname'},{attribute:'firstname'}]"
+             contentWidget="moviedb.ui.DirectorItem"
+             sortBy="moviedb.ui.MovieEditor.creditedAsCompare"
              ></div>
       </li>
       <li class="actors">
