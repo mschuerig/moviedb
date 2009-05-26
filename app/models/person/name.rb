@@ -18,6 +18,10 @@ class Person
     "#{firstname} #{lastname}"
   end
 
+  def has_dupes?
+    self[:duplicate_count].to_i > 1
+  end
+
   def before_create
     # This method is called before create and before a retried create.
     # On a retry, serial_number is already set, so don't reset it.
@@ -37,10 +41,6 @@ class Person
   rescue ActiveRecord::RecordNotUnique => e
     self.serial_number = next_unused_serial_number
     retry
-  end
-
-  def has_dupes?
-    self[:duplicate_count].to_i > 1
   end
 
   def next_unused_serial_number
