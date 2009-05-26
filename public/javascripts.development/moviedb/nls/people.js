@@ -1,3 +1,4 @@
 {
-  dob: 'born ${dob}'
+  dob: 'born ${dob}',
+  presentDate: 'present'
 }

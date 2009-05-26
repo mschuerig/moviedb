@@ -43,14 +43,11 @@ Dojo
 * tests
     - DOH
 * data stores
-    - correct partial and lazy loading
     - error handling
     - change notif from server + data notification API
 * a11y
     - assign proper roles
 * ensure that non-selected tabs are only loaded on demand
-* editors
-    - tab w/ icon for modified
 * undo/back button
 * offline?
 * movie form
@@ -67,3 +64,5 @@ Dojo
     - define validations from schema
 * transactions + conflict handling
 * optimize stylesheets
+* widget templates
+    - href: absolute/relative paths from getIdentity?

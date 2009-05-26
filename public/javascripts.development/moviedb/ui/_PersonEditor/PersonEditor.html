@@ -29,6 +29,15 @@
       <li class="awards">
         <h3>Awards</h3>
       </li>
+      <li class="spouses">
+        <h3>Spouses</h3>
+        <div dojoType="aiki.SortedList"
+             name="spouses"
+             dojoAttachPoint="spousesNode"
+             contentWidget="moviedb.ui.SpouseItem"
+             sortBy="{attribute:'startDate'}"
+             ></div>
+      </li>
       <li>
         <div dojoType="dojox.form.BusyButton" type="submit"
              busyLabel="Saving..."

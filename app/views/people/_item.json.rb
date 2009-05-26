@@ -4,5 +4,5 @@ hash = {
   :lastname      => person.lastname,
   :dob           => person.date_of_birth
 }
-hash[:serial_number] = person.serial_number if person.serial_number
+hash[:serial_number] = person.serial_number if person.has_dupes?
 hash
