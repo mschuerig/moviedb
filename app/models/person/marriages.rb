@@ -1,12 +1,19 @@
 
 class Person
   has_many :marriages, :order => 'marriages.start_date' do
+    def during(options)
+      dates = Person.dates_from_options(options)
+      overlap = SqlHelper.overlaps(:from_date, :until_date, 'start_date', 'COALESCE(end_date, NOW())')
+      self.scoped(:conditions => [overlap, dates])
+    end
+    
     def at(date)
       self.first(:conditions => [
         "(start_date <= :date) AND (:date <= COALESCE(end_date, NOW()))",
         { :date => date }
       ])
     end
+    
     def current
       at(Date.today)
     end
@@ -25,10 +32,7 @@ class Person
 
   named_scope :unmarried, lambda { |*args|
     options = args.first || {}
-    dates = {
-      :from_date  => options[:from]  || options[:at] || Date.today,
-      :until_date => options[:until] || options[:at] || Date.today
-    }
+    dates   = dates_from_options(options)
     overlap = SqlHelper.overlaps(:from_date, :until_date, 'start_date', 'COALESCE(end_date, NOW())')
     {
       :conditions => [
@@ -52,4 +56,13 @@ class Person
   has_one :spouse, :through => :marriages,
     :conditions => 'marriages.end_date IS NULL' #,
 #    :extend => SpouseAt
+
+  private
+  
+  def self.dates_from_options(options)
+    {
+      :from_date  => options[:from]  || options[:at] || Date.today,
+      :until_date => options[:until] || options[:at] || Date.today
+    }
+  end
 end

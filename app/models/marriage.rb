@@ -13,15 +13,15 @@ class Marriage < ActiveRecord::Base
     if person == spouse
       errors.add_to_base("A person cannot marry themselves.")
     end
-    if person.spouse
-      errors.add(:person_id, "Is already married.")
-    end
-    if spouse.spouse
-      errors.add(:spouse_id, "Is already married.")
-    end
+  end
+  
+  def validate_on_save
     if end_date && end_date < start_date
       errors.add(:end_date, "The end date cannot be before the start date.")
     end
+
+    validate_unmarried(person, :person_id)
+    validate_unmarried(spouse, :spouse_id)
   end
 
   private
@@ -31,6 +31,12 @@ class Marriage < ActiveRecord::Base
     # and thus a spurious clash with optimistic locking is avoided.
     self.class.send(:with_scope, :find => { :conditions => "person_id < spouse_id" }) do
       super
+    end
+  end
+
+  def validate_unmarried(person, attribute)
+    if person.marriages.during(:from => start_date, :until => end_date).exists?
+      errors.add(attribute, "Is already married at that time.")
     end
   end
 end
