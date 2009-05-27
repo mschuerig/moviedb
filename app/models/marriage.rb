@@ -27,6 +27,13 @@ class Marriage < ActiveRecord::Base
     { :conditions => [overlap, dates] }
   }
 
+  def overlaps?(dates)
+    today = Date.today
+    from_date  = extract_date(dates, [:from,  :date], today)
+    until_date = extract_date(dates, [:until, :date], today)
+    (from_date..until_date).overlaps?((start_date || today)..(end_date || today))
+  end
+
   def before_validation
     self.start_date ||= Date.today
   end
@@ -48,15 +55,28 @@ class Marriage < ActiveRecord::Base
 
   private
 
-  named_scope :excluding, lambda { |marriage|
+=begin
+ named_scope :excluding, lambda { |marriage|
     marriage.new_record? ? {} : { :conditions => ["marriages.id <> ?", marriage] }
   }
+=end
 
   def validate_unmarried(person, attribute)
-    # TODO do this check on loaded association collection?
-    married = person.marriages.excluding(self).during(:from => start_date, :until => end_date).exists?
+#    married = person.marriages.excluding(self).during(:from => start_date, :until => end_date).exists?
+    married = !(person.marriages.during(:from => start_date, :until => end_date) - [self]).empty?
     if married
       errors.add(attribute, "Is already married at that time.")
     end
+  end
+
+  def extract_date(hash, keys, default_date)
+    date = extract_value(hash, keys, default_date)
+    date = Date.parse(date) if date.kind_of?(String)
+    date.to_date
+  end
+
+  def extract_value(hash, keys, default_value)
+    key = keys.detect { |k| hash[k] }
+    key ? hash[key] : default_value
   end
 end

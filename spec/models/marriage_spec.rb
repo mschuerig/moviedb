@@ -85,8 +85,8 @@ describe Marriage do
 
   describe ", divorced" do
     it "is no longer current" do
-      @divorced1.marriages.at(Date.today).should be_nil
-      @divorced2.marriages.at(Date.today).should be_nil
+      @divorced1.marriages.during(:from => Date.today).should be_empty
+      @divorced2.marriages.during(:from => Date.today).should be_empty
     end
 
     it "is remembered by the divorced couple" do
@@ -113,15 +113,17 @@ describe Marriage do
     before do
       @old_marriage.end_date = 1.day.ago
       @old_marriage.save!
+      @married1.reload
+      @married2.reload
     end
 
     it "first partner should not be married" do
-      @married1.marriages.at(Date.today).should be_nil
+      @married1.marriages.during(:from => Date.today).should == []
       @married1.spouse.should be_nil
     end
 
     it "second partner should not be married" do
-      @married2.marriages.at(Date.today).should be_nil
+      @married2.marriages.during(:from => Date.today).should be_empty
       @married2.spouse.should be_nil
     end
   end

@@ -2,11 +2,17 @@
 module SqlHelper
 
   def self.overlaps_predicate(period1_start, period1_end, period2_start, period2_end)
+=begin
   <<-SQL
   ((#{symstr(period1_start)} BETWEEN #{symstr(period2_start)} AND #{symstr(period2_end)}) OR
    (#{symstr(period1_end)  } BETWEEN #{symstr(period2_start)} AND #{symstr(period2_end)}) OR
    ((#{symstr(period1_start)} <= #{symstr(period2_start)})
     AND (#{symstr(period2_end)} <= #{symstr(period1_end)})))
+    SQL
+=end
+  <<-SQL
+  ((#{symstr(period1_start)} BETWEEN #{symstr(period2_start)} AND #{symstr(period2_end)}) OR
+   (#{symstr(period2_start)} BETWEEN #{symstr(period1_start)} AND #{symstr(period1_end)}))
     SQL
   end
   

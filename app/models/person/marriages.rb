@@ -1,15 +1,12 @@
 
 class Person
   has_many :marriages, :order => 'marriages.start_date' do
-    def at(date)
-      self.first(:conditions => [
-        "(start_date <= :date) AND (:date <= COALESCE(end_date, NOW()))",
-        { :date => date }
-      ])
+    def during(dates)
+      self.select { |marriage| marriage.overlaps?(dates) }
     end
 
-    def current
-      at(Date.today)
+    def at(date)
+      self.during(:date => date).first
     end
 
     def status(date = Date.today)
@@ -24,6 +21,22 @@ class Person
     end
   end
 
+  has_one :marriage, :conditions => 'end_date IS NULL', :extend => (Module.new do
+    ### FIXME doesn't work
+    # see https://rails.lighthouseapp.com/projects/8994-ruby-on-rails/tickets/2186
+    def at(date)
+      proxy_owner.marriages.during(:date => date).first
+    end
+  end)
+
+  has_one :spouse, :through => :marriage, :extend => (Module.new do
+    ### FIXME doesn't work
+    # see https://rails.lighthouseapp.com/projects/8994-ruby-on-rails/tickets/2186
+    def at(date)
+      proxy_owner.marriages.during(:date => date).first.try(:spouse)
+    end
+  end)
+
   named_scope :unmarried, lambda { |*args|
     options = args.first || {}
     dates   = dates_from_options(options)
@@ -37,18 +50,5 @@ class Person
   }
 
   named_scope :married ### TODO
-
-=begin
-  # see https://rails.lighthouseapp.com/projects/8994-ruby-on-rails/tickets/2186
-  module SpouseAt
-    def at(date)
-      proxy_owner.marriages.at(date).try(:spouse)
-    end
-  end
-=end
-
-  has_one :spouse, :through => :marriages,
-    :conditions => 'marriages.end_date IS NULL' #,
-#    :extend => SpouseAt
 
 end
