@@ -1,6 +1,6 @@
 class Person < ActiveRecord::Base
   concerned_with :awards, :marriages, :name, :roles, :social
-  
+
   default_scope :order => 'lastname, firstname, serial_number'
 
   def self.find(*args)

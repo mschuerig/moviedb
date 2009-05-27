@@ -10,11 +10,11 @@ class Character < ActiveRecord::Base
       self.map(&:person)
     end
   end
-=end  
+=end
   def movies
     roles.all(:include => :movie).map(&:movie)
   end
-  
+
   def actors
     roles.all(:include => :person).map(&:actor)
   end

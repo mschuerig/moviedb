@@ -6,7 +6,6 @@ shared_examples_for "Any Movie" do
   end
 
   it "should be valid given valid attributes" do
-###    debugger
     @movie.should be_valid
   end
 
