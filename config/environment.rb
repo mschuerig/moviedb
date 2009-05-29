@@ -25,7 +25,7 @@ Rails::Initializer.run do |config|
   # config.gem "sqlite3-ruby", :lib => "sqlite3"
   # config.gem "aws-s3", :lib => "aws/s3"
   config.gem "mschuerig-index_lifter", :lib => 'index_lifter'
-  config.gem "mschuerig-easy_enums", :lib => 'easy_enums'
+  config.gem "mschuerig-enumerate_by", :lib => 'enumerate_by'
   config.gem "mschuerig-ruby_template_handler", :lib => 'ruby_template_handler'
   config.gem "mschuerig-branch_db", :lib => 'branch_db'
   config.gem "rails_sql_views"
