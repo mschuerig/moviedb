@@ -2,9 +2,10 @@
 class Person
   class HasRoleError < StandardError; end
 
-  has_many :roles, :extend => RoleTypeAssociationExtensions
+  has_many :roles, :autosave => true, :extend => RoleTypeAssociationExtensions
 
-  has_many :movies, :through => :roles, :extend => RoleTypeAssociationExtensions, :order => 'release_date'
+  has_many :movies, :through => :roles,
+    :autosave => true, :extend => RoleTypeAssociationExtensions, :order => 'release_date'
 
   RoleType.each_name do |name|
     named_scope name.pluralize, lambda { |*args|

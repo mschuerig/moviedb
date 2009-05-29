@@ -5,7 +5,7 @@ class Person
   validates_presence_of :firstname, :lastname
 
   # Returns a formatted name for the person.
-  # Formatting is really a view concern, this method is here only for inspection.  
+  # Formatting is really a view concern, this method is here only for inspection.
   def name
     if has_dupes?
       "#{firstname} #{lastname} (#{serial_number})"

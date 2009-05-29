@@ -78,12 +78,17 @@ describe "Movie (2002)" do
 
     it "can have actors replaced" do
       others = [@actor.to_param, @cand_actor.to_param]
-      @movie.participants.replace_actors(others)
+      @movie.actors = others
 #      pending do
 #        movie_should_have_new_actors
 #      end
       @movie.save!
+      movie_should_have_new_roles
       movie_should_have_new_actors
+    end
+
+    def movie_should_have_new_roles
+      @movie.participants.as_actor.size.should == 2
     end
 
     def movie_should_have_new_actors

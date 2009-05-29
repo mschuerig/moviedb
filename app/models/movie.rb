@@ -43,4 +43,5 @@ class Movie < ActiveRecord::Base
   def before_validation
     self.release_year = release_date.blank? ? nil : release_date.year
   end
+  
 end

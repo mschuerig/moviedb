@@ -27,11 +27,13 @@ class Marriage < ActiveRecord::Base
     { :conditions => [overlap, dates] }
   }
 
-  def overlaps?(dates)
+  def period
     today = Date.today
-    from_date  = extract_date(dates, [:from,  :date], today)
-    until_date = extract_date(dates, [:until, :date], today)
-    (from_date..until_date).overlaps?((start_date || today)..(end_date || today))
+    ((start_date || today)..(end_date || today))
+  end
+
+  def overlaps?(dates)
+    period.overlaps?(extract_period(dates))
   end
 
   def before_validation
@@ -55,20 +57,20 @@ class Marriage < ActiveRecord::Base
 
   private
 
-=begin
- named_scope :excluding, lambda { |marriage|
-    marriage.new_record? ? {} : { :conditions => ["marriages.id <> ?", marriage] }
-  }
-=end
-
   def validate_unmarried(person, attribute)
-#    married = person.marriages.excluding(self).during(:from => start_date, :until => end_date).exists?
-    married = !(person.marriages.during(:from => start_date, :until => end_date) - [self]).empty?
-    if married
+    others = person.marriages.during(:from => start_date, :until => end_date) - [self]
+    unless others.empty?
       errors.add(attribute, "Is already married at that time.")
     end
   end
 
+  def extract_period(hash, default_date = Date.today)
+    return hash if hash.kind_of?(Range)
+    from_date  = extract_date(hash, [:from,  :date], default_date)
+    until_date = extract_date(hash, [:until, :date], default_date)
+    (from_date..until_date)
+  end
+  
   def extract_date(hash, keys, default_date)
     date = extract_value(hash, keys, default_date)
     date = Date.parse(date) if date.kind_of?(String)
