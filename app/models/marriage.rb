@@ -10,7 +10,7 @@ class Marriage < ActiveRecord::Base
   }
 
   named_scope :ended_before, lambda { |date|
-    { :conditions => ["COALESCE(end_date, NOW()) < ?", date] }
+    { :conditions => ["COALESCE(end_date, CURRENT_DATE) < ?", date] }
   }
 
   named_scope :started_after, lambda { |date|
@@ -18,12 +18,12 @@ class Marriage < ActiveRecord::Base
   }
 
   named_scope :ended_after, lambda { |date|
-    { :conditions => ["? < COALESCE(end_date, NOW())", date] }
+    { :conditions => ["? < COALESCE(end_date, CURRENT_DATE)", date] }
   }
 
   named_scope :during, lambda { |options|
     dates   = SqlHelper.dates_from_options(options)
-    overlap = SqlHelper.overlaps_predicate(:from_date, :until_date, 'start_date', 'COALESCE(end_date, NOW())')
+    overlap = SqlHelper.overlaps_predicate(:from_date, :until_date, 'start_date', 'COALESCE(end_date, CURRENT_DATE)')
     { :conditions => [overlap, dates] }
   }
 

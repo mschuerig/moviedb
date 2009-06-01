@@ -40,7 +40,7 @@ class Person
   named_scope :unmarried, lambda { |*args|
     options = args.first || {}
     dates   = dates_from_options(options)
-    overlap = SqlHelper.overlaps(:from_date, :until_date, 'start_date', 'COALESCE(end_date, NOW())')
+    overlap = SqlHelper.overlaps(:from_date, :until_date, 'start_date', 'COALESCE(end_date, CURRENT_DATE)')
     {
       :conditions => [
         "people.id NOT IN (SELECT person_id FROM marriages WHERE #{overlap})",
