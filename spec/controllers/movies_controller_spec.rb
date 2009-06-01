@@ -5,10 +5,12 @@ require 'spec/mocks/scope_expectation'
 describe MoviesController do
 
   def mock_movie_item(stubs={})
+    stubs = stubs.reverse_merge(:updated_at => 10.minutes.ago)
     @mock_movie_item ||= mock_model(MovieItem, stubs)
   end
 
   def mock_movie(stubs={})
+    stubs = stubs.reverse_merge(:updated_at => 10.minutes.ago)
     @mock_movie ||= mock_model(Movie, stubs)
   end
 

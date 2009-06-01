@@ -4,6 +4,7 @@ require 'spec/mocks/scope_expectation'
 
 describe PeopleController do
   def mock_person(stubs={})
+    stubs = stubs.reverse_merge(:updated_at => 10.minutes.ago)
     @mock_person ||= mock_model(Person, stubs)
   end
 
