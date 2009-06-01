@@ -1,7 +1,7 @@
 dojo.provide('moviedb.ui.AwardView');
+dojo.require('dojo.NodeList-traverse');
 dojo.require('dijit._Templated');
 dojo.require('dijit._Widget');
-dojo.require('plugd.ancestor');
 dojo.require('moviedb.Dispatcher');
 dojo.require('moviedb.ui._AwardView.AwardingsList');
 dojo.require('moviedb.ui._AwardView.Group');
@@ -58,8 +58,8 @@ dojo.declare('moviedb.ui.AwardView',
 
   postCreate: function() {
     this._dispatcher = new moviedb.Dispatcher(this.domNode, 
-      { event: 'click', path: '.person a', topic: 'person.selected' },
-      { event: 'click', path: '.movie a',  topic: 'movie.selected' }
+      { event: 'click', path: 'a .person', topic: 'person.selected' },
+      { event: 'click', path: 'a .movie',  topic: 'movie.selected' }
     );
   },
 

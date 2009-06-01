@@ -10,8 +10,8 @@ dojo.declare('moviedb.ui.PersonEditor', [moviedb.ui._generic.Editor, moviedb.ui.
     this.inherited(arguments);
 
     this._dispatcher = new moviedb.Dispatcher(this.domNode,
-      { event: 'click', path: '.person a', topic: 'person.selected' },
-      { event: 'click', path: '.movie a',  topic: 'movie.selected' }
+      { event: 'click', path: 'a .person', topic: 'person.selected' },
+      { event: 'click', path: 'a .movie',  topic: 'movie.selected' }
     );
   },
 
