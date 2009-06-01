@@ -10,10 +10,10 @@ class CreateMovieItems < ActiveRecord::Migration
       v.column :title
       v.column :release_date
       v.column :release_year
-      v.column :award_count
       v.column :created_at
       v.column :updated_at
       v.column :lock_version
+      v.column :award_count
     end
   end
 
