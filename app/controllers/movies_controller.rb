@@ -1,15 +1,14 @@
 class MoviesController < ApplicationController
   include LazyJason
   include QueryScope
-  before_filter :load_list_scope, :only => :index
-  before_filter :load_scope, :except => :index
+  before_filter :load_scope
   normalize_references :actors, :directors, :awardings
 
-  query_scope :resource => :movie_item, :only => :index do
-    allow     :title, :release_year, :release_date, :award_count
+  query_scope :only => :index do
+    allow     :title, :release_year, :release_date, :awardings_count
     rename    :year => :release_year
     rename    :date => :release_date
-    rename    [:awardings, :awards, :award_count, 'award-count'] => :award_count
+    rename    [:awardings, :awards, :award_count, 'award-count'] => :awardings_count
   end
 
   private
@@ -33,9 +32,4 @@ class MoviesController < ApplicationController
   def load_scope
     @scope = Movie
   end
-
-  def load_list_scope
-    @scope = MovieItem
-  end
-
 end

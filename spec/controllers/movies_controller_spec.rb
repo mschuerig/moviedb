@@ -4,11 +4,6 @@ require 'spec/mocks/scope_expectation'
 
 describe MoviesController do
 
-  def mock_movie_item(stubs={})
-    stubs = stubs.reverse_merge(:updated_at => 10.minutes.ago)
-    @mock_movie_item ||= mock_model(MovieItem, stubs)
-  end
-
   def mock_movie(stubs={})
     stubs = stubs.reverse_merge(:updated_at => 10.minutes.ago)
     @mock_movie ||= mock_model(Movie, stubs)
@@ -16,8 +11,8 @@ describe MoviesController do
 
   def expect_movie_retrievals(options = {}, find_scope = nil)
     scopes = find_scope ? { :find => find_scope } : {}
-    MovieItem.should_receive(:all).with(options).within_scope(MovieItem, scopes).and_return([])
-    MovieItem.should_receive(:count).and_return(0)
+    Movie.should_receive(:all).with(options).within_scope(Movie, scopes).and_return([])
+    Movie.should_receive(:count).and_return(0)
   end
 
   describe "GET index" do

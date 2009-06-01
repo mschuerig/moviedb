@@ -22,24 +22,6 @@ class Movie < ActiveRecord::Base
     find(:all).group_by(&:release_year).sort_by(&:first)
   end
 
-  def self.find(*args)
-    options = args.extract_options!
-    if options[:order] =~ /\bawards\b/i
-      tn = table_name
-      cols = Movie.column_names.map { |c| "#{tn}.#{c}"}.join(',')
-      with_scope(:find => options) do
-        super(args[0],
-          :select => "#{cols}, COUNT(awardings_movies.movie_id) AS awards",
-          :joins => "LEFT OUTER JOIN awardings_movies ON awardings_movies.movie_id = movies.id",
-          :group => cols
-        )
-      end
-    else
-      args << options
-      super(*args)
-    end
-  end
-
   def before_validation
     self.release_year = release_date.blank? ? nil : release_date.year
   end
