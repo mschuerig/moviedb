@@ -5,7 +5,8 @@ describe "/people/index.json.rb" do
 
   before do
     person = stub_model(Person, :id => 1,
-      :firstname => 'Clint', :lastname => 'Easterbunny', :date_of_birth => '2008-03-23')
+      :firstname => 'Clint', :lastname => 'Easterbunny',
+      :date_of_birth => '2008-03-23', :serial_number => 1, :duplicate_count => 1)
     assigns[:people] = [person]
     assigns[:count] = 1
   end

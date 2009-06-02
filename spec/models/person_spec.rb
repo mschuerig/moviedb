@@ -31,6 +31,23 @@ describe "A Person" do
     it "does not show its serial number" do
       @person.name.should == 'Clint Eastwood'
     end
+    
+    describe "when renamed to an existing name" do
+      before do
+        @other = Person.create!(:firstname => 'Already', :lastname => 'There')
+        @person.firstname = 'Already'
+        @person.lastname  = 'There'
+        @person.save!
+      end
+      
+      it "gets a new serial number" do
+        @person.serial_number.should == 2
+      end
+  
+      it "shows its serial number" do
+        @person.name.should == 'Already There (2)'
+      end
+    end
   end
 
   describe "with a duplicate name" do
