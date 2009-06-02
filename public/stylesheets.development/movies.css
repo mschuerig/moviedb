@@ -126,13 +126,6 @@ h1 {
   border-bottom: #ccc solid 1px;
 }
 
-.moviedbEditor .aikiSortedTable td,
-.moviedbEditor .aikiSortedTable th
-{
-  padding: 0 1em;
-  text-align: left;
-}
-
 .moviedbEditor .aikiSortedTable .actor {
   color: #333;
 }

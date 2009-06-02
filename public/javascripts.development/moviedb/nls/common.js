@@ -1,0 +1,3 @@
+{
+  editItem: 'Edit'
+}

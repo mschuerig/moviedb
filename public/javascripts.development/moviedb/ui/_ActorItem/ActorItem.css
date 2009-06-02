@@ -14,3 +14,17 @@
   display: -moz-inline-box;
   display: inline-block;
 }
+
+.aikiSortedTableItem .moviedbActorItemEditButton .dijitButtonNode {
+  visibility: hidden;
+  width: 20px;
+  height: 16px;
+  margin: 0;
+  padding: 0;
+  background-color: transparent;
+  background: url(edit.png) center center no-repeat;
+}
+
+.aikiSortedTableItem:hover .moviedbActorItemEditButton .dijitButtonNode {
+  visibility: visible;
+}
