@@ -4,6 +4,7 @@ ENV["RAILS_ENV"] ||= 'test'
 require File.dirname(__FILE__) + "/../config/environment" unless defined?(RAILS_ROOT)
 require 'spec/autorun'
 require 'spec/rails'
+require 'remarkable_rails'
 require 'spec/blueprints'
 
 Spec::Runner.configure do |config|
@@ -49,4 +50,12 @@ Spec::Runner.configure do |config|
   # For more information take a look at Spec::Runner::Configuration and Spec::Runner
 
   config.include Spec::JSONMatchers, :type => :views
+end
+
+module ActionController # :nodoc:
+  class TestRequest < Request # :nodoc:
+    def if_match=(etag)
+      @env["HTTP_IF_MATCH"] = etag
+    end
+  end
 end

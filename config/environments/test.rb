@@ -29,8 +29,9 @@ config.action_mailer.delivery_method = :test
 
 config.gem "faker"
 config.gem "notahat-machinist", :lib => "machinist"
-config.gem "rspec", :lib => false, :version => ">= 1.2.2" 
-config.gem "rspec-rails", :lib => false, :version => ">= 1.2.2"
+config.gem "rspec",             :lib => false, :version => ">= 1.2.2" 
+config.gem "rspec-rails",       :lib => false, :version => ">= 1.2.2"
+config.gem "remarkable_rails",  :lib => false
 
 config.after_initialize do
   if config.database_configuration[RAILS_ENV]['database'] == ':memory:'
