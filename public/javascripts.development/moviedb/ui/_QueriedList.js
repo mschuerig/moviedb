@@ -47,7 +47,7 @@ dojo.declare('moviedb.ui._QueriedList',
     this._makeQueryHelp(this.helpContentNode, 
       this.allowedQueryAttributes, this.defaultQueryAttribute);
 
-    this._addTopAction('Show', dojo.hitch(this, function(context) {
+    this._addTopAction(this._nls.showObjectAction, dojo.hitch(this, function(context) {
       dojo.publish(this._topic + '.selected', [context[this._contextItemName]]);
     }));
     this._addTopAction('-');
