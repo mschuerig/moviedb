@@ -83,6 +83,23 @@ h1 {
   background-image: url(/images/small/oscar.png);
 }
 
+.filterIcon {
+  background: url(/images/small/search.png) center center no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.helpIcon {
+  background: url(/images/small/help.png) center center no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.helpButton .dijitArrowButtonInner {
+  display: none;
+}
+
+
 .moviedbEditor ol {
   list-style-type: none;
 }

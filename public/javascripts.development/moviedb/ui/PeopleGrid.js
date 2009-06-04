@@ -1,9 +1,11 @@
 dojo.provide('moviedb.ui.PeopleGrid');
 dojo.require('dijit._Templated');
+dojo.require('dijit.form.DropDownButton');
 dojo.require('dijit.form.Form');
 dojo.require('dijit.form.TextBox');
 dojo.require('dijit.layout.BorderContainer');
 dojo.require('dijit.layout.ContentPane');
+dojo.require('dijit.TooltipDialog');
 dojo.require('dojo.date.locale');
 dojo.require('dojo.i18n');
 dojo.require('dojox.form.BusyButton');
@@ -54,7 +56,10 @@ dojo.declare('moviedb.ui.PeopleGrid',
     });
 
     this._connectQuerying(grid, this.queryNode, this.queryFieldNode,
-    this.allowedQueryAttributes, this.defaultQueryAttribute);
+      this.allowedQueryAttributes, this.defaultQueryAttribute);
+
+    this._makeQueryHelp(this.helpContentNode, 
+      this.allowedQueryAttributes, this.defaultQueryAttribute);
 
     this._addTopAction('Show Person', function(context) { //### i18n
       dojo.publish('person.selected', [context.person]);
