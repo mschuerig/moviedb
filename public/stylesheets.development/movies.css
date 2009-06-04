@@ -83,6 +83,21 @@ h1 {
   background-image: url(/images/small/oscar.png);
 }
 
+.moviedbQueriedList table.queryForm {
+  width: 100%;
+}
+.moviedbQueriedList table.queryForm .dijitTextBox {
+  width: 100%;
+}
+.moviedbQueriedList table.queryForm .actions {
+  padding: inherit 0;
+  text-align: right;
+  white-space: nowrap;
+}
+.moviedbQueriedList .actions * {
+  float: left;
+}
+
 .filterIcon {
   background: url(/images/small/search.png) center center no-repeat;
   width: 18px;
