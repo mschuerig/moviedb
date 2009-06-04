@@ -19,10 +19,15 @@
   </div>
   <div dojoType="dojox.grid.DataGrid" dojoAttachPoint="gridNode" region="center"></div>
   <div dojoType="dijit.layout.ContentPane" region="bottom">
-    <div dojoType="dijit.form.Form" dojoAttachPoint="newPersonNode">
+    <div dojoType="dijit.form.Form" dojoAttachPoint="newObjectNode">
       <button dojoType="dijit.form.Button" type="submit"
-              iconClass="newPersonIcon" showLabel="true"
-              >New Person</button>
+              showLabel="true"
+              >New</button>
+    </div>
+    <div dojoType="dijit.form.Form" dojoAttachPoint="deleteObjectNode">
+      <button dojoType="dijit.form.Button" type="submit"
+              showLabel="true"
+              >Delete</button>
     </div>
   </div>
 </div>
