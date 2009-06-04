@@ -1,26 +1,9 @@
 dojo.provide('moviedb.ui.MoviesGrid');
-dojo.require('dijit._Templated');
-dojo.require('dijit.form.DropDownButton');
-dojo.require('dijit.form.Form');
-dojo.require('dijit.form.TextBox');
-dojo.require('dijit.layout.BorderContainer');
-dojo.require('dijit.layout.ContentPane');
-dojo.require('dijit.TooltipDialog');
-dojo.require('dojo.i18n');
-dojo.require('dojox.form.BusyButton');
-dojo.require('dojox.grid.DataGrid');
-dojo.require('aiki.Action');
-dojo.require('aiki.BusyForm');
-dojo.require('aiki._QueriedListMixin');
+dojo.require('moviedb.ui._QueriedList');
+//dojo.requireLocalization('moviedb', 'people');
 
-dojo.declare('moviedb.ui.MoviesGrid',
-    [dijit.layout.BorderContainer, dijit._Templated, aiki._QueriedListMixin], {
-  store: null,
+dojo.declare('moviedb.ui.MoviesGrid', moviedb.ui._QueriedList, {
   sortInfo: -2,
-  rowsPerPage: 50,
-  keepRows: 300,
-  templatePath: dojo.moduleUrl('moviedb', 'ui/_MoviesGrid/MoviesGrid.html'),
-  widgetsInTemplate: true,
 /*
   _awardingsFormatter: function(awardings) {
     return awardings ? dojo.string.rep('*', awardings.length) : '';
@@ -41,38 +24,7 @@ dojo.declare('moviedb.ui.MoviesGrid',
   defaultQueryAttribute: 'title',
 
   _contextItemName: 'movie',
-
-  postCreate: function() {
-    this.inherited(arguments);
-
-    var grid = this.gridNode;
-    this._initGrid(grid, this);
-
-    this._connectGridTopics('movie', grid);
-    this._connectButtonTopics('movie', {
-      'new':    this.newMovieNode,
-      'delete': this.deleteMovieNode 
-    });
-
-    this._connectQuerying(grid, this.queryNode, this.queryFieldNode,
-      this.allowedQueryAttributes, this.defaultQueryAttribute);
-
-    this._makeQueryHelp(this.helpContentNode, 
-      this.allowedQueryAttributes, this.defaultQueryAttribute);
-
-    this._addTopAction('Show Movie', function(context) { //### i18n
-      dojo.publish('movie.selected', [context.movie]);
-    });
-    this._addTopAction('-');
-    this._gridContextMenu(grid);
-  },
-
-  _awardingSelected: function(awarding) {
-    var hints = {
-      context: 'awardGroup'
-    };
-    dojo.publish('awarding.selected', [awarding, hints]);
-  },
+  _topic: 'movie',
 
   _getActions: function(context, event) {
     var actions = this.inherited(arguments);
@@ -91,5 +43,12 @@ dojo.declare('moviedb.ui.MoviesGrid',
       }
     }
     return actions;
+  },
+
+  _awardingSelected: function(awarding) {
+    var hints = {
+      context: 'awardGroup'
+    };
+    dojo.publish('awarding.selected', [awarding, hints]);
   }
 });
