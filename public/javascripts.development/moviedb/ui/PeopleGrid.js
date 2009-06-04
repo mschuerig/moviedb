@@ -17,14 +17,9 @@ dojo.declare('moviedb.ui.PeopleGrid', moviedb.ui._QueriedList, {
   allowedQueryAttributes: ['name', 'firstname', 'lastname', 'birthday', 'dob'],
       defaultQueryAttribute: 'name',
 
-
   _contextItemName: 'person',
   _topic: 'person',
-
-  postMixInProperties: function() {
-    this._nls = dojo.i18n.getLocalization('moviedb', 'people');
-    this.inherited(arguments);
-  },
+  _i18nBundles: ['people'],
 
   postCreate: function() {
     this.inherited(arguments);

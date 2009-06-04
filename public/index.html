@@ -58,6 +58,10 @@
         editors.newObject(peopleStore, 'moviedb.ui.PersonEditor');
       });
       
+      dojo.subscribe('person.delete', function() {
+        dojo.publish('not-implemented');
+      });
+
       dijit.byId('peopleList').attr('actions', editors.actions);
 
       // Character event handlers

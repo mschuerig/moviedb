@@ -1,3 +1,5 @@
 {
-  editItem: 'Edit'
+  helpAction: 'Help',
+  filterAction: 'Find',
+  editItemAction: 'Edit'
 }

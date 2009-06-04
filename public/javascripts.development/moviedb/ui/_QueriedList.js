@@ -12,6 +12,7 @@ dojo.require('dojox.form.BusyButton');
 dojo.require('dojox.grid.DataGrid');
 dojo.require('aiki.BusyForm');
 dojo.require('aiki._QueriedListMixin');
+dojo.requireLocalization('moviedb', 'common');
 
 
 dojo.declare('moviedb.ui._QueriedList',
@@ -22,6 +23,11 @@ dojo.declare('moviedb.ui._QueriedList',
   keepRows: 300,
   templatePath: dojo.moduleUrl('moviedb', 'ui/_QueriedList/QueriedList.html'),
   widgetsInTemplate: true,
+
+  postMixInProperties: function() {
+    this.inherited(arguments);
+    this._loadNls();
+  },
 
   postCreate: function() {
     this.inherited(arguments);
@@ -46,5 +52,14 @@ dojo.declare('moviedb.ui._QueriedList',
     }));
     this._addTopAction('-');
     this._gridContextMenu(grid);
+  },
+
+  _loadNls: function() {
+    this._nls = dojo.mixin({}, dojo.i18n.getLocalization('moviedb', 'common'));
+    if (dojo.isArray(this._i18nBundles)) {
+      dojo.forEach(this._i18nBundles, function(bundle) {
+        dojo.mixin(this._nls, dojo.i18n.getLocalization('moviedb', bundle));
+      }, this);
+    }
   }
 });

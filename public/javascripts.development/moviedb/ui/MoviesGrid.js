@@ -1,6 +1,6 @@
 dojo.provide('moviedb.ui.MoviesGrid');
 dojo.require('moviedb.ui._QueriedList');
-//dojo.requireLocalization('moviedb', 'people');
+dojo.requireLocalization('moviedb', 'movies');
 
 dojo.declare('moviedb.ui.MoviesGrid', moviedb.ui._QueriedList, {
   sortInfo: -2,
@@ -25,6 +25,7 @@ dojo.declare('moviedb.ui.MoviesGrid', moviedb.ui._QueriedList, {
 
   _contextItemName: 'movie',
   _topic: 'movie',
+  _i18nBundles: ['movies'],
 
   _getActions: function(context, event) {
     var actions = this.inherited(arguments);

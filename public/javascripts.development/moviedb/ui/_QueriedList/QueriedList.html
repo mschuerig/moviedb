@@ -6,13 +6,13 @@
            trim="true"></div>
       <button dojoType="dojox.form.BusyButton" type="submit"
               iconClass="filterIcon" showLabel="false"
-              >Filter</button>
+              >${_nls.filterAction}</button>
       <div dojoType="dijit.form.DropDownButton"
            class="helpButton"
            iconClass="helpIcon"
            showLabel="false"
            scrollOnFocus="false">
-        <span>Help</span>
+        <span>${_nls.helpAction}</span>
         <div dojoType="dijit.TooltipDialog" dojoAttachPoint="helpContentNode"></div>
       </div>
     </div>
@@ -22,12 +22,12 @@
     <div dojoType="dijit.form.Form" dojoAttachPoint="newObjectNode">
       <button dojoType="dijit.form.Button" type="submit"
               showLabel="true"
-              >New</button>
+              >${_nls.newObjectAction}</button>
     </div>
     <div dojoType="dijit.form.Form" dojoAttachPoint="deleteObjectNode">
       <button dojoType="dijit.form.Button" type="submit"
               showLabel="true"
-              >Delete</button>
+              >${_nls.deleteObjectAction}</button>
     </div>
   </div>
 </div>
