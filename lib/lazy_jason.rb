@@ -2,6 +2,12 @@
 module LazyJason
   DEFAULT_EXPIRATION_TIME = 10.seconds.freeze
 
+  def self.included(base)
+    base.class_eval do
+      rescue_from ActiveRecord::RecordNotFound, :with => :no_such_object
+    end
+  end
+
   def index
     objects = scope.all(:offset => @offset_limit[0], :limit => @offset_limit[1])
 
@@ -74,11 +80,15 @@ module LazyJason
 
   def destroy
     object = scope.find(params[:id])
-    set_object(object)
-    object.destroy
+    if update_matches_current_version?(object)
+      set_object(object)
+      object.destroy
 
-    respond_to do |format|
-      format.json { head :ok } ### TODO
+      respond_to do |format|
+        format.json { head :ok } ### TODO
+      end
+    else
+      head :precondition_failed
     end
   end
 
@@ -108,5 +118,13 @@ module LazyJason
     response.etag = object
     if_match_header = request.headers['IF-MATCH']
     if_match_header.nil? || (if_match_header == response.etag)
+  end
+
+  def no_such_object
+    if request.if_modified_since || request.if_none_match
+      head :gone
+    else
+      head :not_found
+    end
   end
 end

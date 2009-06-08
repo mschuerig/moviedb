@@ -4,7 +4,6 @@ ENV["RAILS_ENV"] ||= 'test'
 require File.dirname(__FILE__) + "/../config/environment" unless defined?(RAILS_ROOT)
 require 'spec/autorun'
 require 'spec/rails'
-require 'remarkable_rails'
 require 'spec/blueprints'
 
 Spec::Runner.configure do |config|
@@ -56,6 +55,17 @@ module ActionController # :nodoc:
   class TestRequest < Request # :nodoc:
     def if_match=(etag)
       @env["HTTP_IF_MATCH"] = etag
+    end
+  end
+  module TestResponseBehavior # :nodoc:
+    def not_modified?
+      response_code == 304
+    end
+    def precondition_failed?
+      response_code == 412
+    end
+    def gone?
+      response_code == 410
     end
   end
 end
